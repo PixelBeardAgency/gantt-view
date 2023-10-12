@@ -120,24 +120,22 @@ class _GanttItemFill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      child: Container(
-        decoration: BoxDecoration(
-          color: GanttSettings.of(context).eventRowTheme.fillColor,
-          border: Border.all(
-              color: GanttSettings.of(context).eventRowTheme.fillColor),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(isStart
-                ? GanttSettings.of(context).eventRowTheme.startRadius
-                : 0),
-            bottomLeft: Radius.circular(isStart
-                ? GanttSettings.of(context).eventRowTheme.startRadius
-                : 0),
-            topRight: Radius.circular(
-                isEnd ? GanttSettings.of(context).eventRowTheme.endRadius : 0),
-            bottomRight: Radius.circular(
-                isEnd ? GanttSettings.of(context).eventRowTheme.endRadius : 0),
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: GanttSettings.of(context).eventRowTheme.fillColor,
+        border: Border.all(
+            color: GanttSettings.of(context).eventRowTheme.fillColor),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(isStart
+              ? GanttSettings.of(context).eventRowTheme.startRadius
+              : 0),
+          bottomLeft: Radius.circular(isStart
+              ? GanttSettings.of(context).eventRowTheme.startRadius
+              : 0),
+          topRight: Radius.circular(
+              isEnd ? GanttSettings.of(context).eventRowTheme.endRadius : 0),
+          bottomRight: Radius.circular(
+              isEnd ? GanttSettings.of(context).eventRowTheme.endRadius : 0),
         ),
       ),
     );

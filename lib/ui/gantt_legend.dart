@@ -67,45 +67,47 @@ class _GanttLegendState extends State<GanttLegend> {
             ),
           ),
           Expanded(
-            child: widget.events.isEmpty?SizedBox.shrink() : SizedBox(
-              height: GanttSettings.of(context).legendTheme.height,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollInfo) =>
-                    widget.controller.onScroll(scrollInfo),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (GanttSettings.of(context).legendTheme.showYear)
-                      Expanded(
-                        child: _DateHorizontalScroll(
-                          type: _DateHorizontalScrollType.year,
-                          headerScrollController: _headerScrollController,
-                          startDate: widget.events.startDate,
-                          columns: widget.columns,
-                        ),
+            child: widget.events.isEmpty
+                ? const SizedBox.shrink()
+                : SizedBox(
+                    height: GanttSettings.of(context).legendTheme.height,
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: (scrollInfo) =>
+                          widget.controller.onScroll(scrollInfo),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (GanttSettings.of(context).legendTheme.showYear)
+                            Expanded(
+                              child: _DateHorizontalScroll(
+                                type: _DateHorizontalScrollType.year,
+                                headerScrollController: _headerScrollController,
+                                startDate: widget.events.startDate,
+                                columns: widget.columns,
+                              ),
+                            ),
+                          if (GanttSettings.of(context).legendTheme.showMonth)
+                            Expanded(
+                              child: _DateHorizontalScroll(
+                                type: _DateHorizontalScrollType.month,
+                                headerScrollController: _headerScrollController,
+                                startDate: widget.events.startDate,
+                                columns: widget.columns,
+                              ),
+                            ),
+                          if (GanttSettings.of(context).legendTheme.showDay)
+                            Expanded(
+                              child: _DateHorizontalScroll(
+                                type: _DateHorizontalScrollType.day,
+                                headerScrollController: _headerScrollController,
+                                startDate: widget.events.startDate,
+                                columns: widget.columns,
+                              ),
+                            ),
+                        ],
                       ),
-                    if (GanttSettings.of(context).legendTheme.showMonth)
-                      Expanded(
-                        child: _DateHorizontalScroll(
-                          type: _DateHorizontalScrollType.month,
-                          headerScrollController: _headerScrollController,
-                          startDate: widget.events.startDate,
-                          columns: widget.columns,
-                        ),
-                      ),
-                    if (GanttSettings.of(context).legendTheme.showDay)
-                      Expanded(
-                        child: _DateHorizontalScroll(
-                          type: _DateHorizontalScrollType.day,
-                          headerScrollController: _headerScrollController,
-                          startDate: widget.events.startDate,
-                          columns: widget.columns,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
+                    ),
+                  ),
           ),
         ],
       ),

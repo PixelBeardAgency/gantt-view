@@ -22,7 +22,7 @@ class GanttView<T> extends StatelessWidget {
   final TimelineAxisType? timelineAxisType;
   final Color? columnBoundaryColor;
 
-  const GanttView({
+  GanttView({
     super.key,
     required this.controller,
     this.titleColumnWidth,
@@ -34,7 +34,10 @@ class GanttView<T> extends StatelessWidget {
     this.subtitle,
     this.timelineAxisType,
     this.columnBoundaryColor,
-  });
+  }) : assert(
+            controller.data.whereType<GanttEvent>().every(
+                (event) => event.endDate.compareTo(event.startDate) >= 0),
+            'All events must have a start date before or equal to the end date.');
 
   @override
   Widget build(BuildContext context) {

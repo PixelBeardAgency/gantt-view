@@ -26,8 +26,14 @@ class GanttDataController<T> extends ChangeNotifier {
     sortItems();
   }
 
-  void addItems(T item) {
-    _items.add(item);
+  void setItems(List<T> items) {
+    _items.clear();
+    _items.addAll(items);
+    sortItems();
+  }
+
+  void addItems(List<T> items) {
+    _items.addAll(items);
     sortItems();
   }
 
