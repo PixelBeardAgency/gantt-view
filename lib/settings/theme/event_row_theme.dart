@@ -4,6 +4,7 @@ class EventRowTheme {
   final double height;
   final Color fillColor;
   final TextStyle? labelStyle;
+  final Color labelColor;
   final double startRadius;
   final double endRadius;
 
@@ -11,6 +12,7 @@ class EventRowTheme {
     this.height = 50.0,
     Color? fillColor,
     this.labelStyle,
+    this.labelColor = Colors.transparent,
     this.startRadius = 8.0,
     this.endRadius = 8.0,
   }) : fillColor = fillColor ?? Colors.greenAccent.shade700;

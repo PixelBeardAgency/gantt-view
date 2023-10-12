@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
         headerRowTheme: HeaderRowTheme(
           height: 48.0,
           textStyle: Theme.of(context).textTheme.labelLarge,
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Colors.grey[300]!,
         ),
         eventRowTheme: EventRowTheme(
           fillColor: Colors.blue[200],

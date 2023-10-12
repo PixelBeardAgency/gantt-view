@@ -69,8 +69,8 @@ class _GanttViewContentState extends State<_GanttViewContent> {
   final SyncedScrollController _syncedScrollController =
       SyncedScrollController();
 
-  DateTime get startDate =>
-      widget.eventController.data.whereType<GanttEvent>().startDate;
+  // DateTime get startDate =>
+  //     widget.eventController.data.whereType<GanttEvent>().startDate;
 
   @override
   void dispose() {
@@ -95,11 +95,7 @@ class _GanttViewContentState extends State<_GanttViewContent> {
             events: widget.eventController.data.whereType<GanttEvent>(),
             columns: columns),
         Expanded(
-          child: GanttEvents(
-            syncedScrollController: _syncedScrollController,
-            columns: columns,
-            events: widget.eventController.data,
-          ),
+          child: GanttEvents(data: widget.eventController.data),
         ),
       ],
     );
