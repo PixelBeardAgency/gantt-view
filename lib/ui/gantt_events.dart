@@ -25,30 +25,32 @@ class GanttEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        final event = events[index];
-        return event is GanttEvent
-            ? GanttEventRow(
-                title: event.label,
-                start: event.startDate.difference(eventsStartDate).inDays,
-                end: event.endDate.difference(eventsStartDate).inDays,
-                controller: _syncedScrollController,
-                columns: columns,
-              )
-            : event is GanttHeader
-                ? GanttHeaderRow(
-                    controller: _syncedScrollController,
-                    columns: columns,
-                    title: event,
-                  )
-                : const SizedBox.shrink();
-      },
-      itemCount: events.length,
-      separatorBuilder: (context, index) => GanttSeparatorRow(
-        controller: _syncedScrollController,
-        columns: columns,
-      ),
-    );
+    return events.isEmpty
+        ? const SizedBox.shrink()
+        : ListView.separated(
+            itemBuilder: (context, index) {
+              final event = events[index];
+              return event is GanttEvent
+                  ? GanttEventRow(
+                      title: event.label,
+                      start: event.startDate.difference(eventsStartDate).inDays,
+                      end: event.endDate.difference(eventsStartDate).inDays,
+                      controller: _syncedScrollController,
+                      columns: columns,
+                    )
+                  : event is GanttHeader
+                      ? GanttHeaderRow(
+                          controller: _syncedScrollController,
+                          columns: columns,
+                          title: event,
+                        )
+                      : const SizedBox.shrink();
+            },
+            itemCount: events.length,
+            separatorBuilder: (context, index) => GanttSeparatorRow(
+              controller: _syncedScrollController,
+              columns: columns,
+            ),
+          );
   }
 }

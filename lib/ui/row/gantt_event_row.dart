@@ -121,7 +121,6 @@ class _GanttItemFill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: 'asjkdsa',
       child: Container(
         decoration: BoxDecoration(
           color: GanttSettings.of(context).eventRowTheme.fillColor,

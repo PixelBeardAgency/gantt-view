@@ -67,7 +67,7 @@ class _GanttLegendState extends State<GanttLegend> {
             ),
           ),
           Expanded(
-            child: SizedBox(
+            child: widget.events.isEmpty?SizedBox.shrink() : SizedBox(
               height: GanttSettings.of(context).legendTheme.height,
               child: NotificationListener<ScrollNotification>(
                 onNotification: (scrollInfo) =>

@@ -77,12 +77,14 @@ class _GanttViewContentState extends State<_GanttViewContent> {
 
   @override
   Widget build(BuildContext context) {
-    var columns = switch (GanttSettings.of(context).timelineAxisType) {
-      TimelineAxisType.daily =>
-        widget.eventController.data.whereType<GanttEvent>().days,
-      TimelineAxisType.weekly =>
-        widget.eventController.data.whereType<GanttEvent>().weeks,
-    };
+    var columns = widget.eventController.data.isEmpty
+        ? 0
+        : switch (GanttSettings.of(context).timelineAxisType) {
+            TimelineAxisType.daily =>
+              widget.eventController.data.whereType<GanttEvent>().days,
+            TimelineAxisType.weekly =>
+              widget.eventController.data.whereType<GanttEvent>().weeks,
+          };
     return Column(
       children: [
         GanttLegend(
