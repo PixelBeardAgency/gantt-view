@@ -24,14 +24,10 @@ class GanttGridData {
         (size.height / (rowHeight + (verticalSpacing / 2))).ceil();
     firstVisibleRow =
         max(0, (-panOffset.dy / (rowHeight + (verticalSpacing / 2))).floor());
-    lastVisibleRow = min(rows, (firstVisibleRow + visibleRows).floor());
+    lastVisibleRow = min(rows, firstVisibleRow + visibleRows);
 
-    final visibleColumns = (size.width / columnWidth).ceil();
+    final visibleColumns = (size.width / columnWidth).floor();
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     lastVisibleColumn = min(firstVisibleColumn + visibleColumns, columns);
-
-    debugPrint('firstVisibleColumn: $firstVisibleColumn');
-    debugPrint('lastVisibleColumn: $lastVisibleColumn');
-    debugPrint('diff: ${lastVisibleColumn - firstVisibleColumn}');
   }
 }
