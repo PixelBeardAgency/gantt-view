@@ -8,18 +8,19 @@ import 'package:gantt_view/ui/painter/gantt_painter.dart';
 class GanttUiPainter extends GanttPainter {
   GanttUiPainter({
     required super.data,
-    required super.offset,
+    required super.panOffset,
     required super.settings,
+    required super.uiOffset,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final visibleRows = (size.height / rowHeight).ceil();
-    final int firstVisibleRow = max(0, (-offset.dy / rowHeight).floor());
+    final int firstVisibleRow = max(0, (-panOffset.dy / rowHeight).floor());
     final int lastVisibleRow = min(data.length, firstVisibleRow + visibleRows);
 
     final visibleColumns = (size.width / columnWidth).ceil();
-    final int firstVisibleColumn = max(0, (-offset.dx ~/ columnWidth));
+    final int firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     final int lastVisibleColumn =
         min(firstVisibleColumn + visibleColumns + 2, maxColumns);
 
@@ -76,13 +77,13 @@ class GanttUiPainter extends GanttPainter {
           ..style = PaintingStyle.fill;
 
         final rect = Rect.fromLTWH(
-          (x * columnWidth) + titleWidth,
-          0 - offset.dy,
+          (x * columnWidth) + uiOffset.dx,
+          0 - panOffset.dy,
           columnWidth,
           textPainter.height,
         );
         canvas.drawRect(
-          rect.shift(offset),
+          rect.shift(panOffset),
           paint,
         );
 
@@ -92,7 +93,7 @@ class GanttUiPainter extends GanttPainter {
                 rect.left + (columnWidth / 2) - (textPainter.width / 2),
                 rect.top,
               ) +
-              offset,
+              panOffset,
         );
 
         previousYear = date.year;
@@ -111,7 +112,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final endOffset = Offset(
-      titleWidth,
+      uiOffset.dx,
       (index + 1) * rowHeight,
     );
 
@@ -126,7 +127,7 @@ class GanttUiPainter extends GanttPainter {
           : settings.eventRowTheme.labelColor
       ..style = PaintingStyle.fill;
 
-    final titleOffset = Offset(0, offset.dy + legendHeight);
+    final titleOffset = Offset(0, panOffset.dy + uiOffset.dy);
     canvas.drawRect(
       titleRect.shift(titleOffset),
       titlePaint,
@@ -142,7 +143,7 @@ class GanttUiPainter extends GanttPainter {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: titleWidth,
+      maxWidth: uiOffset.dx,
     );
 
     textPainter.paint(
@@ -159,8 +160,8 @@ class GanttUiPainter extends GanttPainter {
     const startOffset = Offset.zero;
 
     final endOffset = Offset(
-      titleWidth,
-      legendHeight,
+      uiOffset.dx,
+      uiOffset.dy,
     );
 
     var titleRect = Rect.fromPoints(
@@ -192,7 +193,7 @@ class GanttUiPainter extends GanttPainter {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: titleWidth,
+      maxWidth: uiOffset.dx,
     );
 
     textPainter.paint(

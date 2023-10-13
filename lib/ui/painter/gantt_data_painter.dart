@@ -10,8 +10,9 @@ class GanttDataPainter extends GanttPainter {
 
   GanttDataPainter({
     required super.data,
-    required super.offset,
+    required super.panOffset,
     required super.settings,
+    required super.uiOffset,
   }) {
     for (int y = 0; y < data.length; y++) {
       final rowData = data[y];
@@ -38,19 +39,19 @@ class GanttDataPainter extends GanttPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final visibleRows = (size.height / rowHeight).ceil();
-    final int firstVisibleRow = max(0, (-offset.dy / rowHeight).floor());
+    final int firstVisibleRow = max(0, (-panOffset.dy / rowHeight).floor());
     final int lastVisibleRow = min(data.length, firstVisibleRow + visibleRows);
 
     final visibleColumns = (size.width / columnWidth).ceil();
-    final int firstVisibleColumn = max(0, (-offset.dx ~/ columnWidth)) - 1;
+    final int firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     final int lastVisibleColumn =
-        min(firstVisibleColumn + visibleColumns + 2, maxColumns);
+        min(firstVisibleColumn + visibleColumns, maxColumns);
 
     for (int y = 0; y < lastVisibleRow; y++) {
       for (int x = 0; x < lastVisibleColumn; x++) {
         final fill = _cells[y]?[x] ?? false;
         if (fill) {
-          _fillCell(x, y, legendHeight, canvas);
+          _fillCell(x, y, uiOffset.dy, canvas);
         }
       }
     }
@@ -61,13 +62,13 @@ class GanttDataPainter extends GanttPainter {
       ..color = settings.eventRowTheme.fillColor
       ..style = PaintingStyle.fill;
     final rect = Rect.fromLTWH(
-      x * columnWidth + titleWidth,
+      x * columnWidth + uiOffset.dx,
       y * rowHeight + legendHeight,
       columnWidth,
       rowHeight,
     );
     canvas.drawRect(
-      rect.shift(offset),
+      rect.shift(panOffset),
       paint,
     );
   }
