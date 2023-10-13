@@ -12,7 +12,7 @@ class GanttDataPainter extends GanttPainter {
     required super.data,
     required super.panOffset,
     required super.settings,
-    required super.uiOffset,
+    required super.layoutData,
   }) {
     for (int y = 0; y < data.length; y++) {
       final rowData = data[y];
@@ -51,7 +51,7 @@ class GanttDataPainter extends GanttPainter {
       for (int x = 0; x < lastVisibleColumn; x++) {
         final fill = _cells[y]?[x] ?? false;
         if (fill) {
-          _fillCell(x, y, uiOffset.dy, canvas);
+          _fillCell(x, y, layoutData.uiOffset.dy, canvas);
         }
       }
     }
@@ -62,7 +62,7 @@ class GanttDataPainter extends GanttPainter {
       ..color = settings.eventRowTheme.fillColor
       ..style = PaintingStyle.fill;
     final rect = Rect.fromLTWH(
-      x * columnWidth + uiOffset.dx,
+      x * columnWidth + layoutData.uiOffset.dx,
       y * rowHeight + legendHeight,
       columnWidth,
       rowHeight,

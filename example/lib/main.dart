@@ -45,9 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
         endDate: item.end,
       ),
       headerBuilder: (item) => GanttHeader(label: item.group),
-      sorters: 
-[        (a, b) => a.group.compareTo(b.group),
-        (a, b) => a.start.compareTo(b.start),],
+      sorters: [
+        (a, b) => a.group.compareTo(b.group),
+        (a, b) => a.start.compareTo(b.start),
+      ],
     );
   }
 
@@ -76,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 20,
           startRadius: 4.0,
           endRadius: 4.0,
+          labelColor: Colors.green.shade100,
         ),
         legendTheme: LegendTheme(
           width: 200,

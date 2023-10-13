@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/extension/gantt_event_list_extension.dart';
 import 'package:gantt_view/model/gantt_event.dart';
+import 'package:gantt_view/model/gantt_layout_data.dart';
 import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 
@@ -8,7 +9,7 @@ abstract class GanttPainter extends CustomPainter {
   final List<GanttRowData> data;
   final Offset panOffset;
   final GanttSettings settings;
-  final Offset uiOffset;
+  final GanttChartLayoutData layoutData;
 
   double get rowHeight => settings.eventRowTheme.height;
   double get columnWidth => settings.legendTheme.dateWidth;
@@ -20,7 +21,7 @@ abstract class GanttPainter extends CustomPainter {
     required this.data,
     required this.panOffset,
     required this.settings,
-    required this.uiOffset
+    required this.layoutData
   });
 
   @override

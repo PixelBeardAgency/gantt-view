@@ -10,7 +10,7 @@ class GanttUiPainter extends GanttPainter {
     required super.data,
     required super.panOffset,
     required super.settings,
-    required super.uiOffset,
+    required super.layoutData,
   });
 
   @override
@@ -47,51 +47,39 @@ class GanttUiPainter extends GanttPainter {
 
     double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
-      if (settings.legendTheme.showYear) {
-        final date = startDate.add(Duration(days: x));
-
-        final textPainter = TextPainter(
-          maxLines: 3,
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            text: [
-              if (settings.legendTheme.showYear)
-                previousYear == date.year ? '' : '${date.year}',
-              if (settings.legendTheme.showMonth)
-                previousMonth == date.month ? '' : '${date.month}',
-              if (settings.legendTheme.showDay)
-                previousDay == date.day ? '' : '${date.day}',
-            ].join('\n'),
-            style: settings.headerRowTheme.textStyle,
-          ),
-          textDirection: TextDirection.ltr,
-        );
-
-        textPainter.layout(
-          minWidth: 0,
-          maxWidth: columnWidth,
-        );
-
+      if (settings.legendTheme.showYear ||
+          settings.legendTheme.showMonth ||
+          settings.legendTheme.showDay) {
         final paint = Paint()
           ..color = settings.legendTheme.backgroundColor
           ..style = PaintingStyle.fill;
 
         final rect = Rect.fromLTWH(
-          (x * columnWidth) + uiOffset.dx,
+          (x * columnWidth) + layoutData.uiOffset.dx,
           0 - panOffset.dy,
           columnWidth,
-          textPainter.height,
+          layoutData.legendHeight,
         );
         canvas.drawRect(
           rect.shift(panOffset),
           paint,
         );
 
+        final date = startDate.add(Duration(days: x));
+        final textPainter = layoutData.datePainter([
+          if (settings.legendTheme.showYear)
+            previousYear == date.year ? '' : '${date.year}',
+          if (settings.legendTheme.showMonth)
+            previousMonth == date.month ? '' : '${date.month}',
+          if (settings.legendTheme.showDay)
+            previousDay == date.day ? '' : '${date.day}',
+        ]);
+
         textPainter.paint(
           canvas,
           Offset(
                 rect.left + (columnWidth / 2) - (textPainter.width / 2),
-                rect.top,
+                rect.bottom - textPainter.height, // Align to bottom
               ) +
               panOffset,
         );
@@ -112,7 +100,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final endOffset = Offset(
-      uiOffset.dx,
+      layoutData.uiOffset.dx,
       (index + 1) * rowHeight,
     );
 
@@ -123,28 +111,17 @@ class GanttUiPainter extends GanttPainter {
 
     final titlePaint = Paint()
       ..color = rowData is GanttEvent
-          ? settings.headerRowTheme.backgroundColor
-          : settings.eventRowTheme.labelColor
+          ? settings.eventRowTheme.labelColor
+          : settings.headerRowTheme.backgroundColor
       ..style = PaintingStyle.fill;
 
-    final titleOffset = Offset(0, panOffset.dy + uiOffset.dy);
+    final titleOffset = Offset(0, panOffset.dy + layoutData.uiOffset.dy);
     canvas.drawRect(
       titleRect.shift(titleOffset),
       titlePaint,
     );
 
-    final textPainter = TextPainter(
-      maxLines: 1,
-      text: TextSpan(
-        text: rowData.label,
-        style: settings.headerRowTheme.textStyle,
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: uiOffset.dx,
-    );
+    final textPainter = layoutData.headerPainter(rowData.label);
 
     textPainter.paint(
       canvas,
@@ -160,8 +137,8 @@ class GanttUiPainter extends GanttPainter {
     const startOffset = Offset.zero;
 
     final endOffset = Offset(
-      uiOffset.dx,
-      uiOffset.dy,
+      layoutData.uiOffset.dx,
+      layoutData.uiOffset.dy,
     );
 
     var titleRect = Rect.fromPoints(
@@ -178,23 +155,7 @@ class GanttUiPainter extends GanttPainter {
       titlePaint,
     );
 
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: settings.title,
-        style: settings.legendTheme.titleStyle,
-        children: [
-          TextSpan(
-            text: '\n${settings.subtitle}',
-            style: settings.legendTheme.subtitleStyle,
-          )
-        ],
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: uiOffset.dx,
-    );
+    final textPainter = layoutData.titlePainter();
 
     textPainter.paint(
       canvas,
