@@ -6,7 +6,7 @@ class HeaderRowTheme {
   final TextStyle? textStyle;
 
   HeaderRowTheme({
-    this.backgroundColor = Colors.transparent,
+    this.backgroundColor = Colors.white,
     this.textStyle,
     this.height = 50,
   });

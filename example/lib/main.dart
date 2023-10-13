@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
         legendTheme: LegendTheme(
           width: 200,
           dateStyle: Theme.of(context).textTheme.labelMedium,
-          backgroundColor: Colors.blue[100],
+          backgroundColor: Colors.blue[100]!,
         ),
         timelineAxisType: TimelineAxisType.daily,
       ),
