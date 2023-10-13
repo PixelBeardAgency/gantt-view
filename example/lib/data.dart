@@ -1,10 +1,8 @@
-import 'dart:convert';
+import 'dart:math';
 
 abstract class Data {
-  static List<ExampleEventItem> get dummyData => json
-      .decode(_dummyData)
-      .map<ExampleEventItem>((e) => ExampleEventItem.fromJson(e))
-      .toList();
+  static List<ExampleEventItem> get dummyData =>
+      List.generate(400, (index) => ExampleEventItem.random());
 }
 
 class ExampleEventItem {
@@ -13,203 +11,148 @@ class ExampleEventItem {
   final DateTime start;
   final DateTime end;
 
-  ExampleEventItem(
-      {required this.title,
-      required this.group,
-      required this.start,
-      required this.end});
+  ExampleEventItem({
+    required this.title,
+    required this.group,
+    required this.start,
+    required this.end,
+  });
 
-  factory ExampleEventItem.fromJson(Map<String, dynamic> json) {
+  factory ExampleEventItem.random() {
+    final start = DateTime.now()
+        .add(Duration(days: Random().nextInt(25) - Random().nextInt(25)));
+    final end = start.add(Duration(days: Random().nextInt(50)));
     return ExampleEventItem(
-      title: json['title'],
-      group: json['group'],
-      start: DateTime.parse(json['start_date']),
-      end: DateTime.parse(json['end_date']),
+      title: _tasks[Random().nextInt(_tasks.length)],
+      group: _groups[Random().nextInt(_groups.length)],
+      start: start,
+      end: end,
     );
   }
 }
 
-const String _dummyData = '''
-  [
-    {
-        "title": "tristique in",
-        "group": "sed",
-        "start_date": "2022-09-27",
-        "end_date": "2022-10-07"
-    },
-    {
-        "title": "id luctus nec",
-        "group": "morbi",
-        "start_date": "2022-09-21",
-        "end_date": "2022-10-07"
-    },
-    {
-        "title": "turpis a",
-        "group": "sed",
-        "start_date": "2022-09-14",
-        "end_date": "2022-09-25"
-    },
-    {
-        "title": "nulla ac enim",
-        "group": "sed",
-        "start_date": "2022-10-08",
-        "end_date": "2022-10-21"
-    },
-    {
-        "title": "faucibus orci",
-        "group": "morbi",
-        "start_date": "2022-10-06",
-        "end_date": "2022-10-08"
-    },
-    {
-        "title": "purus aliquet",
-        "group": "morbi",
-        "start_date": "2022-10-10",
-        "end_date": "2022-10-11"
-    },
-    {
-        "title": "etiam",
-        "group": "in",
-        "start_date": "2022-09-15",
-        "end_date": "2022-10-02"
-    },
-    {
-        "title": "vestibulum",
-        "group": "sed",
-        "start_date": "2022-09-25",
-        "end_date": "2022-09-30"
-    },
-    {
-        "title": "massa quis augue",
-        "group": "morbi",
-        "start_date": "2022-09-26",
-        "end_date": "2022-10-04"
-    },
-    {
-        "title": "id",
-        "group": "in",
-        "start_date": "2022-09-14",
-        "end_date": "2022-09-18"
-    },
-    {
-        "title": "leo maecenas pulvinar",
-        "group": "sed",
-        "start_date": "2022-09-16",
-        "end_date": "2022-10-03"
-    },
-    {
-        "title": "ultrices",
-        "group": "in",
-        "start_date": "2022-09-14",
-        "end_date": "2022-09-28"
-    },
-    {
-        "title": "libero nullam",
-        "group": "sed",
-        "start_date": "2022-09-19",
-        "end_date": "2022-09-28"
-    },
-    {
-        "title": "metus aenean fermentum",
-        "group": "in",
-        "start_date": "2022-09-28",
-        "end_date": "2022-10-06"
-    },
-    {
-        "title": "cubilia",
-        "group": "sed",
-        "start_date": "2022-09-14",
-        "end_date": "2022-09-29"
-    },
-    {
-        "title": "nullam porttitor lacus",
-        "group": "diam",
-        "start_date": "2022-09-26",
-        "end_date": "2022-10-06"
-    },
-    {
-        "title": "sit amet nulla",
-        "group": "in",
-        "start_date": "2022-09-25",
-        "end_date": "2022-10-13"
-    },
-    {
-        "title": "cras",
-        "group": "in",
-        "start_date": "2022-09-17",
-        "end_date": "2022-09-27"
-    },
-    {
-        "title": "quisque id justo",
-        "group": "sed",
-        "start_date": "2022-09-18",
-        "end_date": "2022-09-22"
-    },
-    {
-        "title": "vulputate",
-        "group": "diam",
-        "start_date": "2022-09-19",
-        "end_date": "2022-09-24"
-    },
-    {
-        "title": "tincidunt nulla mollis",
-        "group": "diam",
-        "start_date": "2022-09-20",
-        "end_date": "2022-10-02"
-    },
-    {
-        "title": "quam pharetra magna",
-        "group": "morbi",
-        "start_date": "2022-10-06",
-        "end_date": "2022-10-19"
-    },
-    {
-        "title": "eleifend luctus ultricies",
-        "group": "diam",
-        "start_date": "2022-09-14",
-        "end_date": "2022-09-18"
-    },
-    {
-        "title": "pede venenatis",
-        "group": "sem",
-        "start_date": "2022-10-08",
-        "end_date": "2022-10-21"
-    },
-    {
-        "title": "in tempus",
-        "group": "morbi",
-        "start_date": "2022-09-21",
-        "end_date": "2022-09-24"
-    },
-    {
-        "title": "vel",
-        "group": "diam",
-        "start_date": "2022-10-09",
-        "end_date": "2022-10-26"
-    },
-    {
-        "title": "ut suscipit",
-        "group": "sem",
-        "start_date": "2022-10-03",
-        "end_date": "2022-10-20"
-    },
-    {
-        "title": "ut nulla sed",
-        "group": "in",
-        "start_date": "2022-09-18",
-        "end_date": "2022-09-22"
-    },
-    {
-        "title": "non mattis",
-        "group": "sem",
-        "start_date": "2022-09-26",
-        "end_date": "2022-09-28"
-    },
-    {
-        "title": "at",
-        "group": "morbi",
-        "start_date": "2022-09-30",
-        "end_date": "2022-10-18"
-    }
-]
-''';
+List<String> _groups = [
+  'KOJvZfmBafapGkQqMi3R',
+  '3I5Ktin0entxQ5SWOLZC',
+  'V3X5uvqd7M7YZloBvWYR',
+  '6gCDH95Qp17Mfvtq0Kiq',
+  'HwJGIVmyUifHKzzWCcPP',
+  '9r4YPWbfXZNCujsxX0er',
+  '7edH9bO7zQ1BI2PmsxqR',
+  'yrpWavDsoCkGlDC69JpE',
+  'Sv38osovlqO76j0bVTaT',
+  'zz0HB1BIByAOwXZTv5oX',
+  'VVQwM2YRpc9k2VWqqAg2',
+  'Yg5MfvypD39yGJiqFllG',
+  'NEqruIQW2rLA9CAesuvW',
+  'WwuPstJ6vIBIZgFjTciD',
+  'P7CaRDvhOzNbRKer9bMm',
+  'Q2ec7Tus3rswPNbgPVei',
+  'HnOnrE646IwAnE2yrI0V',
+  't3ycngi746AbwW2QZzyA',
+  'WqHH3LceideQnUGRYcni',
+  'UgMWFGC49xcyzzwfe8hV',
+];
+
+List<String> _tasks = [
+  '8NPBdDKPoGp4Fvc96vsQ',
+  'CtdLUzfUdsqjlvSGgmEd',
+  'eNJz3n8OVWlWbSxSJAqA',
+  'ZLjL45zC7n75pG74mdVV',
+  'oKMwMdwcYL7LhnJI4pw0',
+  '06K980Sk3O8ZRYzy5osD',
+  'ScEH94qOubXDsN5wm0SY',
+  'ufFNfycEssPY0z7o0toL',
+  'Y38Nunnwq5MvzrypYAii',
+  'sWzeLXHLJE6qTFtxEz4y',
+  'sxRx13XGetEcqnx0CDXa',
+  'WqLfKF0yGdprT5mNOlKs',
+  '6JetPIfXCxCSLBemWRLe',
+  'Qhv3VyQjBPDCpX436RMX',
+  'oulUqN25BSFhIRvIqGJI',
+  'Xb7GfMAKCV8Zt0nfugR1',
+  'wb7H9OKzCgd3wPdwZ1Er',
+  '35SpDu5Q2ZkLwlVXzbGP',
+  'SXH79XT5LalueN3P0h3j',
+  'd4ud5DZsnfJJ4Tssm6H5',
+  'pTyDQB1IPRonK7jd2UDx',
+  'BPpJ0B5tqRh5J8lMdpkz',
+  'UjmRzWDIhrj4hBcXhvPU',
+  'HbcnQmGXXpy78vI8tbIP',
+  '8ebPJIvC8ImLfVdCjLiy',
+  'F3paM4LN4DiUUJaZFq1B',
+  'ZsopMlBKBFDS4eR1bMdo',
+  '6xjkq0K9LaUjnGvfm1Zf',
+  'XZgqctWtZq0ACsgxrk1u',
+  'aUvRfJSOn3Pop40ZYLcW',
+  'B6G4ciXaeGQum0rHSf2U',
+  'X4TXDFxpTKGKTcczLgF8',
+  'tVTrVqpKDJ2PdXtegsB6',
+  'GngP1dIpRA63sdHcY6d5',
+  'bHodjr5NPIbonGCBsHe1',
+  'uHRceHRglMUxnxEwdW8b',
+  'rWSfn0jem4Rpy06ETa2T',
+  'Kpe45cbx0efhz6UAXUd8',
+  'I2uuW9ymqVT8gAeOBeqt',
+  'Ukf57CCOxqGdWltGRZq4',
+  'Kca07hpHq4x6UoVUzab9',
+  'bgQebcGTGqZSUueU9I42',
+  '57Ghbtq8yUO8lRFCZNRg',
+  'Gh92wlYrTtjLPrW7Gyvs',
+  'fWmD0gGPDbXyN243n6Z2',
+  'eWdtc3tYq9tVDlt76f12',
+  'oBbSM0LyM2cjvVCdJmhK',
+  'HWuobeUnYOwhePK05f9l',
+  '3zyznjpIO078zBTmuZYE',
+  'ButPpUxBaFcrkKj3En1s',
+  'M6WTBzFxQZFTs7CUGEwx',
+  'HGVzt3XbUtYpidZPZMnO',
+  'eqckKbyAvMxElcJegoBk',
+  '6wGCHWt55wy3HE6uduTg',
+  'uZAKgck2s2IQmhDQQEHs',
+  'WwlN9EYZ6fNWjWiA4y1Q',
+  'Jhxd5MQrzYV6XxTGQwUX',
+  'vEqMozPIMh4Et1RgQ28Y',
+  'dVvqATXqNlLVtd0CcNuU',
+  'ANjYksFzaL2oTDh1dUeN',
+  'g1992zSpxaMZ06c7OlCW',
+  'i3XrQSsymqsdLQ6dOQqw',
+  'F2d8ZdQ6gVE6BGtK2GUK',
+  'A3s5YYDRy6Q1oTH6PfxJ',
+  'QrhetTY7aWpXEaGYOI0L',
+  'A2nPZdaM25hAPnGTYVN5',
+  'taieFS5wkE3WlOEaywBd',
+  '7OO0C1J86N45HH1b3ANr',
+  'n6viZ1O7XYygMC18cfhp',
+  'jCP5xqE5Rpb626FueQp5',
+  'sLqy5OTmTfERM47TuCvx',
+  '7MZs3ALoXTmHtovUdy9U',
+  'O5hQqQGraybKmt4EkSg3',
+  'HJmDXW7LN2oASBvKC2pf',
+  '0WpYlQBY5awXsn6PQSzg',
+  'XzOFf17Cgd4G3O4sRE5U',
+  'pp9v1ORrFxVO7ADE4fSz',
+  '0LDSwpw7smtTW7P9SX8a',
+  'OelGBfk0WwH7CyvrPT0W',
+  'J7ya9LaFejOnkuqsgloT',
+  'yMEYYGODac2s6YhNVhjs',
+  'K9WxNOeKKk7CPS0SPq0o',
+  'fAgLz3Toy8oRC69qLMxq',
+  'EOarZSmxcngNTPJL6c8l',
+  'w2HA2kF3K7gDLauRKA8O',
+  'pTIpbFJg4nJ4csDITb6E',
+  'MMmHq9SksLj4VmaJxmn4',
+  'PaWoqJ7VrlADdUuJ4Z6h',
+  'Iu35oPugFN2Jl5SkxEqW',
+  'cbthK5rocV1UXD8Qlkil',
+  'r3TauYXOEBVRhjFO3BtD',
+  'IBuFmRVzWEUh6Rzl0cyA',
+  'kR9sDNgFERJWhg8oHBJj',
+  'fYHfkYG5i3LbeSAaX6Bb',
+  'lvEunZhWc1CU1Of3P9tz',
+  '3jZlkGbBTFSEJZA34s2o',
+  'kgleFz1Dgm4UZe6USkyn',
+  '9v9puiBRT6v2aAGT2Ke8',
+  'qCJiKRZqbRtzgVivlikv',
+  'qLRRuuJ31Goe8JU43SCM',
+];

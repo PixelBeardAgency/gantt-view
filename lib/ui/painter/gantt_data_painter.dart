@@ -4,7 +4,7 @@ import 'package:gantt_view/model/gantt_event.dart';
 import 'package:gantt_view/ui/painter/gantt_painter.dart';
 
 class GanttDataPainter extends GanttPainter {
-  final Map<int, Map<int, Color>> _cells = {};
+  final Map<int, Map<int, _FillData>> _cells = {};
 
   GanttDataPainter({
     required super.data,
@@ -29,12 +29,16 @@ class GanttDataPainter extends GanttPainter {
         }
 
         for (int i = from; i <= to; i++) {
-          (_cells[y] ??= {})[i] = layoutData.settings.eventRowTheme.fillColor;
+          (_cells[y] ??= {})[i] = _FillData(
+            layoutData.settings.eventRowTheme.fillColor,
+            i == from,
+            i == to,
+          );
         }
       } else {
         for (int i = 0; i <= columns; i++) {
-          (_cells[y] ??= {})[i] =
-              layoutData.settings.headerRowTheme.backgroundColor;
+          (_cells[y] ??= {})[i] = _FillData(
+              layoutData.settings.headerRowTheme.backgroundColor, false, false);
         }
       }
     }
@@ -50,26 +54,55 @@ class GanttDataPainter extends GanttPainter {
         final fill = _cells[y]?[x];
         if (fill != null) {
           _fillCell(
-              x, y, layoutData.uiOffset.dy, canvas, fill, verticalSpacing / 2);
+            x,
+            y,
+            layoutData.uiOffset.dy,
+            canvas,
+            fill,
+            verticalSpacing / 2,
+          );
         }
       }
     }
   }
 
-  void _fillCell(int x, int y, double legendHeight, Canvas canvas, Color color,
-      double verticalPadding) {
+  void _fillCell(
+    int x,
+    int y,
+    double legendHeight,
+    Canvas canvas,
+    _FillData fill,
+    double verticalPadding,
+  ) {
     final paint = Paint()
-      ..color = color
+      ..color = fill.color
       ..style = PaintingStyle.fill;
-    final rect = Rect.fromLTWH(
-      x * columnWidth + layoutData.uiOffset.dx,
-      y * (rowHeight + verticalPadding) + legendHeight + verticalPadding,
-      columnWidth,
-      rowHeight,
+
+    final radius = layoutData.settings.eventRowTheme.radius;
+
+    final rect = RRect.fromRectAndCorners(
+      Rect.fromLTWH(
+        x * columnWidth + layoutData.uiOffset.dx,
+        y * (rowHeight + verticalPadding) + legendHeight + verticalPadding,
+        columnWidth,
+        rowHeight,
+      ),
+      topLeft: Radius.circular(fill.isFirst ? radius : 0),
+      bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
+      topRight: Radius.circular(fill.isLast ? radius : 0),
+      bottomRight: Radius.circular(fill.isLast ? radius : 0),
     );
-    canvas.drawRect(
+    canvas.drawRRect(
       rect.shift(panOffset),
       paint,
     );
   }
+}
+
+class _FillData {
+  final Color color;
+  final bool isFirst;
+  final bool isLast;
+
+  _FillData(this.color, this.isFirst, this.isLast);
 }
