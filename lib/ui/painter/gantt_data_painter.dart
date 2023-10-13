@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:gantt_view/extension/gantt_event_list_extension.dart';
 import 'package:gantt_view/model/gantt_event.dart';
@@ -45,20 +43,10 @@ class GanttDataPainter extends GanttPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final verticalSpacing = layoutData.settings.rowSpacing;
+    var gridData = super.gridData(size);
 
-    final visibleRows = (size.height / (rowHeight + verticalSpacing)).ceil();
-    final int firstVisibleRow =
-        max(0, (-panOffset.dy / (rowHeight + verticalSpacing)).floor());
-    final int lastVisibleRow = min(
-        data.length, (firstVisibleRow + visibleRows + verticalSpacing).ceil());
-
-    final visibleColumns = (size.width / columnWidth).ceil();
-    final int firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
-    final int lastVisibleColumn =
-        min(firstVisibleColumn + visibleColumns, maxColumns);
-
-    for (int y = 0; y < lastVisibleRow; y++) {
-      for (int x = 0; x < lastVisibleColumn; x++) {
+    for (int y = 0; y < gridData.lastVisibleRow; y++) {
+      for (int x = 0; x < gridData.lastVisibleColumn; x++) {
         final fill = _cells[y]?[x];
         if (fill != null) {
           _fillCell(

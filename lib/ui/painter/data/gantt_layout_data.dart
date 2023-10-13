@@ -14,10 +14,11 @@ class GanttChartLayoutData {
   late double maxDx;
   late double maxDy;
 
-  GanttChartLayoutData(
-      {required Iterable<GanttEvent> data,
-      required this.settings,
-      required Size screenSize}) {
+  GanttChartLayoutData({
+    required Iterable<GanttEvent> data,
+    required this.settings,
+    required Size screenSize,
+  }) {
     titleWidth = _getTitleWidth(data);
     legendHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(
@@ -56,41 +57,26 @@ class GanttChartLayoutData {
     return max(width, titlePainter().width);
   }
 
-  double _getLegendHeight() {
-    double height = 0;
-    if (settings.legendTheme.showYear ||
-        settings.legendTheme.showMonth ||
-        settings.legendTheme.showDay) {
-      final textPainter = datePainter(
-        [
-          if (settings.legendTheme.showYear) '2021',
-          if (settings.legendTheme.showMonth) '12',
-          if (settings.legendTheme.showDay) '31',
-        ],
+  double _getLegendHeight() => max(
+        datePainter(
+          [
+            if (settings.legendTheme.showYear) '2021',
+            if (settings.legendTheme.showMonth) '12',
+            if (settings.legendTheme.showDay) '31',
+          ],
+        ).height,
+        titlePainter().height,
       );
-
-      height = max(height, textPainter.height);
-    }
-    return max(height, titlePainter().height);
-  }
 
   TextPainter titlePainter() {
     final textPainter = TextPainter(
       text: TextSpan(
         text: settings.title,
-        style: settings.legendTheme.titleStyle ??
-            const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+        style: settings.legendTheme.titleStyle,
         children: [
           TextSpan(
             text: '\n${settings.subtitle}',
-            style: settings.legendTheme.subtitleStyle ??
-                const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w400,
-                ),
+            style: settings.legendTheme.subtitleStyle,
           )
         ],
       ),
@@ -109,8 +95,7 @@ class GanttChartLayoutData {
       textAlign: TextAlign.center,
       text: TextSpan(
         text: dates.join('\n'),
-        style: settings.legendTheme.dateStyle ??
-            const TextStyle(color: Colors.black),
+        style: settings.legendTheme.dateStyle,
       ),
       textDirection: TextDirection.ltr,
     );

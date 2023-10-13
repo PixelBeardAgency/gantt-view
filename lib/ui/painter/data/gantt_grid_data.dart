@@ -20,14 +20,18 @@ class GanttGridData {
     final rowHeight = settings.eventRowTheme.height;
     final columnWidth = settings.legendTheme.dateWidth;
 
-    final visibleRows = (size.height / (rowHeight + verticalSpacing)).ceil();
+    final visibleRows =
+        (size.height / (rowHeight + (verticalSpacing / 2))).ceil();
     firstVisibleRow =
-        max(0, (-panOffset.dy / (rowHeight + verticalSpacing)).floor());
-    lastVisibleRow =
-        min(rows, (firstVisibleRow + visibleRows + verticalSpacing).ceil());
+        max(0, (-panOffset.dy / (rowHeight + (verticalSpacing / 2))).floor());
+    lastVisibleRow = min(rows, (firstVisibleRow + visibleRows).floor());
 
     final visibleColumns = (size.width / columnWidth).ceil();
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     lastVisibleColumn = min(firstVisibleColumn + visibleColumns, columns);
+
+    debugPrint('firstVisibleColumn: $firstVisibleColumn');
+    debugPrint('lastVisibleColumn: $lastVisibleColumn');
+    debugPrint('diff: ${lastVisibleColumn - firstVisibleColumn}');
   }
 }
