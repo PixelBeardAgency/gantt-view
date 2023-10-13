@@ -9,7 +9,7 @@ class GanttDataController<T> extends ChangeNotifier {
   final GanttEvent Function(T data) _eventBuilder;
   final GanttHeader Function(T data)? _headerBuilder;
 
-  final int Function(T a, T b)? _sorter;
+  final List<int Function(T a, T b)> _sorters;
 
   final List<GanttRowData> _data = [];
   List<GanttRowData> get data => List.unmodifiable(_data);
@@ -18,10 +18,10 @@ class GanttDataController<T> extends ChangeNotifier {
     required List<T> items,
     required GanttEvent Function(T data) eventBuilder,
     GanttHeader Function(T data)? headerBuilder,
-    int Function(T a, T b)? sorter,
+    List<int Function(T a, T b)>? sorters,
   })  : _eventBuilder = eventBuilder,
         _headerBuilder = headerBuilder,
-        _sorter = sorter {
+        _sorters = sorters ?? [] {
     _items.addAll(items);
     sortItems();
   }
@@ -45,8 +45,12 @@ class GanttDataController<T> extends ChangeNotifier {
   void sortItems() {
     _data.clear();
     List<T> items = List.from(_items);
-    if (_sorter != null) {
-      items.sort(_sorter);
+    if (_sorters.isNotEmpty) {
+      items.sort(
+          (a, b) => <Comparator<T>>[..._sorters].map((e) => e(a, b)).firstWhere(
+                (comparator) => comparator != 0,
+                orElse: () => 0,
+              ));
     }
 
     if (_headerBuilder == null) {

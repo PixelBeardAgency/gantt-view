@@ -45,13 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
         endDate: item.end,
       ),
       headerBuilder: (item) => GanttHeader(label: item.group),
-      sorter: (a, b) => <Comparator<ExampleEventItem>>[
-        (a, b) => a.group.compareTo(b.group),
-        (a, b) => a.start.compareTo(b.start),
-      ].map((e) => e(a, b)).firstWhere(
-            (comparator) => comparator != 0,
-            orElse: () => 0,
-          ),
+      sorters: 
+[        (a, b) => a.group.compareTo(b.group),
+        (a, b) => a.start.compareTo(b.start),],
     );
   }
 
