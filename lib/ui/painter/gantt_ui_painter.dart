@@ -9,28 +9,22 @@ class GanttUiPainter extends GanttPainter {
   GanttUiPainter({
     required super.data,
     required super.panOffset,
-    required super.settings,
     required super.layoutData,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final visibleRows = (size.height / rowHeight).ceil();
-    final int firstVisibleRow = max(0, (-panOffset.dy / rowHeight).floor());
-    final int lastVisibleRow = min(data.length, firstVisibleRow + visibleRows);
-
-    final visibleColumns = (size.width / columnWidth).ceil();
-    final int firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
-    final int lastVisibleColumn =
-        min(firstVisibleColumn + visibleColumns + 2, maxColumns);
+    var gridData = super.gridData(size);
 
     _paintLegend(
-      firstVisibleColumn,
-      lastVisibleColumn,
+      gridData.firstVisibleColumn,
+      gridData.lastVisibleColumn,
       canvas,
     );
 
-    for (int index = firstVisibleRow; index < lastVisibleRow; index++) {
+    for (int index = gridData.firstVisibleRow;
+        index < gridData.lastVisibleRow;
+        index++) {
       final rowData = data[index];
 
       _paintHeader(index, canvas, rowData);
@@ -47,11 +41,11 @@ class GanttUiPainter extends GanttPainter {
 
     double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
-      if (settings.legendTheme.showYear ||
-          settings.legendTheme.showMonth ||
-          settings.legendTheme.showDay) {
+      if (layoutData.settings.legendTheme.showYear ||
+          layoutData.settings.legendTheme.showMonth ||
+          layoutData.settings.legendTheme.showDay) {
         final paint = Paint()
-          ..color = settings.legendTheme.backgroundColor
+          ..color = layoutData.settings.legendTheme.backgroundColor
           ..style = PaintingStyle.fill;
 
         final rect = Rect.fromLTWH(
@@ -67,11 +61,11 @@ class GanttUiPainter extends GanttPainter {
 
         final date = startDate.add(Duration(days: x));
         final textPainter = layoutData.datePainter([
-          if (settings.legendTheme.showYear)
+          if (layoutData.settings.legendTheme.showYear)
             previousYear == date.year ? '' : '${date.year}',
-          if (settings.legendTheme.showMonth)
+          if (layoutData.settings.legendTheme.showMonth)
             previousMonth == date.month ? '' : '${date.month}',
-          if (settings.legendTheme.showDay)
+          if (layoutData.settings.legendTheme.showDay)
             previousDay == date.day ? '' : '${date.day}',
         ]);
 
@@ -94,6 +88,8 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
+    final verticalPadding = layoutData.settings.rowSpacing / 2;
+
     final startOffset = Offset(
       0,
       index * rowHeight,
@@ -111,11 +107,16 @@ class GanttUiPainter extends GanttPainter {
 
     final titlePaint = Paint()
       ..color = rowData is GanttEvent
-          ? settings.eventRowTheme.labelColor
-          : settings.headerRowTheme.backgroundColor
+          ? layoutData.settings.eventRowTheme.labelColor
+          : layoutData.settings.headerRowTheme.backgroundColor
       ..style = PaintingStyle.fill;
 
-    final titleOffset = Offset(0, panOffset.dy + layoutData.uiOffset.dy);
+    final titleOffset = Offset(
+        0,
+        panOffset.dy +
+            layoutData.uiOffset.dy +
+            (index * verticalPadding) +
+            verticalPadding);
     canvas.drawRect(
       titleRect.shift(titleOffset),
       titlePaint,
@@ -127,7 +128,7 @@ class GanttUiPainter extends GanttPainter {
       canvas,
       Offset(
             0,
-            titleRect.top + rowHeight / 4,
+            titleRect.top,
           ) +
           titleOffset,
     );
@@ -147,7 +148,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final titlePaint = Paint()
-      ..color = settings.legendTheme.backgroundColor
+      ..color = layoutData.settings.legendTheme.backgroundColor
       ..style = PaintingStyle.fill;
 
     canvas.drawRect(

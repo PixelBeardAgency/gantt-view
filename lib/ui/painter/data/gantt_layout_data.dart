@@ -30,6 +30,7 @@ class GanttChartLayoutData {
       data,
       settings.eventRowTheme.height,
       legendHeight,
+      settings.rowSpacing,
     );
   }
 
@@ -39,9 +40,12 @@ class GanttChartLayoutData {
           double columnWidth, double screenWidth, double offset) =>
       (data.days * columnWidth) - screenWidth + offset;
 
-  double _getVerticalScrollBoundary(
-          Iterable<GanttEvent> data, double rowHeight, double offset) =>
-      ((data.length * rowHeight) + offset);
+  double _getVerticalScrollBoundary(Iterable<GanttEvent> data, double rowHeight,
+          double offset, double rowSpacing) =>
+      (data.length * (rowHeight + rowSpacing)) -
+      offset +
+      rowHeight +
+      rowSpacing;
 
   double _getTitleWidth(Iterable<GanttRowData> data) {
     double width = 0;

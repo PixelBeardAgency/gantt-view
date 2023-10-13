@@ -11,7 +11,6 @@ class GanttDataPainter extends GanttPainter {
   GanttDataPainter({
     required super.data,
     required super.panOffset,
-    required super.settings,
     required super.layoutData,
   }) {
     final startDate = data.whereType<GanttEvent>().startDate;
@@ -32,11 +31,12 @@ class GanttDataPainter extends GanttPainter {
         }
 
         for (int i = from; i <= to; i++) {
-          (_cells[y] ??= {})[i] = settings.eventRowTheme.fillColor;
+          (_cells[y] ??= {})[i] = layoutData.settings.eventRowTheme.fillColor;
         }
       } else {
         for (int i = 0; i <= columns; i++) {
-          (_cells[y] ??= {})[i] = settings.headerRowTheme.backgroundColor;
+          (_cells[y] ??= {})[i] =
+              layoutData.settings.headerRowTheme.backgroundColor;
         }
       }
     }
@@ -44,9 +44,13 @@ class GanttDataPainter extends GanttPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final visibleRows = (size.height / rowHeight).ceil();
-    final int firstVisibleRow = max(0, (-panOffset.dy / rowHeight).floor());
-    final int lastVisibleRow = min(data.length, firstVisibleRow + visibleRows);
+    final verticalSpacing = layoutData.settings.rowSpacing;
+
+    final visibleRows = (size.height / (rowHeight + verticalSpacing)).ceil();
+    final int firstVisibleRow =
+        max(0, (-panOffset.dy / (rowHeight + verticalSpacing)).floor());
+    final int lastVisibleRow = min(
+        data.length, (firstVisibleRow + visibleRows + verticalSpacing).ceil());
 
     final visibleColumns = (size.width / columnWidth).ceil();
     final int firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
@@ -57,20 +61,21 @@ class GanttDataPainter extends GanttPainter {
       for (int x = 0; x < lastVisibleColumn; x++) {
         final fill = _cells[y]?[x];
         if (fill != null) {
-          _fillCell(x, y, layoutData.uiOffset.dy, canvas, fill);
+          _fillCell(
+              x, y, layoutData.uiOffset.dy, canvas, fill, verticalSpacing / 2);
         }
       }
     }
   }
 
-  void _fillCell(
-      int x, int y, double legendHeight, Canvas canvas, Color color) {
+  void _fillCell(int x, int y, double legendHeight, Canvas canvas, Color color,
+      double verticalPadding) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
     final rect = Rect.fromLTWH(
       x * columnWidth + layoutData.uiOffset.dx,
-      y * rowHeight + legendHeight,
+      y * (rowHeight + verticalPadding) + legendHeight + verticalPadding,
       columnWidth,
       rowHeight,
     );

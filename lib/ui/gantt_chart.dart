@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_layout_data.dart';
+import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 import 'package:gantt_view/ui/painter/gantt_data_painter.dart';
@@ -54,13 +54,11 @@ class _GanttChartContentState extends State<_GanttChartContent> {
           foregroundPainter: GanttUiPainter(
             data: widget.data,
             panOffset: panOffset,
-            settings: GanttSettings.of(context),
             layoutData: widget.layoutData,
           ),
           painter: GanttDataPainter(
             data: widget.data,
             panOffset: panOffset,
-            settings: GanttSettings.of(context),
             layoutData: widget.layoutData,
           ),
         ),
