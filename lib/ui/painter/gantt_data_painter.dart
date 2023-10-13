@@ -6,7 +6,7 @@ import 'package:gantt_view/model/gantt_event.dart';
 import 'package:gantt_view/ui/painter/gantt_painter.dart';
 
 class GanttDataPainter extends GanttPainter {
-  final Map<int, Map<int, bool>> _cells = {};
+  final Map<int, Map<int, Color>> _cells = {};
 
   GanttDataPainter({
     required super.data,
@@ -14,23 +14,29 @@ class GanttDataPainter extends GanttPainter {
     required super.settings,
     required super.layoutData,
   }) {
+    final startDate = data.whereType<GanttEvent>().startDate;
+    final endDate = data.whereType<GanttEvent>().endDate;
+    final columns = endDate.difference(startDate).inDays + 1;
+
     for (int y = 0; y < data.length; y++) {
       final rowData = data[y];
       if (rowData is GanttEvent) {
         final start = rowData.startDate;
         final end = rowData.endDate;
 
-        final int from =
-            start.difference(data.whereType<GanttEvent>().startDate).inDays;
-        final int to =
-            end.difference(data.whereType<GanttEvent>().startDate).inDays;
+        final int from = start.difference(startDate).inDays;
+        final int to = end.difference(startDate).inDays;
 
         if (start.isAfter(end)) {
           throw Exception('Start date must be before end date.');
         }
 
         for (int i = from; i <= to; i++) {
-          (_cells[y] ??= {})[i] = true;
+          (_cells[y] ??= {})[i] = settings.eventRowTheme.fillColor;
+        }
+      } else {
+        for (int i = 0; i <= columns; i++) {
+          (_cells[y] ??= {})[i] = settings.headerRowTheme.backgroundColor;
         }
       }
     }
@@ -49,17 +55,18 @@ class GanttDataPainter extends GanttPainter {
 
     for (int y = 0; y < lastVisibleRow; y++) {
       for (int x = 0; x < lastVisibleColumn; x++) {
-        final fill = _cells[y]?[x] ?? false;
-        if (fill) {
-          _fillCell(x, y, layoutData.uiOffset.dy, canvas);
+        final fill = _cells[y]?[x];
+        if (fill != null) {
+          _fillCell(x, y, layoutData.uiOffset.dy, canvas, fill);
         }
       }
     }
   }
 
-  void _fillCell(int x, int y, double legendHeight, Canvas canvas) {
+  void _fillCell(
+      int x, int y, double legendHeight, Canvas canvas, Color color) {
     final paint = Paint()
-      ..color = settings.eventRowTheme.fillColor
+      ..color = color
       ..style = PaintingStyle.fill;
     final rect = Rect.fromLTWH(
       x * columnWidth + layoutData.uiOffset.dx,
