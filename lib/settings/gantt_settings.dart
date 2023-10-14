@@ -1,54 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/settings/theme/event_row_theme.dart';
-import 'package:gantt_view/settings/theme/header_row_theme.dart';
-import 'package:gantt_view/settings/theme/legend_theme.dart';
+import 'package:gantt_view/settings/theme/gantt_style.dart';
+import 'package:gantt_view/settings/theme/grid_scheme.dart';
 
 class GanttSettings<T> extends InheritedWidget {
-  final EventRowTheme _eventRowTheme;
-  EventRowTheme get eventRowTheme => _eventRowTheme;
+  final GridScheme gridScheme;
+  final GanttStyle style;
 
-  final HeaderRowTheme _headerRowTheme;
-  HeaderRowTheme get headerRowTheme => _headerRowTheme;
+  final String? title;
+  final String? subtitle;
 
-  final LegendTheme _legendTheme;
-  LegendTheme get legendTheme => _legendTheme;
-
-  final double _rowSpacing;
-  double get rowSpacing => _rowSpacing;
-
-  final String? _title;
-  String? get title => _title;
-
-  final String? _subtitle;
-  String? get subtitle => _subtitle;
-
-  final TimelineAxisType _timelineAxisType;
-  TimelineAxisType get timelineAxisType => _timelineAxisType;
-
-  final Color? _columnBoundaryColor;
-  Color? get columnBoundaryColor => _columnBoundaryColor;
-
-  GanttSettings({
+  GanttSettings(
+    BuildContext context, {
     super.key,
-    double? titleColumnWidth,
-    EventRowTheme? eventRowTheme,
-    HeaderRowTheme? headerRowTheme,
-    LegendTheme? legendTheme,
-    double? rowSpacing,
-    String? title,
-    String? subtitle,
-    TimelineAxisType? timelineAxisType,
-    bool? showColumnBoundary,
-    Color? columnBoundaryColor,
+    GridScheme? gridScheme,
+    GanttStyle? style,
+    this.title,
+    this.subtitle,
     required super.child,
-  })  : _eventRowTheme = eventRowTheme ?? EventRowTheme(),
-        _headerRowTheme = headerRowTheme ?? HeaderRowTheme(),
-        _legendTheme = legendTheme ?? LegendTheme(),
-        _rowSpacing = rowSpacing ?? 0.0,
-        _title = title,
-        _subtitle = subtitle,
-        _timelineAxisType = timelineAxisType ?? TimelineAxisType.daily,
-        _columnBoundaryColor = columnBoundaryColor;
+  })  : gridScheme = gridScheme ?? const GridScheme(),
+        style = style ?? GanttStyle(context);
 
   static GanttSettings? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<GanttSettings>();
@@ -63,12 +33,10 @@ class GanttSettings<T> extends InheritedWidget {
 
   @override
   bool updateShouldNotify(GanttSettings oldWidget) =>
-      _eventRowTheme != oldWidget._eventRowTheme ||
-      _headerRowTheme != oldWidget._headerRowTheme ||
-      _legendTheme != oldWidget._legendTheme ||
-      _rowSpacing != oldWidget._rowSpacing ||
-      _title != oldWidget._title ||
-      _subtitle != oldWidget._subtitle;
+      oldWidget.gridScheme != gridScheme ||
+      oldWidget.style != style ||
+      oldWidget.title != title ||
+      oldWidget.subtitle != subtitle;
 }
 
 enum TimelineAxisType { weekly, daily }

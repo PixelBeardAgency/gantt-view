@@ -41,11 +41,11 @@ class GanttUiPainter extends GanttPainter {
 
     double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
-      if (layoutData.settings.legendTheme.showYear ||
-          layoutData.settings.legendTheme.showMonth ||
-          layoutData.settings.legendTheme.showDay) {
+      if (layoutData.settings.gridScheme.showYear ||
+          layoutData.settings.gridScheme.showMonth ||
+          layoutData.settings.gridScheme.showDay) {
         final paint = Paint()
-          ..color = layoutData.settings.legendTheme.backgroundColor
+          ..color = layoutData.settings.style.timelineColor
           ..style = PaintingStyle.fill;
 
         final rect = Rect.fromLTWH(
@@ -61,11 +61,11 @@ class GanttUiPainter extends GanttPainter {
 
         final date = startDate.add(Duration(days: x));
         final textPainter = layoutData.datePainter([
-          if (layoutData.settings.legendTheme.showYear)
+          if (layoutData.settings.gridScheme.showYear)
             previousYear == date.year ? '' : '${date.year}',
-          if (layoutData.settings.legendTheme.showMonth)
+          if (layoutData.settings.gridScheme.showMonth)
             previousMonth == date.month ? '' : '${date.month}',
-          if (layoutData.settings.legendTheme.showDay)
+          if (layoutData.settings.gridScheme.showDay)
             previousDay == date.day ? '' : '${date.day}',
         ]);
 
@@ -73,7 +73,7 @@ class GanttUiPainter extends GanttPainter {
           canvas,
           Offset(
                 rect.left + (columnWidth / 2) - (textPainter.width / 2),
-                rect.bottom - textPainter.height, // Align to bottom
+                rect.bottom - textPainter.height,
               ) +
               panOffset,
         );
@@ -88,7 +88,7 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
-    final verticalPadding = layoutData.settings.rowSpacing / 2;
+    final verticalMargin = layoutData.settings.gridScheme.rowSpacing / 2;
 
     final startOffset = Offset(
       0,
@@ -107,28 +107,32 @@ class GanttUiPainter extends GanttPainter {
 
     final titlePaint = Paint()
       ..color = rowData is GanttEvent
-          ? layoutData.settings.eventRowTheme.labelColor
-          : layoutData.settings.headerRowTheme.backgroundColor
+          ? layoutData.settings.style.eventLabelColor
+          : layoutData.settings.style.eventHeaderColor
       ..style = PaintingStyle.fill;
 
     final titleOffset = Offset(
         0,
         panOffset.dy +
             layoutData.uiOffset.dy +
-            (index * verticalPadding) +
-            verticalPadding);
+            (index * verticalMargin) +
+            verticalMargin);
     canvas.drawRect(
       titleRect.shift(titleOffset),
       titlePaint,
     );
 
-    final textPainter = layoutData.headerPainter(rowData.label);
+    final textPainter = layoutData.headerPainter(
+        rowData.label,
+        rowData is GanttEvent
+            ? layoutData.settings.style.eventLabelStyle
+            : layoutData.settings.style.eventHeaderStyle);
 
     textPainter.paint(
       canvas,
       Offset(
             0,
-            titleRect.top,
+            titleRect.top + ((rowHeight / 2)) - (textPainter.height / 2),
           ) +
           titleOffset,
     );
@@ -148,7 +152,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final titlePaint = Paint()
-      ..color = layoutData.settings.legendTheme.backgroundColor
+      ..color = layoutData.settings.style.timelineColor
       ..style = PaintingStyle.fill;
 
     canvas.drawRect(
@@ -162,7 +166,7 @@ class GanttUiPainter extends GanttPainter {
       canvas,
       Offset(
         0,
-        titleRect.top + rowHeight / 4,
+        titleRect.bottom - textPainter.height,
       ),
     );
   }

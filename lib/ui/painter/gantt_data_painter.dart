@@ -30,7 +30,7 @@ class GanttDataPainter extends GanttPainter {
 
         for (int i = from; i <= to; i++) {
           (_cells[y] ??= {})[i] = _FillData(
-            layoutData.settings.eventRowTheme.fillColor,
+            layoutData.settings.style.eventColor,
             i == from,
             i == to,
           );
@@ -38,7 +38,7 @@ class GanttDataPainter extends GanttPainter {
       } else {
         for (int i = 0; i <= columns; i++) {
           (_cells[y] ??= {})[i] = _FillData(
-              layoutData.settings.headerRowTheme.backgroundColor, false, false);
+              layoutData.settings.style.eventHeaderColor, false, false);
         }
       }
     }
@@ -46,7 +46,7 @@ class GanttDataPainter extends GanttPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final verticalSpacing = layoutData.settings.rowSpacing;
+    final verticalSpacing = layoutData.settings.gridScheme.rowSpacing;
     var gridData = super.gridData(size);
 
     for (int y = 0; y < gridData.lastVisibleRow; y++) {
@@ -78,7 +78,7 @@ class GanttDataPainter extends GanttPainter {
       ..color = fill.color
       ..style = PaintingStyle.fill;
 
-    final radius = layoutData.settings.eventRowTheme.radius;
+    final radius = layoutData.settings.style.eventRadius;
 
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(

@@ -23,15 +23,15 @@ class GanttChartLayoutData {
     legendHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(
       data,
-      settings.legendTheme.dateWidth,
+      settings.gridScheme.columnWidth,
       screenSize.width,
       titleWidth,
     );
     maxDy = _getVerticalScrollBoundary(
       data,
-      settings.eventRowTheme.height,
+      settings.gridScheme.rowHeight,
       legendHeight,
-      settings.rowSpacing,
+      settings.gridScheme.rowSpacing,
     );
   }
 
@@ -51,7 +51,11 @@ class GanttChartLayoutData {
   double _getTitleWidth(Iterable<GanttRowData> data) {
     double width = 0;
     for (var rowData in data) {
-      final textPainter = headerPainter(rowData.label);
+      final textPainter = headerPainter(
+          rowData.label,
+          rowData is GanttEvent
+              ? settings.style.eventLabelStyle
+              : settings.style.eventHeaderStyle);
       width = max(width, textPainter.width);
     }
     return max(width, titlePainter().width);
@@ -60,9 +64,9 @@ class GanttChartLayoutData {
   double _getLegendHeight() => max(
         datePainter(
           [
-            if (settings.legendTheme.showYear) '2021',
-            if (settings.legendTheme.showMonth) '12',
-            if (settings.legendTheme.showDay) '31',
+            if (settings.gridScheme.showYear) '2021',
+            if (settings.gridScheme.showMonth) '12',
+            if (settings.gridScheme.showDay) '31',
           ],
         ).height,
         titlePainter().height,
@@ -72,11 +76,11 @@ class GanttChartLayoutData {
     final textPainter = TextPainter(
       text: TextSpan(
         text: settings.title,
-        style: settings.legendTheme.titleStyle,
+        style: settings.style.titleStyle,
         children: [
           TextSpan(
             text: '\n${settings.subtitle}',
-            style: settings.legendTheme.subtitleStyle,
+            style: settings.style.subtitleStyle,
           )
         ],
       ),
@@ -95,26 +99,25 @@ class GanttChartLayoutData {
       textAlign: TextAlign.center,
       text: TextSpan(
         text: dates.join('\n'),
-        style: settings.legendTheme.dateStyle,
+        style: settings.style.timelineStyle,
       ),
       textDirection: TextDirection.ltr,
     );
 
     textPainter.layout(
       minWidth: 0,
-      maxWidth: settings.legendTheme.dateWidth,
+      maxWidth: settings.gridScheme.columnWidth,
     );
 
     return textPainter;
   }
 
-  TextPainter headerPainter(String label) {
+  TextPainter headerPainter(String label, TextStyle style) {
     final textPainter = TextPainter(
       maxLines: 1,
       text: TextSpan(
         text: label,
-        style: settings.headerRowTheme.textStyle ??
-            const TextStyle(color: Colors.black),
+        style: style,
       ),
       textDirection: TextDirection.ltr,
     );

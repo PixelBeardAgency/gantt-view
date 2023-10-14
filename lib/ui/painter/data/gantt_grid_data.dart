@@ -16,9 +16,9 @@ class GanttGridData {
     int rows,
     int columns,
   ) {
-    final verticalSpacing = settings.rowSpacing;
-    final rowHeight = settings.eventRowTheme.height;
-    final columnWidth = settings.legendTheme.dateWidth;
+    final verticalSpacing = settings.gridScheme.rowSpacing;
+    final rowHeight = settings.gridScheme.rowHeight;
+    final columnWidth = settings.gridScheme.columnWidth;
 
     final visibleRows =
         (size.height / (rowHeight + (verticalSpacing / 2))).ceil();

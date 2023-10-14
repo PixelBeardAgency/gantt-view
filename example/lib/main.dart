@@ -4,10 +4,7 @@ import 'package:gantt_view/controller/gantt_data_controller.dart';
 import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/model/gantt_event.dart';
 import 'package:gantt_view/model/gantt_header.dart';
-import 'package:gantt_view/settings/gantt_settings.dart';
-import 'package:gantt_view/settings/theme/event_row_theme.dart';
-import 'package:gantt_view/settings/theme/header_row_theme.dart';
-import 'package:gantt_view/settings/theme/legend_theme.dart';
+import 'package:gantt_view/settings/theme/grid_scheme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +15,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
+    return MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(),
     );
   }
 }
@@ -63,27 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: GanttView(
         controller: _controller,
-        rowSpacing: 8.0,
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
-        headerRowTheme: HeaderRowTheme(
-          height: 48.0,
-          textStyle: Theme.of(context).textTheme.labelLarge,
-          backgroundColor: Colors.grey[300]!,
+        gridScheme: const GridScheme(
+          rowHeight: 20,
+          rowSpacing: 8,
         ),
-        eventRowTheme: EventRowTheme(
-          fillColor: Colors.blue[200],
-          labelStyle: Theme.of(context).textTheme.labelMedium,
-          height: 20,
-          radius: 10.0,
-          labelColor: Colors.green.shade100,
-        ),
-        legendTheme: LegendTheme(
-          width: 200,
-          dateStyle: Theme.of(context).textTheme.labelMedium!,
-          backgroundColor: Colors.blue[100]!,
-        ),
-        timelineAxisType: TimelineAxisType.daily,
       ),
     );
   }
