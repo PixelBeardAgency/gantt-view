@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
@@ -42,42 +43,53 @@ class _GanttChartContentState extends State<_GanttChartContent> {
   @override
   Widget build(BuildContext context) {
     return ClipRect(
-      child: GestureDetector(
-        onPanUpdate: (details) => setState(
-          () => _updateOffset(
-              details, widget.layoutData.maxDx, widget.layoutData.maxDy),
-        ),
-        child: CustomPaint(
-          size: Size.infinite,
-          willChange: true,
-          foregroundPainter: GanttUiPainter(
-            data: widget.data,
-            panOffset: panOffset,
-            layoutData: widget.layoutData,
-          ),
-          painter: GanttDataPainter(
-            data: widget.data,
-            panOffset: panOffset,
-            layoutData: widget.layoutData,
+      child: Listener(
+        onPointerSignal: (event) {
+          if (event is PointerScrollEvent) {
+            _updateOffset(
+              -event.scrollDelta,
+              widget.layoutData.maxDx,
+              widget.layoutData.maxDy,
+            );
+          }
+        },
+        child: GestureDetector(
+          onPanUpdate: (details) => _updateOffset(
+              details.delta, widget.layoutData.maxDx, widget.layoutData.maxDy),
+          child: CustomPaint(
+            size: Size.infinite,
+            willChange: true,
+            foregroundPainter: GanttUiPainter(
+              data: widget.data,
+              panOffset: panOffset,
+              layoutData: widget.layoutData,
+            ),
+            painter: GanttDataPainter(
+              data: widget.data,
+              panOffset: panOffset,
+              layoutData: widget.layoutData,
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _updateOffset(DragUpdateDetails details, double maxDx, double maxDy) {
-    panOffset += details.delta;
-    if (panOffset.dx > 0) {
-      panOffset = Offset(0, panOffset.dy);
-    }
-    if (panOffset.dx < -maxDx) {
-      panOffset = Offset(-maxDx, panOffset.dy);
-    }
-    if (panOffset.dy > 0) {
-      panOffset = Offset(panOffset.dx, 0);
-    }
-    if (panOffset.dy < -maxDy) {
-      panOffset = Offset(panOffset.dx, -maxDy);
-    }
+  void _updateOffset(Offset delta, double maxDx, double maxDy) {
+    setState(() {
+      panOffset += delta;
+      if (panOffset.dx > 0) {
+        panOffset = Offset(0, panOffset.dy);
+      }
+      if (panOffset.dx < -maxDx) {
+        panOffset = Offset(-maxDx, panOffset.dy);
+      }
+      if (panOffset.dy > 0) {
+        panOffset = Offset(panOffset.dx, 0);
+      }
+      if (panOffset.dy < -maxDy) {
+        panOffset = Offset(panOffset.dx, -maxDy);
+      }
+    });
   }
 }
