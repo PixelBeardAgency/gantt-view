@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/extension/gantt_event_list_extension.dart';
 import 'package:gantt_view/model/gantt_event.dart';
 import 'package:gantt_view/ui/painter/gantt_painter.dart';
 
@@ -11,10 +10,6 @@ class GanttDataPainter extends GanttPainter {
     required super.panOffset,
     required super.layoutData,
   }) {
-    final startDate = data.whereType<GanttEvent>().startDate;
-    final endDate = data.whereType<GanttEvent>().endDate;
-    final columns = endDate.difference(startDate).inDays + 1;
-
     for (int y = 0; y < data.length; y++) {
       final rowData = data[y];
       if (rowData is GanttEvent) {
@@ -30,15 +25,9 @@ class GanttDataPainter extends GanttPainter {
 
         for (int i = from; i <= to; i++) {
           (_cells[y] ??= {})[i] = _FillData(
-            layoutData.settings.style.eventColor,
             i == from,
             i == to,
           );
-        }
-      } else {
-        for (int i = 0; i <= columns; i++) {
-          (_cells[y] ??= {})[i] = _FillData(
-              layoutData.settings.style.eventHeaderColor, false, false);
         }
       }
     }
@@ -57,7 +46,7 @@ class GanttDataPainter extends GanttPainter {
     final gridData = super.gridData(size);
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
       for (int x = gridData.firstVisibleColumn;
-          x < gridData.lastVisibleColumn;
+          x / layoutData.widthDivisor < gridData.lastVisibleColumn;
           x++) {
         final fill = _cells[y]?[x];
         if (fill != null) {
@@ -83,18 +72,19 @@ class GanttDataPainter extends GanttPainter {
     double verticalPadding,
   ) {
     final paint = Paint()
-      ..color = fill.color
+      ..color = layoutData.settings.style.eventColor
       ..style = PaintingStyle.fill;
 
     final radius = layoutData.settings.style.eventRadius;
 
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
-        x * gridScheme.columnWidth + layoutData.uiOffset.dx,
+        (x * gridScheme.columnWidth) / layoutData.widthDivisor +
+            layoutData.uiOffset.dx,
         y * (gridScheme.rowHeight + verticalPadding) +
             legendHeight +
             verticalPadding,
-        gridScheme.columnWidth + 1,
+        (gridScheme.columnWidth / layoutData.widthDivisor) + 1,
         gridScheme.rowHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -160,9 +150,8 @@ class GanttDataPainter extends GanttPainter {
 }
 
 class _FillData {
-  final Color color;
   final bool isFirst;
   final bool isLast;
 
-  _FillData(this.color, this.isFirst, this.isLast);
+  _FillData(this.isFirst, this.isLast);
 }

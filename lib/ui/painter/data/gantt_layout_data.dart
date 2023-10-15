@@ -3,28 +3,35 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/extension/gantt_event_list_extension.dart';
 import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 
 class GanttChartLayoutData {
   final GanttSettings settings;
+  final Iterable<GanttEvent> data;
 
   late double labelColumnWidth;
   late double timelineHeight;
   late double maxDx;
   late double maxDy;
 
-  GanttChartLayoutData({
-    required Iterable<GanttEvent> data,
-    required this.settings,
-    required Size screenSize,
-  }) {
-    labelColumnWidth = _getTitleWidth(data);
+  int get widthDivisor => switch (settings.gridScheme.timelineAxisType) {
+        TimelineAxisType.daily => 1,
+        TimelineAxisType.weekly => 7,
+      };
+
+  Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
+  int get maxColumns => switch (settings.gridScheme.timelineAxisType) {
+        TimelineAxisType.daily => data.days,
+        TimelineAxisType.weekly => data.weeks,
+      };
+
+  GanttChartLayoutData(BuildContext context,
+      {required this.data, required this.settings}) {
+    labelColumnWidth = _getTitleWidth();
     timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(
-      data,
       settings.gridScheme.columnWidth,
-      screenSize.width,
+      MediaQuery.of(context).size.width,
       labelColumnWidth,
     );
     maxDy = _getVerticalScrollBoundary(
@@ -35,11 +42,9 @@ class GanttChartLayoutData {
     );
   }
 
-  Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
-
-  double _getHorizontalScrollBoundary(Iterable<GanttEvent> data,
+  double _getHorizontalScrollBoundary(
           double columnWidth, double screenWidth, double offset) =>
-      (data.days * columnWidth) - screenWidth + offset;
+      (maxColumns * columnWidth) - screenWidth + offset;
 
   double _getVerticalScrollBoundary(Iterable<GanttEvent> data, double rowHeight,
           double offset, double rowSpacing) =>
@@ -48,14 +53,11 @@ class GanttChartLayoutData {
       rowHeight +
       rowSpacing;
 
-  double _getTitleWidth(Iterable<GanttRowData> data) {
+  double _getTitleWidth() {
     double width = 0;
     for (var rowData in data) {
-      final textPainter = headerPainter(
-          rowData.label,
-          rowData is GanttEvent
-              ? settings.style.eventLabelStyle
-              : settings.style.eventHeaderStyle);
+      final textPainter =
+          headerPainter(rowData.label, settings.style.eventLabelStyle);
       width = max(width, textPainter.width);
     }
     return max(width, titlePainter().width);

@@ -16,19 +16,19 @@ class GanttUiPainter extends GanttPainter {
   void paint(Canvas canvas, Size size) {
     var gridData = super.gridData(size);
 
-    _paintLegend(
-      gridData.firstVisibleColumn,
-      gridData.lastVisibleColumn,
-      canvas,
-    );
-
     for (int index = gridData.firstVisibleRow;
         index < gridData.lastVisibleRow;
         index++) {
       final rowData = data[index];
 
-      _paintHeader(index, canvas, rowData);
+      _paintHeader(index, canvas, rowData, size.width);
     }
+
+    _paintLegend(
+      gridData.firstVisibleColumn,
+      gridData.lastVisibleColumn,
+      canvas,
+    );
 
     _paintTitle(canvas);
   }
@@ -59,7 +59,7 @@ class GanttUiPainter extends GanttPainter {
           paint,
         );
 
-        final date = startDate.add(Duration(days: x));
+        final date = startDate.add(Duration(days: x * layoutData.widthDivisor));
         final textPainter = layoutData.datePainter([
           if (layoutData.settings.gridScheme.showYear)
             previousYear == date.year ? '' : '${date.year}',
@@ -89,7 +89,8 @@ class GanttUiPainter extends GanttPainter {
     }
   }
 
-  void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
+  void _paintHeader(
+      int index, Canvas canvas, GanttRowData rowData, double width) {
     final verticalMargin = gridScheme.rowSpacing / 2;
 
     final startOffset = Offset(
@@ -98,7 +99,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final endOffset = Offset(
-      layoutData.uiOffset.dx,
+      rowData is GanttEvent ? layoutData.uiOffset.dx : width,
       (index + 1) * gridScheme.rowHeight,
     );
 
@@ -119,6 +120,7 @@ class GanttUiPainter extends GanttPainter {
             layoutData.uiOffset.dy +
             (index * verticalMargin) +
             verticalMargin);
+
     canvas.drawRect(
       titleRect.shift(titleOffset),
       titlePaint,

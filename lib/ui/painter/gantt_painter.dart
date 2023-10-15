@@ -14,7 +14,6 @@ abstract class GanttPainter extends CustomPainter {
   GridScheme get gridScheme => layoutData.settings.gridScheme;
 
   DateTime get startDate => data.whereType<GanttEvent>().startDate;
-  int get maxColumns => data.whereType<GanttEvent>().days;
 
   GanttPainter(
       {required this.data, required this.panOffset, required this.layoutData});
@@ -31,6 +30,6 @@ abstract class GanttPainter extends CustomPainter {
         size,
         panOffset,
         data.length,
-        maxColumns,
+        layoutData.maxColumns,
       );
 }

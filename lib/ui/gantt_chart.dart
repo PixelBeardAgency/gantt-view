@@ -19,9 +19,9 @@ class GanttChart extends StatelessWidget {
     return _GanttChartContent(
       data: data,
       layoutData: GanttChartLayoutData(
+        context,
         data: data.whereType<GanttEvent>(),
         settings: GanttSettings.of(context),
-        screenSize: MediaQuery.of(context).size,
       ),
     );
   }
