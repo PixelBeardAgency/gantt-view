@@ -21,37 +21,34 @@ There are basic theming options available for customising the look and feel of t
 
 ```dart
 GanttView(
-    controller: _controller, // required
-    rowSpacing: 8.0,
+    controller: _controller,
     title: 'My Lovely Gantt',
     subtitle: 'This is a subtitle',
-    headerRowTheme: HeaderRowTheme(
-        height: 48.0,
-        textStyle: Theme.of(context).textTheme.labelLarge,
-        backgroundColor: Colors.grey[300],
+    gridScheme: const GridScheme(
+        columnWidth: 30,
+        rowSpacing: 0,
+        timelineAxisType: TimelineAxisType.daily,
     ),
-    eventRowTheme: EventRowTheme(
-        fillColor: Colors.blue[200],
-        labelStyle: Theme.of(context).textTheme.labelMedium,
-        height: 20,
-        startRadius: 4.0,
-        endRadius: 4.0,
+    style: GanttStyle(
+        context,
+        eventColor: Colors.blue.shade200,
+        eventHeaderColor: Colors.blue.shade400,
+        eventLabelColor: Colors.blue.shade900,
+        gridColor: Colors.grey.shade300,
+        eventLabelPadding: const EdgeInsets.all(4),
+        eventRadius: 4,
+        timelineColor: Colors.grey.shade300,
     ),
-    legendTheme: LegendTheme(
-        width: 200,
-        dateStyle: Theme.of(context).textTheme.labelMedium,
-        backgroundColor: Colors.blue[100],
-    ),
-    timelineAxisType: TimelineAxisType.daily,
 )
 ```
 
 To display events in the `GanttView`, a `GanttDataController` is required. The `GanttDataController` has
 2 required fields, `items` and `eventBuilder`. The `items` field is a list of items that are used by the `GanttDataController` to build an internal data model for the `GanttView` to display. The `eventBuilder` is a function that takes an item from the `items` list and returns a `GanttEvent` data object. The `GanttEvent` data object provides the required data to display an event in the `GanttView`.
 
-If a `headerBuilder` is provided, the `GanttView` will display a header row above the events. The `headerBuilder` is a function that takes an item from the `items` list and returns a `GanttHeader` data object. The `GanttHeader` data object provides the required data to display a header in the `GanttView`.
+If a `headerLabelBuilder` is provided, the `GanttView` will display a header row above the events. The `headerLabelBuilder` is a function that takes an item from the `items` list and returns a `String`. The header String is then used to group events together to be displayed as part of the same activity.
 
-If a `sorter` is provided, the `GanttDataController` will sort the `items` list before building the internal data model. The `sorter` is a function that takes 2 items from the `items` list and returns an integer. The `sorter` should return a negative integer if the first item should be placed before the second item, a positive integer if the first item should be placed after the second item, or 0 if the items are equal.
+Currently all data is sorted by 'startDate' on the 'GanttEvent' data object. This will be customisable in the future.
+
 
 ```dart
 GanttDataController<ExampleEventItem>(
@@ -61,15 +58,12 @@ GanttDataController<ExampleEventItem>(
     startDate: item.start,
     endDate: item.end,
     ),
-    headerBuilder: (item) => GanttHeader(label: item.group),
-    sorter: (a, b) => <Comparator<ExampleEventItem>>[
+    headerLabelBuilder: (item) => item.group,
+    sorters: [
     (a, b) => a.group.compareTo(b.group),
     (a, b) => a.start.compareTo(b.start),
-    ].map((e) => e(a, b)).firstWhere(
-        (comparator) => comparator != 0,
-        orElse: () => 0,
-        ),
-);
+    ],
+)
 ```
 
 ## Additional information
@@ -84,7 +78,6 @@ The current version was made quickly, and as such, there are some performance is
 - [ ] Add ability to customise weekend colour
 - [ ] Add ability to add custom holiday dates
 - [ ] Add ability to customise holiday colour
-- [ ] Switch from a series of ListViews to a more performant solution
 - [ ] Add tooltip to display event details
 - [ ] Add zooming functionality
 - [ ] Add ability to customise individual event bar colours

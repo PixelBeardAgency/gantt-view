@@ -41,9 +41,6 @@ class GanttUiPainter extends GanttPainter {
 
     double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
-      if (layoutData.settings.gridScheme.showYear ||
-          layoutData.settings.gridScheme.showMonth ||
-          layoutData.settings.gridScheme.showDay) {
         final paint = Paint()
           ..color = layoutData.settings.style.timelineColor
           ..style = PaintingStyle.fill;
@@ -86,7 +83,6 @@ class GanttUiPainter extends GanttPainter {
 
         height = max(height, textPainter.height);
       }
-    }
   }
 
   void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {

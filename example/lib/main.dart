@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -67,11 +68,19 @@ class _MyHomePageState extends State<MyHomePage> {
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
         gridScheme: const GridScheme(
+          columnWidth: 30,
+          rowSpacing: 0,
           timelineAxisType: TimelineAxisType.daily,
         ),
         style: GanttStyle(
           context,
+          eventColor: Colors.blue.shade200,
+          eventHeaderColor: Colors.blue.shade400,
+          eventLabelColor: Colors.blue.shade900,
           gridColor: Colors.grey.shade300,
+          eventLabelPadding: const EdgeInsets.all(4),
+          eventRadius: 4,
+          timelineColor: Colors.grey.shade300,
         ),
       ),
     );

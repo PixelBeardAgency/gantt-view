@@ -22,10 +22,10 @@ class GanttStyle {
   GanttStyle(
     BuildContext context, {
     Color? eventColor,
-    this.eventRadius = 8.0,
+    this.eventRadius = 0.0,
     TextStyle? eventLabelStyle,
     Color? eventLabelColor,
-    this.eventLabelPadding = const EdgeInsets.all(6),
+    this.eventLabelPadding = const EdgeInsets.all(0),
     TextStyle? eventHeaderStyle,
     Color? eventHeaderColor,
     Color? timelineColor,
