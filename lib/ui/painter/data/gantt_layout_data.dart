@@ -15,21 +15,25 @@ class GanttChartLayoutData {
   late double maxDx;
   late double maxDy;
 
+  final double fullRowHeight;
+
   int get widthDivisor => switch (settings.gridScheme.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
       };
 
   Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
-  int get maxRows => data.length;
   int get maxColumns => switch (settings.gridScheme.timelineAxisType) {
         TimelineAxisType.daily => data.whereType<GanttEvent>().days,
         TimelineAxisType.weekly => data.whereType<GanttEvent>().weeks,
       };
-  double get rowVerticalMargin => settings.gridScheme.rowSpacing / 2;
 
   GanttChartLayoutData(
-      {required this.data, required this.settings, required Size size}) {
+      {required this.data, required this.settings, required Size size})
+      : fullRowHeight = settings.gridScheme.rowHeight +
+            settings.gridScheme.rowSpacing +
+            settings.style.eventLabelPadding.top +
+            settings.style.eventLabelPadding.bottom {
     labelColumnWidth = _getTitleWidth();
     timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(size.width);
@@ -45,17 +49,9 @@ class GanttChartLayoutData {
   }
 
   double _getVerticalScrollBoundary(double screenHeight) {
-    var fullRowHeight =
-        settings.gridScheme.rowHeight + (settings.gridScheme.rowSpacing / 2);
     var dataHeight = data.length * fullRowHeight;
     var renderAreaHeight = screenHeight - timelineHeight;
-    return dataHeight < renderAreaHeight
-        ? 0
-        : dataHeight -
-            screenHeight +
-            timelineHeight +
-            settings.gridScheme.rowSpacing +
-            settings.style.eventLabelPadding.bottom;
+    return dataHeight < renderAreaHeight ? 0 : dataHeight - renderAreaHeight;
   }
 
   double _getTitleWidth() {

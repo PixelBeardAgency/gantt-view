@@ -12,19 +12,16 @@ abstract class GanttPainter extends CustomPainter {
   final Offset panOffset;
   final GanttChartLayoutData layoutData;
 
-  final double fullRowHeight;
 
   GridScheme get gridScheme => layoutData.settings.gridScheme;
   GanttStyle get ganttStyle => layoutData.settings.style;
 
   DateTime get startDate => data.whereType<GanttEvent>().startDate;
+  
+  double get fullRowHeight => layoutData.fullRowHeight;
 
   GanttPainter(
-      {required this.data, required this.panOffset, required this.layoutData})
-      : fullRowHeight = layoutData.settings.gridScheme.rowHeight +
-            layoutData.settings.gridScheme.rowSpacing +
-            layoutData.settings.style.eventLabelPadding.top +
-            layoutData.settings.style.eventLabelPadding.bottom;
+      {required this.data, required this.panOffset, required this.layoutData});
 
   @override
   bool shouldRepaint(covariant GanttPainter oldDelegate) {
