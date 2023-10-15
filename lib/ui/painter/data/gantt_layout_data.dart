@@ -9,8 +9,8 @@ import 'package:gantt_view/settings/gantt_settings.dart';
 class GanttChartLayoutData {
   final GanttSettings settings;
 
-  late double titleWidth;
-  late double legendHeight;
+  late double labelColumnWidth;
+  late double timelineHeight;
   late double maxDx;
   late double maxDy;
 
@@ -19,23 +19,23 @@ class GanttChartLayoutData {
     required this.settings,
     required Size screenSize,
   }) {
-    titleWidth = _getTitleWidth(data);
-    legendHeight = _getLegendHeight();
+    labelColumnWidth = _getTitleWidth(data);
+    timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(
       data,
       settings.gridScheme.columnWidth,
       screenSize.width,
-      titleWidth,
+      labelColumnWidth,
     );
     maxDy = _getVerticalScrollBoundary(
       data,
       settings.gridScheme.rowHeight,
-      legendHeight,
+      timelineHeight,
       settings.gridScheme.rowSpacing,
     );
   }
 
-  Offset get uiOffset => Offset(titleWidth, legendHeight);
+  Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
 
   double _getHorizontalScrollBoundary(Iterable<GanttEvent> data,
           double columnWidth, double screenWidth, double offset) =>

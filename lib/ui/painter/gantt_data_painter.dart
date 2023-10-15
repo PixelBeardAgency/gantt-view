@@ -112,8 +112,8 @@ class GanttDataPainter extends GanttPainter {
     final double vertinalLineSpacing =
         gridScheme.rowHeight + gridScheme.rowSpacing / 2;
     final double verticalOffset =
-        layoutData.legendHeight + gridScheme.rowSpacing / 4;
-    final double horizontalOffset = layoutData.titleWidth;
+        layoutData.timelineHeight + gridScheme.rowSpacing / 4;
+    final double horizontalOffset = layoutData.labelColumnWidth;
 
     _paintGridRows(
         size, verticalOffset, vertinalLineSpacing, horizontalOffset, canvas);

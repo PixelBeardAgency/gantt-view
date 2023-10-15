@@ -52,7 +52,7 @@ class GanttUiPainter extends GanttPainter {
           (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
           0 - panOffset.dy,
           gridScheme.columnWidth,
-          layoutData.legendHeight,
+          layoutData.timelineHeight,
         );
         canvas.drawRect(
           rect.shift(panOffset),
