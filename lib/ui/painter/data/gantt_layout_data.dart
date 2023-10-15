@@ -3,11 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/extension/gantt_event_list_extension.dart';
 import 'package:gantt_view/model/gantt_event.dart';
+import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 
 class GanttChartLayoutData {
   final GanttSettings settings;
-  final Iterable<GanttEvent> data;
+  final Iterable<GanttRowData> data;
 
   late double labelColumnWidth;
   late double timelineHeight;
@@ -20,44 +21,47 @@ class GanttChartLayoutData {
       };
 
   Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
+  int get maxRows => data.length;
   int get maxColumns => switch (settings.gridScheme.timelineAxisType) {
-        TimelineAxisType.daily => data.days,
-        TimelineAxisType.weekly => data.weeks,
+        TimelineAxisType.daily => data.whereType<GanttEvent>().days + 1,
+        TimelineAxisType.weekly => data.whereType<GanttEvent>().weeks,
       };
+  double get verticalPadding => settings.gridScheme.rowSpacing / 2;
 
-  GanttChartLayoutData(BuildContext context,
-      {required this.data, required this.settings}) {
+  GanttChartLayoutData(
+      {required this.data, required this.settings, required Size size}) {
     labelColumnWidth = _getTitleWidth();
     timelineHeight = _getLegendHeight();
-    maxDx = _getHorizontalScrollBoundary(
-      settings.gridScheme.columnWidth,
-      MediaQuery.of(context).size.width,
-      labelColumnWidth,
-    );
-    maxDy = _getVerticalScrollBoundary(
-      data,
-      settings.gridScheme.rowHeight,
-      timelineHeight,
-      settings.gridScheme.rowSpacing,
-    );
+    maxDx = _getHorizontalScrollBoundary(size.width);
+    maxDy = _getVerticalScrollBoundary(size.height);
   }
 
-  double _getHorizontalScrollBoundary(
-          double columnWidth, double screenWidth, double offset) =>
-      (maxColumns * columnWidth) - screenWidth + offset;
+  double _getHorizontalScrollBoundary(double screenWidth) {
+    var dataWidth = maxColumns * settings.gridScheme.columnWidth;
+    var renderAreaWidth = screenWidth - labelColumnWidth;
+    return dataWidth < renderAreaWidth
+        ? 0
+        : dataWidth - screenWidth + labelColumnWidth;
+  }
 
-  double _getVerticalScrollBoundary(Iterable<GanttEvent> data, double rowHeight,
-          double offset, double rowSpacing) =>
-      (data.length * (rowHeight + rowSpacing)) -
-      offset +
-      rowHeight +
-      rowSpacing;
+  double _getVerticalScrollBoundary(double screenHeight) {
+    var fullRowHeight =
+        settings.gridScheme.rowHeight + (settings.gridScheme.rowSpacing / 2);
+    var dataHeight = data.length * fullRowHeight;
+    var renderAreaHeight = screenHeight - timelineHeight;
+    return dataHeight < renderAreaHeight
+        ? 0
+        : dataHeight - screenHeight + timelineHeight;
+  }
 
   double _getTitleWidth() {
     double width = 0;
     for (var rowData in data) {
-      final textPainter =
-          headerPainter(rowData.label, settings.style.eventLabelStyle);
+      final textPainter = headerPainter(
+          rowData.label,
+          rowData is GanttEvent
+              ? settings.style.eventLabelStyle
+              : settings.style.eventHeaderStyle);
       width = max(width, textPainter.width);
     }
     return max(width, titlePainter().width);

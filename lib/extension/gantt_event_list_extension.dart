@@ -3,7 +3,7 @@ import 'package:gantt_view/model/gantt_event.dart';
 extension GanttEventListExtension on Iterable<GanttEvent> {
   int get days => endDate.difference(startDate).inDays;
 
-  int get weeks => days ~/ 7;
+  int get weeks => (days / 7).ceil();
 
   DateTime get startDate => reduce((value, element) =>
       value.startDate.isBefore(element.startDate) ? value : element).startDate;

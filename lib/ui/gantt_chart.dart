@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
+import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 import 'package:gantt_view/ui/painter/gantt_data_painter.dart';
 import 'package:gantt_view/ui/painter/gantt_ui_painter.dart';
 
@@ -19,9 +18,9 @@ class GanttChart extends StatelessWidget {
     return _GanttChartContent(
       data: data,
       layoutData: GanttChartLayoutData(
-        context,
-        data: data.whereType<GanttEvent>(),
+        data: data,
         settings: GanttSettings.of(context),
+        size: MediaQuery.of(context).size,
       ),
     );
   }

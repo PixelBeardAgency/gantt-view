@@ -24,10 +24,14 @@ class GanttDataPainter extends GanttPainter {
         }
 
         for (int i = from; i <= to; i++) {
-          (_cells[y] ??= {})[i] = _FillData(
+          (_cells[y] ??= {})[i] = _EventFillData(
             i == from,
             i == to,
           );
+        }
+      } else {
+        for (int i = 0; i < layoutData.maxColumns; i++) {
+          (_cells[y] ??= {})[i] = _HeaderFillData();
         }
       }
     }
@@ -50,27 +54,37 @@ class GanttDataPainter extends GanttPainter {
           x++) {
         final fill = _cells[y]?[x];
         if (fill != null) {
-          _fillCell(
-            x,
-            y,
-            layoutData.uiOffset.dy,
-            canvas,
-            fill,
-            gridScheme.rowSpacing / 2,
-          );
+          if (fill is _HeaderFillData) {
+            _paintHeader(x, y, canvas, fill);
+          } else if (fill is _EventFillData) {
+            _paintEvent(x, y, canvas, fill);
+          }
         }
       }
     }
   }
 
-  void _fillCell(
-    int x,
-    int y,
-    double legendHeight,
-    Canvas canvas,
-    _FillData fill,
-    double verticalPadding,
-  ) {
+  void _paintHeader(int x, int y, Canvas canvas, _HeaderFillData fill) {
+    final paint = Paint()
+      ..color = layoutData.settings.style.eventHeaderColor
+      ..style = PaintingStyle.fill;
+
+    final rect = Rect.fromLTWH(
+      (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
+      y * (gridScheme.rowHeight + layoutData.verticalPadding) +
+          layoutData.uiOffset.dy +
+          layoutData.verticalPadding,
+      (gridScheme.columnWidth) + 1,
+      gridScheme.rowHeight,
+    );
+
+    canvas.drawRect(
+      rect.shift(panOffset),
+      paint,
+    );
+  }
+
+  void _paintEvent(int x, int y, Canvas canvas, _EventFillData fill) {
     final paint = Paint()
       ..color = layoutData.settings.style.eventColor
       ..style = PaintingStyle.fill;
@@ -81,9 +95,9 @@ class GanttDataPainter extends GanttPainter {
       Rect.fromLTWH(
         (x * gridScheme.columnWidth) / layoutData.widthDivisor +
             layoutData.uiOffset.dx,
-        y * (gridScheme.rowHeight + verticalPadding) +
-            legendHeight +
-            verticalPadding,
+        y * (gridScheme.rowHeight + layoutData.verticalPadding) +
+            layoutData.uiOffset.dy +
+            layoutData.verticalPadding,
         (gridScheme.columnWidth / layoutData.widthDivisor) + 1,
         gridScheme.rowHeight,
       ),
@@ -149,9 +163,13 @@ class GanttDataPainter extends GanttPainter {
   }
 }
 
-class _FillData {
+abstract class _FillData {}
+
+class _HeaderFillData extends _FillData {}
+
+class _EventFillData extends _FillData {
   final bool isFirst;
   final bool isLast;
 
-  _FillData(this.isFirst, this.isLast);
+  _EventFillData(this.isFirst, this.isLast);
 }

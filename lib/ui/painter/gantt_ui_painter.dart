@@ -21,7 +21,7 @@ class GanttUiPainter extends GanttPainter {
         index++) {
       final rowData = data[index];
 
-      _paintHeader(index, canvas, rowData, size.width);
+      _paintHeader(index, canvas, rowData);
     }
 
     _paintLegend(
@@ -89,8 +89,7 @@ class GanttUiPainter extends GanttPainter {
     }
   }
 
-  void _paintHeader(
-      int index, Canvas canvas, GanttRowData rowData, double width) {
+  void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
     final verticalMargin = gridScheme.rowSpacing / 2;
 
     final startOffset = Offset(
@@ -99,7 +98,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final endOffset = Offset(
-      rowData is GanttEvent ? layoutData.uiOffset.dx : width,
+      layoutData.uiOffset.dx,
       (index + 1) * gridScheme.rowHeight,
     );
 
