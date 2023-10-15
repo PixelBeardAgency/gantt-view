@@ -27,13 +27,15 @@ class GanttView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GanttSettings(
-      context,
-      gridScheme: gridScheme,
-      style: style,
-      title: title,
-      subtitle: subtitle,
-      child: GanttChart(data: controller.data),
-    );
+    return controller.data.isNotEmpty
+        ? GanttSettings(
+            context,
+            gridScheme: gridScheme,
+            style: style,
+            title: title,
+            subtitle: subtitle,
+            child: GanttChart(data: controller.data),
+          )
+        : const Center(child: Text('No data'));
   }
 }

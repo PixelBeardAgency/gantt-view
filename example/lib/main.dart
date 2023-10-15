@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
 import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_header.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 import 'package:gantt_view/settings/theme/gantt_style.dart';
 import 'package:gantt_view/settings/theme/grid_scheme.dart';
@@ -46,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
         startDate: item.start,
         endDate: item.end,
       ),
-      headerBuilder: (item) => GanttHeader(label: item.group),
+      headerLabelBuilder: (item) => item.group,
       sorters: [
         (a, b) => a.group.compareTo(b.group),
         (a, b) => a.start.compareTo(b.start),
