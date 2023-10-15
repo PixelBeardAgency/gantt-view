@@ -4,6 +4,7 @@ import 'package:gantt_view/controller/gantt_data_controller.dart';
 import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/model/gantt_event.dart';
 import 'package:gantt_view/model/gantt_header.dart';
+import 'package:gantt_view/settings/theme/gantt_style.dart';
 import 'package:gantt_view/settings/theme/grid_scheme.dart';
 
 void main() {
@@ -69,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
           rowHeight: 20,
           rowSpacing: 8,
         ),
+        style: GanttStyle(context, gridColor: Colors.grey.shade300),
       ),
     );
   }

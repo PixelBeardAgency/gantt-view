@@ -49,9 +49,9 @@ class GanttUiPainter extends GanttPainter {
           ..style = PaintingStyle.fill;
 
         final rect = Rect.fromLTWH(
-          (x * columnWidth) + layoutData.uiOffset.dx,
+          (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
           0 - panOffset.dy,
-          columnWidth,
+          gridScheme.columnWidth,
           layoutData.legendHeight,
         );
         canvas.drawRect(
@@ -72,7 +72,9 @@ class GanttUiPainter extends GanttPainter {
         textPainter.paint(
           canvas,
           Offset(
-                rect.left + (columnWidth / 2) - (textPainter.width / 2),
+                rect.left +
+                    (gridScheme.columnWidth / 2) -
+                    (textPainter.width / 2),
                 rect.bottom - textPainter.height,
               ) +
               panOffset,
@@ -88,16 +90,16 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
-    final verticalMargin = layoutData.settings.gridScheme.rowSpacing / 2;
+    final verticalMargin = gridScheme.rowSpacing / 2;
 
     final startOffset = Offset(
       0,
-      index * rowHeight,
+      index * gridScheme.rowHeight,
     );
 
     final endOffset = Offset(
       layoutData.uiOffset.dx,
-      (index + 1) * rowHeight,
+      (index + 1) * gridScheme.rowHeight,
     );
 
     var titleRect = Rect.fromPoints(
@@ -132,7 +134,9 @@ class GanttUiPainter extends GanttPainter {
       canvas,
       Offset(
             0,
-            titleRect.top + ((rowHeight / 2)) - (textPainter.height / 2),
+            titleRect.top +
+                ((gridScheme.rowHeight / 2)) -
+                (textPainter.height / 2),
           ) +
           titleOffset,
     );

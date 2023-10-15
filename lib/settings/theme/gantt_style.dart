@@ -16,6 +16,8 @@ class GanttStyle {
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
 
+  final Color? gridColor;
+
   GanttStyle(
     BuildContext context, {
     Color? eventColor,
@@ -28,6 +30,7 @@ class GanttStyle {
     TextStyle? timelineStyle,
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
+    this.gridColor,
   })  : eventColor = eventColor ?? Theme.of(context).colorScheme.primary,
         eventLabelStyle = Theme.of(context)
                 .textTheme
