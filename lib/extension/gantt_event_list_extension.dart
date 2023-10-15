@@ -1,7 +1,8 @@
 import 'package:gantt_view/model/gantt_event.dart';
 
 extension GanttEventListExtension on Iterable<GanttEvent> {
-  int get days => endDate.difference(startDate).inDays;
+  // No difference == 1 day
+  int get days => endDate.difference(startDate).inDays + 1;
 
   int get weeks => (days / 7).ceil();
 

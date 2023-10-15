@@ -12,8 +12,8 @@ class GridScheme {
   final TimelineAxisType timelineAxisType;
 
   const GridScheme({
-    this.rowHeight = 50.0,
-    this.rowSpacing = 0.0,
+    this.rowHeight = 20.0,
+    this.rowSpacing = 4.0,
     this.columnWidth = 50.0,
     this.showYear = true,
     this.showMonth = true,

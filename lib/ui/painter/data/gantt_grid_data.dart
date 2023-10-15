@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 
 class GanttGridData {
+  final double rowHeight;
+
   late int firstVisibleRow;
   late int lastVisibleRow;
   late int firstVisibleColumn;
@@ -15,19 +17,16 @@ class GanttGridData {
     Offset panOffset,
     int rows,
     int columns,
+    this.rowHeight,
   ) {
-    final verticalSpacing = settings.gridScheme.rowSpacing;
-    final rowHeight = settings.gridScheme.rowHeight;
     final columnWidth = settings.gridScheme.columnWidth;
 
-    final visibleRows =
-        (size.height / (rowHeight + (verticalSpacing / 2))).ceil();
-    firstVisibleRow =
-        max(0, (-panOffset.dy / (rowHeight + (verticalSpacing / 2))).floor());
+    final visibleRows = (size.height / rowHeight).ceil();
+    firstVisibleRow = max(0, (-panOffset.dy ~/ rowHeight));
     lastVisibleRow = min(rows, firstVisibleRow + visibleRows);
 
-    final visibleColumns = (size.width / columnWidth).floor();
+    final visibleColumns = (size.width / columnWidth).ceil();
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
-    lastVisibleColumn = min(firstVisibleColumn + visibleColumns, columns);
+    lastVisibleColumn = min(columns, firstVisibleColumn + visibleColumns);
   }
 }

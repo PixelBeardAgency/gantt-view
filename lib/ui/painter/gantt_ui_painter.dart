@@ -90,21 +90,11 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
-    final verticalMargin = gridScheme.rowSpacing / 2;
-
-    final startOffset = Offset(
+    var backgroundRect = Rect.fromLTWH(
       0,
-      index * gridScheme.rowHeight,
-    );
-
-    final endOffset = Offset(
-      layoutData.uiOffset.dx,
-      (index + 1) * gridScheme.rowHeight,
-    );
-
-    var titleRect = Rect.fromPoints(
-      startOffset,
-      endOffset,
+      index * fullRowHeight + layoutData.timelineHeight,
+      layoutData.labelColumnWidth,
+      fullRowHeight + 1,
     );
 
     final titlePaint = Paint()
@@ -113,15 +103,10 @@ class GanttUiPainter extends GanttPainter {
           : layoutData.settings.style.eventHeaderColor
       ..style = PaintingStyle.fill;
 
-    final titleOffset = Offset(
-        0,
-        panOffset.dy +
-            layoutData.uiOffset.dy +
-            (index * verticalMargin) +
-            verticalMargin);
+    final backgroundOffset = Offset(0, panOffset.dy);
 
     canvas.drawRect(
-      titleRect.shift(titleOffset),
+      backgroundRect.shift(backgroundOffset),
       titlePaint,
     );
 
@@ -134,12 +119,13 @@ class GanttUiPainter extends GanttPainter {
     textPainter.paint(
       canvas,
       Offset(
-            0,
-            titleRect.top +
-                ((gridScheme.rowHeight / 2)) -
-                (textPainter.height / 2),
+            0 + ganttStyle.eventLabelPadding.left,
+            backgroundRect.top +
+                (gridScheme.rowHeight / 2) -
+                (textPainter.height / 2) +
+                (ganttStyle.eventLabelPadding.top),
           ) +
-          titleOffset,
+          backgroundOffset,
     );
   }
 

@@ -6,6 +6,7 @@ class GanttStyle {
 
   final TextStyle eventLabelStyle;
   final Color eventLabelColor;
+  final EdgeInsets eventLabelPadding;
 
   final TextStyle eventHeaderStyle;
   final Color eventHeaderColor;
@@ -24,6 +25,7 @@ class GanttStyle {
     this.eventRadius = 8.0,
     TextStyle? eventLabelStyle,
     Color? eventLabelColor,
+    this.eventLabelPadding = const EdgeInsets.all(6),
     TextStyle? eventHeaderStyle,
     Color? eventHeaderColor,
     Color? timelineColor,

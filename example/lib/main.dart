@@ -68,9 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
         gridScheme: const GridScheme(
-          rowHeight: 20,
-          rowSpacing: 8,
-          timelineAxisType: TimelineAxisType.weekly,
+          timelineAxisType: TimelineAxisType.daily,
         ),
         style: GanttStyle(
           context,

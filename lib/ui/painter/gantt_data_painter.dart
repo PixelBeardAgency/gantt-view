@@ -5,6 +5,8 @@ import 'package:gantt_view/ui/painter/gantt_painter.dart';
 class GanttDataPainter extends GanttPainter {
   final Map<int, Map<int, _FillData>> _cells = {};
 
+  late double _eventOffset;
+
   GanttDataPainter({
     required super.data,
     required super.panOffset,
@@ -35,6 +37,10 @@ class GanttDataPainter extends GanttPainter {
         }
       }
     }
+    _eventOffset = ((gridScheme.rowSpacing / 2) +
+            ganttStyle.eventLabelPadding.top +
+            ganttStyle.eventLabelPadding.bottom) /
+        2;
   }
 
   @override
@@ -71,11 +77,9 @@ class GanttDataPainter extends GanttPainter {
 
     final rect = Rect.fromLTWH(
       (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
-      y * (gridScheme.rowHeight + layoutData.verticalPadding) +
-          layoutData.uiOffset.dy +
-          layoutData.verticalPadding,
+      y * fullRowHeight + layoutData.uiOffset.dy,
       (gridScheme.columnWidth) + 1,
-      gridScheme.rowHeight,
+      fullRowHeight,
     );
 
     canvas.drawRect(
@@ -90,14 +94,17 @@ class GanttDataPainter extends GanttPainter {
       ..style = PaintingStyle.fill;
 
     final radius = layoutData.settings.style.eventRadius;
-
+    Rect.fromLTWH(
+      0,
+      y * fullRowHeight + layoutData.timelineHeight,
+      layoutData.labelColumnWidth,
+      fullRowHeight + 1,
+    );
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         (x * gridScheme.columnWidth) / layoutData.widthDivisor +
             layoutData.uiOffset.dx,
-        y * (gridScheme.rowHeight + layoutData.verticalPadding) +
-            layoutData.uiOffset.dy +
-            layoutData.verticalPadding,
+        y * fullRowHeight + _eventOffset + layoutData.uiOffset.dy,
         (gridScheme.columnWidth / layoutData.widthDivisor) + 1,
         gridScheme.rowHeight,
       ),
@@ -113,25 +120,21 @@ class GanttDataPainter extends GanttPainter {
   }
 
   void _paintGrid(Canvas canvas, Size size) {
-    final double vertinalLineSpacing =
-        gridScheme.rowHeight + gridScheme.rowSpacing / 2;
-    final double verticalOffset =
-        layoutData.timelineHeight + gridScheme.rowSpacing / 4;
+    final double verticalOffset = layoutData.timelineHeight;
     final double horizontalOffset = layoutData.labelColumnWidth;
 
-    _paintGridRows(
-        size, verticalOffset, vertinalLineSpacing, horizontalOffset, canvas);
+    _paintGridRows(size, verticalOffset, horizontalOffset, canvas);
     _paintGridColumns(size, horizontalOffset, verticalOffset, canvas);
   }
 
-  void _paintGridRows(Size size, double verticalOffset,
-      double vertinalLineSpacing, double horizontalOffset, Canvas canvas) {
-    final int rows = (size.height - verticalOffset + vertinalLineSpacing) ~/
-        vertinalLineSpacing;
+  void _paintGridRows(Size size, double verticalOffset, double horizontalOffset,
+      Canvas canvas) {
+    final int rows =
+        (size.height - verticalOffset + fullRowHeight) ~/ fullRowHeight;
     final double rowVerticalOffset =
-        verticalOffset + (panOffset.dy % vertinalLineSpacing);
+        verticalOffset + (panOffset.dy % fullRowHeight);
     for (int y = 0; y < rows; y++) {
-      final py = y * vertinalLineSpacing + rowVerticalOffset;
+      final py = y * fullRowHeight + rowVerticalOffset;
       final p1 = Offset(0 + horizontalOffset, py);
       final p2 = Offset(size.width + horizontalOffset, py);
       if (p1.dy > verticalOffset) {

@@ -23,10 +23,10 @@ class GanttChartLayoutData {
   Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
   int get maxRows => data.length;
   int get maxColumns => switch (settings.gridScheme.timelineAxisType) {
-        TimelineAxisType.daily => data.whereType<GanttEvent>().days + 1,
+        TimelineAxisType.daily => data.whereType<GanttEvent>().days,
         TimelineAxisType.weekly => data.whereType<GanttEvent>().weeks,
       };
-  double get verticalPadding => settings.gridScheme.rowSpacing / 2;
+  double get rowVerticalMargin => settings.gridScheme.rowSpacing / 2;
 
   GanttChartLayoutData(
       {required this.data, required this.settings, required Size size}) {
@@ -51,7 +51,11 @@ class GanttChartLayoutData {
     var renderAreaHeight = screenHeight - timelineHeight;
     return dataHeight < renderAreaHeight
         ? 0
-        : dataHeight - screenHeight + timelineHeight;
+        : dataHeight -
+            screenHeight +
+            timelineHeight +
+            settings.gridScheme.rowSpacing +
+            settings.style.eventLabelPadding.bottom;
   }
 
   double _getTitleWidth() {
@@ -62,7 +66,12 @@ class GanttChartLayoutData {
           rowData is GanttEvent
               ? settings.style.eventLabelStyle
               : settings.style.eventHeaderStyle);
-      width = max(width, textPainter.width);
+      width = max(
+        width,
+        textPainter.width +
+            settings.style.eventLabelPadding.left +
+            settings.style.eventLabelPadding.right,
+      );
     }
     return max(width, titlePainter().width);
   }
