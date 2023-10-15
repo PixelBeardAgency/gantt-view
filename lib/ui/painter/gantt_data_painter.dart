@@ -94,7 +94,7 @@ class GanttDataPainter extends GanttPainter {
         y * (gridScheme.rowHeight + verticalPadding) +
             legendHeight +
             verticalPadding,
-        gridScheme.columnWidth,
+        gridScheme.columnWidth + 1,
         gridScheme.rowHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),

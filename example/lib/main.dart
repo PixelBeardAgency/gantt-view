@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
         gridScheme: const GridScheme(
-          rowHeight: 20,
+          rowHeight: 50,
           rowSpacing: 8,
         ),
         style: GanttStyle(context, gridColor: Colors.grey.shade300),
