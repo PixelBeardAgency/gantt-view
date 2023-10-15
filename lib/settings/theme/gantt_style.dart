@@ -34,7 +34,8 @@ class GanttStyle {
     TextStyle? subtitleStyle,
     this.gridColor,
   })  : eventColor = eventColor ?? Theme.of(context).colorScheme.primary,
-        eventLabelStyle = Theme.of(context)
+        eventLabelStyle = eventLabelStyle ??
+            Theme.of(context)
                 .textTheme
                 .labelMedium
                 ?.apply(color: Theme.of(context).colorScheme.onSecondary) ??
