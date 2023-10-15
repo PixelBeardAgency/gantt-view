@@ -51,7 +51,7 @@ class GanttUiPainter extends GanttPainter {
         final rect = Rect.fromLTWH(
           (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
           0 - panOffset.dy,
-          gridScheme.columnWidth,
+          gridScheme.columnWidth + 1,
           layoutData.timelineHeight,
         );
         canvas.drawRect(
