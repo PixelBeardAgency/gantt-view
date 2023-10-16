@@ -41,48 +41,48 @@ class GanttUiPainter extends GanttPainter {
 
     double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
-        final paint = Paint()
-          ..color = layoutData.settings.style.timelineColor
-          ..style = PaintingStyle.fill;
+      final paint = Paint()
+        ..color = layoutData.settings.style.timelineColor
+        ..style = PaintingStyle.fill;
 
-        final rect = Rect.fromLTWH(
-          (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
-          0 - panOffset.dy,
-          gridScheme.columnWidth + 1,
-          layoutData.timelineHeight,
-        );
-        canvas.drawRect(
-          rect.shift(panOffset),
-          paint,
-        );
+      final rect = Rect.fromLTWH(
+        (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
+        0 - panOffset.dy,
+        gridScheme.columnWidth + 1,
+        layoutData.timelineHeight,
+      );
+      canvas.drawRect(
+        rect.shift(panOffset),
+        paint,
+      );
 
-        final date = startDate.add(Duration(days: x * layoutData.widthDivisor));
-        final textPainter = layoutData.datePainter([
-          if (layoutData.settings.gridScheme.showYear)
-            previousYear == date.year ? '' : '${date.year}',
-          if (layoutData.settings.gridScheme.showMonth)
-            previousMonth == date.month ? '' : '${date.month}',
-          if (layoutData.settings.gridScheme.showDay)
-            previousDay == date.day ? '' : '${date.day}',
-        ]);
+      final date = startDate.add(Duration(days: x * layoutData.widthDivisor));
+      final textPainter = layoutData.datePainter([
+        if (layoutData.settings.gridScheme.showYear)
+          previousYear == date.year ? '' : '${date.year}',
+        if (layoutData.settings.gridScheme.showMonth)
+          previousMonth == date.month ? '' : '${date.month}',
+        if (layoutData.settings.gridScheme.showDay)
+          previousDay == date.day ? '' : '${date.day}',
+      ]);
 
-        textPainter.paint(
-          canvas,
-          Offset(
-                rect.left +
-                    (gridScheme.columnWidth / 2) -
-                    (textPainter.width / 2),
-                rect.bottom - textPainter.height,
-              ) +
-              panOffset,
-        );
+      textPainter.paint(
+        canvas,
+        Offset(
+              rect.left +
+                  (gridScheme.columnWidth / 2) -
+                  (textPainter.width / 2),
+              rect.bottom - textPainter.height,
+            ) +
+            panOffset,
+      );
 
-        previousYear = date.year;
-        previousMonth = date.month;
-        previousDay = date.day;
+      previousYear = date.year;
+      previousMonth = date.month;
+      previousDay = date.day;
 
-        height = max(height, textPainter.height);
-      }
+      height = max(height, textPainter.height);
+    }
   }
 
   void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
@@ -119,7 +119,7 @@ class GanttUiPainter extends GanttPainter {
             backgroundRect.top +
                 (gridScheme.rowHeight / 2) -
                 (textPainter.height / 2) +
-                (ganttStyle.eventLabelPadding.top),
+                ganttStyle.eventLabelPadding.top,
           ) +
           backgroundOffset,
     );

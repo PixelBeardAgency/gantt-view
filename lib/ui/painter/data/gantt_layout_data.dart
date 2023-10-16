@@ -49,9 +49,10 @@ class GanttChartLayoutData {
   }
 
   double _getVerticalScrollBoundary(double screenHeight) {
-    var dataHeight = data.length * fullRowHeight;
-    var renderAreaHeight = screenHeight - timelineHeight;
-    return dataHeight < renderAreaHeight ? 0 : dataHeight - renderAreaHeight;
+    var dataHeight = (data.length * fullRowHeight);
+    return dataHeight < (screenHeight - timelineHeight)
+        ? 0
+        : dataHeight - screenHeight + timelineHeight;
   }
 
   double _getTitleWidth() {

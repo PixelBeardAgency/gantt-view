@@ -37,7 +37,7 @@ class GanttDataPainter extends GanttPainter {
         }
       }
     }
-    _eventOffset = ((gridScheme.rowSpacing / 2) +
+    _eventOffset = (gridScheme.rowSpacing +
             ganttStyle.eventLabelPadding.top +
             ganttStyle.eventLabelPadding.bottom) /
         2;
@@ -129,14 +129,16 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridRows(Size size, double verticalOffset, double horizontalOffset,
       Canvas canvas) {
-    final int rows =
-        (size.height - verticalOffset + fullRowHeight) ~/ fullRowHeight;
+    final gridData = super.gridData(size);
+
     final double rowVerticalOffset =
         verticalOffset + (panOffset.dy % fullRowHeight);
+    final rows = gridData.lastVisibleRow - gridData.firstVisibleRow + 1;
+
     for (int y = 0; y < rows; y++) {
       final py = y * fullRowHeight + rowVerticalOffset;
-      final p1 = Offset(0 + horizontalOffset, py);
-      final p2 = Offset(size.width + horizontalOffset, py);
+      final p1 = Offset(layoutData.labelColumnWidth, py);
+      final p2 = Offset(size.width, py);
       if (p1.dy > verticalOffset) {
         final paint = Paint()
           ..color = layoutData.settings.style.gridColor!
@@ -148,16 +150,17 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridColumns(Size size, double horizontalOffset,
       double verticalOffset, Canvas canvas) {
-    final double horizontalLineSpacing = gridScheme.columnWidth;
-    final int columns =
-        (size.width - horizontalOffset + gridScheme.columnWidth) ~/
-            gridScheme.columnWidth;
+    final gridData = super.gridData(size);
+
     final double columnHorizontalOffset =
-        horizontalOffset + (panOffset.dx % horizontalLineSpacing);
+        horizontalOffset + (panOffset.dx % gridScheme.columnWidth);
+
+    final columns = gridData.lastVisibleColumn - gridData.firstVisibleColumn + 1;
+
     for (int x = 0; x < columns; x++) {
-      final px = x * horizontalLineSpacing + columnHorizontalOffset;
+      final px = x * gridScheme.columnWidth + columnHorizontalOffset;
       final p1 = Offset(px, verticalOffset);
-      final p2 = Offset(px, size.height + verticalOffset);
+      final p2 = Offset(px, size.height);
       final paint = Paint()
         ..color = layoutData.settings.style.gridColor!
         ..strokeWidth = 1;

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/model/gantt_row_data.dart';
@@ -16,12 +18,14 @@ class GanttChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GanttChartContent(
-      data: data,
-      layoutData: GanttChartLayoutData(
+    return LayoutBuilder(
+      builder: (context, constraints) => _GanttChartContent(
         data: data,
-        settings: GanttSettings.of(context),
-        size: MediaQuery.of(context).size,
+        layoutData: GanttChartLayoutData(
+          data: data,
+          settings: GanttSettings.of(context),
+          size: constraints.biggest,
+        ),
       ),
     );
   }
@@ -42,37 +46,54 @@ class _GanttChartContentState extends State<_GanttChartContent> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: Listener(
-        onPointerSignal: (event) {
-          if (event is PointerScrollEvent) {
-            _updateOffset(
-              -event.scrollDelta,
-              widget.layoutData.maxDx,
-              widget.layoutData.maxDy,
-            );
-          }
-        },
-        child: GestureDetector(
-          onPanUpdate: (details) => _updateOffset(
-              details.delta, widget.layoutData.maxDx, widget.layoutData.maxDy),
-          child: CustomPaint(
-            size: Size.infinite,
-            willChange: true,
-            foregroundPainter: GanttUiPainter(
-              data: widget.data,
-              panOffset: panOffset,
-              layoutData: widget.layoutData,
-            ),
-            painter: GanttDataPainter(
-              data: widget.data,
-              panOffset: panOffset,
-              layoutData: widget.layoutData,
+    return LayoutBuilder(builder: (context, constraints) {
+      debugPrint('constraints.maxWidth: ${constraints.maxWidth}');
+      return Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          height: min(
+              constraints.maxHeight,
+              widget.data.length * widget.layoutData.fullRowHeight +
+                  widget.layoutData.timelineHeight),
+          width: min(
+              constraints.maxWidth,
+              widget.layoutData.maxColumns *
+                      widget.layoutData.settings.gridScheme.columnWidth +
+                  widget.layoutData.labelColumnWidth),
+          child: ClipRect(
+            child: Listener(
+              onPointerSignal: (event) {
+                if (event is PointerScrollEvent) {
+                  _updateOffset(
+                    -event.scrollDelta,
+                    widget.layoutData.maxDx,
+                    widget.layoutData.maxDy,
+                  );
+                }
+              },
+              child: GestureDetector(
+                onPanUpdate: (details) => _updateOffset(details.delta,
+                    widget.layoutData.maxDx, widget.layoutData.maxDy),
+                child: CustomPaint(
+                  size: Size.infinite,
+                  willChange: true,
+                  foregroundPainter: GanttUiPainter(
+                    data: widget.data,
+                    panOffset: panOffset,
+                    layoutData: widget.layoutData,
+                  ),
+                  painter: GanttDataPainter(
+                    data: widget.data,
+                    panOffset: panOffset,
+                    layoutData: widget.layoutData,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   void _updateOffset(Offset delta, double maxDx, double maxDy) {

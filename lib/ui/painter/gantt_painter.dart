@@ -12,12 +12,11 @@ abstract class GanttPainter extends CustomPainter {
   final Offset panOffset;
   final GanttChartLayoutData layoutData;
 
-
   GridScheme get gridScheme => layoutData.settings.gridScheme;
   GanttStyle get ganttStyle => layoutData.settings.style;
 
   DateTime get startDate => data.whereType<GanttEvent>().startDate;
-  
+
   double get fullRowHeight => layoutData.fullRowHeight;
 
   GanttPainter(
@@ -31,11 +30,10 @@ abstract class GanttPainter extends CustomPainter {
   }
 
   GanttGridData gridData(Size size) => GanttGridData(
-        layoutData.settings,
+        layoutData,
         size,
         panOffset,
         data.length,
-        layoutData.maxColumns,
         fullRowHeight,
       );
 }
