@@ -1,8 +1,9 @@
 import 'package:example/data.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
+import 'package:gantt_view/extension/gantt_task_iterable_extension.dart';
 import 'package:gantt_view/gantt_view.dart';
-import 'package:gantt_view/model/gantt_event.dart';
+import 'package:gantt_view/model/gantt_task.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 import 'package:gantt_view/settings/theme/gantt_style.dart';
 import 'package:gantt_view/settings/theme/grid_scheme.dart';
@@ -41,16 +42,14 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _controller = GanttDataController<ExampleEventItem>(
       items: Data.dummyData,
-      eventBuilder: (item) => GanttEvent(
+      taskBuilder: (item) => GanttTask(
         label: item.title,
         startDate: item.start,
         endDate: item.end,
       ),
-      headerLabelBuilder: (item) => item.group,
-      sorters: [
-        (a, b) => a.group.compareTo(b.group),
-        (a, b) => a.start.compareTo(b.start),
-      ],
+      taskSort: (a, b) => a.startDate.compareTo(b.startDate),
+      activityLabelBuilder: (item) => item.group,
+      activitySort: (a, b) => a.tasks.startDate.compareTo(b.tasks.startDate),
     );
   }
 
@@ -79,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           eventLabelColor: Colors.blue.shade900,
           gridColor: Colors.grey.shade300,
           eventLabelPadding: const EdgeInsets.all(4),
-          eventRadius: 4,
+          eventRadius: 10,
           timelineColor: Colors.grey.shade300,
         ),
       ),

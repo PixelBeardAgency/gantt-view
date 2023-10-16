@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/gantt_event.dart';
 import 'package:gantt_view/ui/painter/gantt_painter.dart';
 
 class GanttDataPainter extends GanttPainter {
@@ -12,11 +11,17 @@ class GanttDataPainter extends GanttPainter {
     required super.panOffset,
     required super.layoutData,
   }) {
-    for (int y = 0; y < data.length; y++) {
-      final rowData = data[y];
-      if (rowData is GanttEvent) {
-        final start = rowData.startDate;
-        final end = rowData.endDate;
+    int currentRow = 0;
+    for (var activity in data) {
+      if (activity.label != null) {
+        for (int j = 0; j < layoutData.maxColumns; j++) {
+          (_cells[currentRow] ??= {})[j] = _HeaderFillData();
+        }
+        currentRow++;
+      }
+      for (var task in activity.tasks) {
+        final start = task.startDate;
+        final end = task.endDate;
 
         final int from = start.difference(startDate).inDays;
         final int to = end.difference(startDate).inDays;
@@ -25,16 +30,13 @@ class GanttDataPainter extends GanttPainter {
           throw Exception('Start date must be before end date.');
         }
 
-        for (int i = from; i <= to; i++) {
-          (_cells[y] ??= {})[i] = _EventFillData(
-            i == from,
-            i == to,
+        for (int k = from; k <= to; k++) {
+          (_cells[currentRow] ??= {})[k] = _EventFillData(
+            k == from,
+            k == to,
           );
         }
-      } else {
-        for (int i = 0; i < layoutData.maxColumns; i++) {
-          (_cells[y] ??= {})[i] = _HeaderFillData();
-        }
+        currentRow++;
       }
     }
     _eventOffset = (gridScheme.rowSpacing +
@@ -155,7 +157,8 @@ class GanttDataPainter extends GanttPainter {
     final double columnHorizontalOffset =
         horizontalOffset + (panOffset.dx % gridScheme.columnWidth);
 
-    final columns = gridData.lastVisibleColumn - gridData.firstVisibleColumn + 1;
+    final columns =
+        gridData.lastVisibleColumn - gridData.firstVisibleColumn + 1;
 
     for (int x = 0; x < columns; x++) {
       final px = x * gridScheme.columnWidth + columnHorizontalOffset;

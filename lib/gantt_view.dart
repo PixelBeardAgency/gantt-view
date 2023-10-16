@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
-import 'package:gantt_view/model/gantt_event.dart';
+import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 import 'package:gantt_view/settings/theme/gantt_style.dart';
 import 'package:gantt_view/settings/theme/grid_scheme.dart';
@@ -21,7 +21,7 @@ class GanttView<T> extends StatelessWidget {
     this.title,
     this.subtitle,
   }) : assert(
-            controller.data.whereType<GanttEvent>().every(
+            controller.data.allTasks.every(
                 (event) => event.endDate.compareTo(event.startDate) >= 0),
             'All events must have a start date before or equal to the end date.');
 

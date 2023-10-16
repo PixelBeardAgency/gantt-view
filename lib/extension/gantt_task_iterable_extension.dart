@@ -1,6 +1,6 @@
-import 'package:gantt_view/model/gantt_event.dart';
+import 'package:gantt_view/model/gantt_task.dart';
 
-extension GanttEventListExtension on Iterable<GanttEvent> {
+extension GanttEventIterableExtension on Iterable<GanttTask> {
   // No difference == 1 day
   int get days => endDate.difference(startDate).inDays + 1;
 

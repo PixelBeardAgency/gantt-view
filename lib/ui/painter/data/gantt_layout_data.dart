@@ -1,14 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/extension/gantt_event_list_extension.dart';
-import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_row_data.dart';
+import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
+import 'package:gantt_view/extension/gantt_task_iterable_extension.dart';
+import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 
 class GanttChartLayoutData {
   final GanttSettings settings;
-  final Iterable<GanttRowData> data;
+  final Iterable<GanttActivity> data;
 
   late double labelColumnWidth;
   late double timelineHeight;
@@ -16,6 +16,7 @@ class GanttChartLayoutData {
   late double maxDy;
 
   final double fullRowHeight;
+  late double dataHeight;
 
   int get widthDivisor => switch (settings.gridScheme.timelineAxisType) {
         TimelineAxisType.daily => 1,
@@ -23,17 +24,21 @@ class GanttChartLayoutData {
       };
 
   Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
-  int get maxColumns => switch (settings.gridScheme.timelineAxisType) {
-        TimelineAxisType.daily => data.whereType<GanttEvent>().days,
-        TimelineAxisType.weekly => data.whereType<GanttEvent>().weeks,
-      };
+  final int maxColumns;
 
   GanttChartLayoutData(
       {required this.data, required this.settings, required Size size})
       : fullRowHeight = settings.gridScheme.rowHeight +
             settings.gridScheme.rowSpacing +
             settings.style.eventLabelPadding.top +
-            settings.style.eventLabelPadding.bottom {
+            settings.style.eventLabelPadding.bottom,
+        maxColumns = switch (settings.gridScheme.timelineAxisType) {
+          TimelineAxisType.daily =>
+            data.expand((element) => element.tasks).days,
+          TimelineAxisType.weekly =>
+            data.expand((element) => element.tasks).weeks,
+        } {
+    dataHeight = (data.length + data.allTasks.length) * fullRowHeight;
     labelColumnWidth = _getTitleWidth();
     timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(size.width);
@@ -49,7 +54,6 @@ class GanttChartLayoutData {
   }
 
   double _getVerticalScrollBoundary(double screenHeight) {
-    var dataHeight = (data.length * fullRowHeight);
     return dataHeight < (screenHeight - timelineHeight)
         ? 0
         : dataHeight - screenHeight + timelineHeight;
@@ -57,18 +61,21 @@ class GanttChartLayoutData {
 
   double _getTitleWidth() {
     double width = 0;
-    for (var rowData in data) {
-      final textPainter = headerPainter(
-          rowData.label,
-          rowData is GanttEvent
-              ? settings.style.eventLabelStyle
-              : settings.style.eventHeaderStyle);
+    for (var activity in data) {
       width = max(
         width,
-        textPainter.width +
-            settings.style.eventLabelPadding.left +
-            settings.style.eventLabelPadding.right,
+        headerPainter(activity.label ?? '', settings.style.eventHeaderStyle)
+                .width +
+            settings.style.eventLabelPadding.horizontal,
       );
+
+      for (var task in activity.tasks) {
+        width = max(
+          width,
+          headerPainter(task.label, settings.style.eventLabelStyle).width +
+              settings.style.eventLabelPadding.horizontal,
+        );
+      }
     }
     return max(width, titlePainter().width);
   }

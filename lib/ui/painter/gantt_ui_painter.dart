@@ -1,16 +1,23 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_row_data.dart';
 import 'package:gantt_view/ui/painter/gantt_painter.dart';
 
 class GanttUiPainter extends GanttPainter {
+  final List<_HeaderData> _headers = [];
+
   GanttUiPainter({
     required super.data,
     required super.panOffset,
     required super.layoutData,
-  });
+  }) {
+    for (var activity in data) {
+      if (activity.label != null) {
+        _headers.add(_ActivityHeaderData(activity.label));
+      }
+      _headers.addAll(activity.tasks.map((e) => _TaskHeaderData(e.label)));
+    }
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -19,9 +26,7 @@ class GanttUiPainter extends GanttPainter {
     for (int index = gridData.firstVisibleRow;
         index < gridData.lastVisibleRow;
         index++) {
-      final rowData = data[index];
-
-      _paintHeader(index, canvas, rowData);
+      _paintHeaders(index, canvas);
     }
 
     _paintLegend(
@@ -85,7 +90,9 @@ class GanttUiPainter extends GanttPainter {
     }
   }
 
-  void _paintHeader(int index, Canvas canvas, GanttRowData rowData) {
+  void _paintHeaders(int index, Canvas canvas) {
+    final header = _headers[index];
+
     var backgroundRect = Rect.fromLTWH(
       0,
       index * fullRowHeight + layoutData.timelineHeight,
@@ -94,7 +101,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final titlePaint = Paint()
-      ..color = rowData is GanttEvent
+      ..color = header is _TaskHeaderData
           ? layoutData.settings.style.eventLabelColor
           : layoutData.settings.style.eventHeaderColor
       ..style = PaintingStyle.fill;
@@ -107,8 +114,8 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final textPainter = layoutData.headerPainter(
-        rowData.label,
-        rowData is GanttEvent
+        header.label ?? '',
+        header is _TaskHeaderData
             ? layoutData.settings.style.eventLabelStyle
             : layoutData.settings.style.eventHeaderStyle);
 
@@ -157,4 +164,18 @@ class GanttUiPainter extends GanttPainter {
       ),
     );
   }
+}
+
+abstract class _HeaderData {
+  final String? label;
+
+  _HeaderData(this.label);
+}
+
+class _ActivityHeaderData extends _HeaderData {
+  _ActivityHeaderData(String? label) : super(label);
+}
+
+class _TaskHeaderData extends _HeaderData {
+  _TaskHeaderData(String label) : super(label);
 }

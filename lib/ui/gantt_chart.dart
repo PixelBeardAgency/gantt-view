@@ -2,14 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/gantt_row_data.dart';
+import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
+import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 import 'package:gantt_view/ui/painter/gantt_data_painter.dart';
 import 'package:gantt_view/ui/painter/gantt_ui_painter.dart';
 
 class GanttChart extends StatelessWidget {
-  final List<GanttRowData> data;
+  final List<GanttActivity> data;
 
   const GanttChart({
     super.key,
@@ -32,7 +33,7 @@ class GanttChart extends StatelessWidget {
 }
 
 class _GanttChartContent extends StatefulWidget {
-  final List<GanttRowData> data;
+  final List<GanttActivity> data;
   final GanttChartLayoutData layoutData;
 
   const _GanttChartContent({required this.data, required this.layoutData});
@@ -52,7 +53,8 @@ class _GanttChartContentState extends State<_GanttChartContent> {
               child: SizedBox(
                 height: min(
                     constraints.maxHeight,
-                    widget.data.length * widget.layoutData.fullRowHeight +
+                    (widget.data.length + widget.data.allTasks.length) *
+                            widget.layoutData.fullRowHeight +
                         widget.layoutData.timelineHeight),
                 width: min(
                     constraints.maxWidth,
