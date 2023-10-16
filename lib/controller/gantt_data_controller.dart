@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_header.dart';
-import 'package:gantt_view/model/gantt_row_data.dart';
+import 'package:gantt_view/model/gantt_activity.dart';
+import 'package:gantt_view/model/gantt_task.dart';
 
 class GanttDataController<T> extends ChangeNotifier {
   final List<T> _items = [];
 
-  final GanttEvent Function(T data) _eventBuilder;
-  final GanttHeader Function(T data)? _headerBuilder;
+  final List<GanttActivity> _data = [];
+  List<GanttActivity> get data => List.unmodifiable(_data);
 
-  final int Function(T a, T b)? _sorter;
+  final GanttTask Function(T data) _taskBuilder;
+  final int Function(GanttTask a, GanttTask b)? _taskSort;
 
-  final List<GanttRowData> _data = [];
-  List<GanttRowData> get data => List.unmodifiable(_data);
+  final String Function(T data)? _activityLabelBuilder;
+  final int Function(GanttActivity a, GanttActivity b)? _activitySort;
 
   GanttDataController({
     required List<T> items,
-    required GanttEvent Function(T data) eventBuilder,
-    GanttHeader Function(T data)? headerBuilder,
-    int Function(T a, T b)? sorter,
-  })  : _eventBuilder = eventBuilder,
-        _headerBuilder = headerBuilder,
-        _sorter = sorter {
+    required GanttTask Function(T data) taskBuilder,
+    int Function(GanttTask a, GanttTask b)? taskSort,
+    String Function(T item)? activityLabelBuilder,
+    int Function(GanttActivity a, GanttActivity b)? activitySort,
+  })  : _taskBuilder = taskBuilder,
+        _taskSort = taskSort,
+        _activityLabelBuilder = activityLabelBuilder,
+        _activitySort = activitySort {
     _items.addAll(items);
     sortItems();
   }
@@ -45,23 +47,36 @@ class GanttDataController<T> extends ChangeNotifier {
   void sortItems() {
     _data.clear();
     List<T> items = List.from(_items);
-    if (_sorter != null) {
-      items.sort(_sorter);
+
+    if (_activityLabelBuilder != null) {
+      List<GanttActivity> activities = [];
+      final activityLabels = items.map<String>(_activityLabelBuilder!).toSet();
+      for (var label in activityLabels) {
+        final tasks = items
+            .where((item) => _activityLabelBuilder!(item) == label)
+            .map<GanttTask>(_taskBuilder)
+            .toList();
+        if (_taskSort != null) {
+          tasks.sort(_taskSort!);
+        }
+
+        activities.add(GanttActivity(label: label, tasks: tasks));
+      }
+
+      if (_activitySort != null) {
+        activities.sort(_activitySort!);
+      }
+
+      _data.addAll(activities);
+    } else {
+      final tasks = items.map<GanttTask>(_taskBuilder).toList();
+
+      if (_taskSort != null) {
+        tasks.sort(_taskSort!);
+      }
+      _data.add(GanttActivity(tasks: tasks));
     }
 
-    if (_headerBuilder == null) {
-      _data.addAll(items.map<GanttEvent>(_eventBuilder).toList());
-    } else {
-      String? currentHeader;
-      for (final event in items) {
-        var header = _headerBuilder!(event);
-        if (header.label != currentHeader) {
-          currentHeader = header.label;
-          _data.add(header);
-        }
-        _data.add(_eventBuilder(event));
-      }
-    }
     notifyListeners();
   }
 }

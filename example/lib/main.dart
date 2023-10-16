@@ -1,13 +1,12 @@
 import 'package:example/data.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
+import 'package:gantt_view/extension/gantt_task_iterable_extension.dart';
 import 'package:gantt_view/gantt_view.dart';
-import 'package:gantt_view/model/gantt_event.dart';
-import 'package:gantt_view/model/gantt_header.dart';
+import 'package:gantt_view/model/gantt_task.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
-import 'package:gantt_view/settings/theme/event_row_theme.dart';
-import 'package:gantt_view/settings/theme/header_row_theme.dart';
-import 'package:gantt_view/settings/theme/legend_theme.dart';
+import 'package:gantt_view/settings/theme/gantt_style.dart';
+import 'package:gantt_view/settings/theme/grid_scheme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +17,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
+    return MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -39,19 +42,14 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _controller = GanttDataController<ExampleEventItem>(
       items: Data.dummyData,
-      eventBuilder: (item) => GanttEvent(
+      taskBuilder: (item) => GanttTask(
         label: item.title,
         startDate: item.start,
         endDate: item.end,
       ),
-      headerBuilder: (item) => GanttHeader(label: item.group),
-      sorter: (a, b) => <Comparator<ExampleEventItem>>[
-        (a, b) => a.group.compareTo(b.group),
-        (a, b) => a.start.compareTo(b.start),
-      ].map((e) => e(a, b)).firstWhere(
-            (comparator) => comparator != 0,
-            orElse: () => 0,
-          ),
+      taskSort: (a, b) => a.startDate.compareTo(b.startDate),
+      activityLabelBuilder: (item) => item.group,
+      activitySort: (a, b) => a.tasks.startDate.compareTo(b.tasks.startDate),
     );
   }
 
@@ -66,27 +64,23 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: GanttView(
         controller: _controller,
-        rowSpacing: 8.0,
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
-        headerRowTheme: HeaderRowTheme(
-          height: 48.0,
-          textStyle: Theme.of(context).textTheme.labelLarge,
-          backgroundColor: Colors.grey[300],
+        gridScheme: const GridScheme(
+          columnWidth: 30,
+          rowSpacing: 0,
+          timelineAxisType: TimelineAxisType.daily,
         ),
-        eventRowTheme: EventRowTheme(
-          fillColor: Colors.blue[200],
-          labelStyle: Theme.of(context).textTheme.labelMedium,
-          height: 20,
-          startRadius: 4.0,
-          endRadius: 4.0,
+        style: GanttStyle(
+          context,
+          eventColor: Colors.blue.shade200,
+          eventHeaderColor: Colors.blue.shade400,
+          eventLabelColor: Colors.blue.shade900,
+          gridColor: Colors.grey.shade300,
+          eventLabelPadding: const EdgeInsets.all(4),
+          eventRadius: 10,
+          timelineColor: Colors.grey.shade300,
         ),
-        legendTheme: LegendTheme(
-          width: 200,
-          dateStyle: Theme.of(context).textTheme.labelMedium,
-          backgroundColor: Colors.blue[100],
-        ),
-        timelineAxisType: TimelineAxisType.daily,
       ),
     );
   }
