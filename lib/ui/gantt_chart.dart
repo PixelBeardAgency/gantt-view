@@ -54,7 +54,7 @@ class _GanttChartContentState extends State<_GanttChartContent> {
                 height: min(
                     constraints.maxHeight,
                     (widget.data.length + widget.data.allTasks.length) *
-                            widget.layoutData.fullRowHeight +
+                            widget.layoutData.rowHeight +
                         widget.layoutData.timelineHeight),
                 width: min(
                     constraints.maxWidth,

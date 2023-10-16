@@ -15,7 +15,7 @@ class GanttChartLayoutData {
   late double maxDx;
   late double maxDy;
 
-  final double fullRowHeight;
+  final double rowHeight;
   late double dataHeight;
 
   int get widthDivisor => switch (settings.gridScheme.timelineAxisType) {
@@ -28,7 +28,7 @@ class GanttChartLayoutData {
 
   GanttChartLayoutData(
       {required this.data, required this.settings, required Size size})
-      : fullRowHeight = settings.gridScheme.rowHeight +
+      : rowHeight = settings.gridScheme.barHeight +
             settings.gridScheme.rowSpacing +
             settings.style.eventLabelPadding.top +
             settings.style.eventLabelPadding.bottom,
@@ -38,7 +38,7 @@ class GanttChartLayoutData {
           TimelineAxisType.weekly =>
             data.expand((element) => element.tasks).weeks,
         } {
-    dataHeight = (data.length + data.allTasks.length) * fullRowHeight;
+    dataHeight = (data.length + data.allTasks.length) * rowHeight;
     labelColumnWidth = _getTitleWidth();
     timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(size.width);

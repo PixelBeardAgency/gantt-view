@@ -79,9 +79,9 @@ class GanttDataPainter extends GanttPainter {
 
     final rect = Rect.fromLTWH(
       (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
-      y * fullRowHeight + layoutData.uiOffset.dy,
+      y * rowHeight + layoutData.uiOffset.dy,
       (gridScheme.columnWidth) + 1,
-      fullRowHeight,
+      rowHeight,
     );
 
     canvas.drawRect(
@@ -98,17 +98,17 @@ class GanttDataPainter extends GanttPainter {
     final radius = layoutData.settings.style.eventRadius;
     Rect.fromLTWH(
       0,
-      y * fullRowHeight + layoutData.timelineHeight,
+      y * rowHeight + layoutData.timelineHeight,
       layoutData.labelColumnWidth,
-      fullRowHeight + 1,
+      rowHeight + 1,
     );
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         (x * gridScheme.columnWidth) / layoutData.widthDivisor +
             layoutData.uiOffset.dx,
-        y * fullRowHeight + _eventOffset + layoutData.uiOffset.dy,
+        y * rowHeight + _eventOffset + layoutData.uiOffset.dy,
         (gridScheme.columnWidth / layoutData.widthDivisor) + 1,
-        gridScheme.rowHeight,
+        gridScheme.barHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
       bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -134,11 +134,11 @@ class GanttDataPainter extends GanttPainter {
     final gridData = super.gridData(size);
 
     final double rowVerticalOffset =
-        verticalOffset + (panOffset.dy % fullRowHeight);
+        verticalOffset + (panOffset.dy % rowHeight);
     final rows = gridData.lastVisibleRow - gridData.firstVisibleRow + 1;
 
     for (int y = 0; y < rows; y++) {
-      final py = y * fullRowHeight + rowVerticalOffset;
+      final py = y * rowHeight + rowVerticalOffset;
       final p1 = Offset(layoutData.labelColumnWidth, py);
       final p2 = Offset(size.width, py);
       if (p1.dy > verticalOffset) {

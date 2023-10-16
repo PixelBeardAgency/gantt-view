@@ -1,7 +1,7 @@
 import 'package:gantt_view/settings/gantt_settings.dart';
 
 class GridScheme {
-  final double rowHeight;
+  final double barHeight;
   final double rowSpacing;
   final double columnWidth;
 
@@ -12,7 +12,7 @@ class GridScheme {
   final TimelineAxisType timelineAxisType;
 
   const GridScheme({
-    this.rowHeight = 12.0,
+    this.barHeight = 12.0,
     this.rowSpacing = 0.0,
     this.columnWidth = 50.0,
     this.showYear = true,

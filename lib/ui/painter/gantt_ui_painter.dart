@@ -95,9 +95,9 @@ class GanttUiPainter extends GanttPainter {
 
     var backgroundRect = Rect.fromLTWH(
       0,
-      index * fullRowHeight + layoutData.timelineHeight,
+      index * rowHeight + layoutData.timelineHeight,
       layoutData.labelColumnWidth,
-      fullRowHeight + 1,
+      rowHeight + 1,
     );
 
     final titlePaint = Paint()
@@ -124,7 +124,7 @@ class GanttUiPainter extends GanttPainter {
       Offset(
             0 + ganttStyle.eventLabelPadding.left,
             backgroundRect.top +
-                (gridScheme.rowHeight / 2) -
+                (gridScheme.barHeight / 2) -
                 (textPainter.height / 2) +
                 ganttStyle.eventLabelPadding.top,
           ) +

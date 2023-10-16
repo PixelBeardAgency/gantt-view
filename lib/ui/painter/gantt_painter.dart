@@ -17,7 +17,7 @@ abstract class GanttPainter extends CustomPainter {
 
   DateTime get startDate => data.allTasks.startDate;
 
-  double get fullRowHeight => layoutData.fullRowHeight;
+  double get rowHeight => layoutData.rowHeight;
 
   GanttPainter(
       {required this.data, required this.panOffset, required this.layoutData});
@@ -34,6 +34,6 @@ abstract class GanttPainter extends CustomPainter {
         size,
         panOffset,
         data.length + data.allTasks.length,
-        fullRowHeight,
+        rowHeight,
       );
 }
