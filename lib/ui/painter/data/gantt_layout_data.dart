@@ -30,8 +30,7 @@ class GanttChartLayoutData {
       {required this.data, required this.settings, required Size size})
       : rowHeight = settings.gridScheme.barHeight +
             settings.gridScheme.rowSpacing +
-            settings.style.eventLabelPadding.top +
-            settings.style.eventLabelPadding.bottom,
+            settings.style.eventLabelPadding.vertical,
         maxColumns = switch (settings.gridScheme.timelineAxisType) {
           TimelineAxisType.daily =>
             data.expand((element) => element.tasks).days,
@@ -77,18 +76,19 @@ class GanttChartLayoutData {
         );
       }
     }
-    return max(width, titlePainter().width);
+    return max(
+        width, titlePainter().width + settings.style.titlePadding.horizontal);
   }
 
   double _getLegendHeight() => max(
         datePainter(
           [
-            if (settings.gridScheme.showYear) '2021',
+            if (settings.gridScheme.showYear) '2022',
             if (settings.gridScheme.showMonth) '12',
             if (settings.gridScheme.showDay) '31',
           ],
         ).height,
-        titlePainter().height,
+        titlePainter().height + settings.style.titlePadding.vertical,
       );
 
   TextPainter titlePainter() {
