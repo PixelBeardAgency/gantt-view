@@ -76,7 +76,8 @@ class GanttChartLayoutData {
         );
       }
     }
-    return max(width, titlePainter().width);
+    return max(
+        width, titlePainter().width + settings.style.titlePadding.horizontal);
   }
 
   double _getLegendHeight() => max(
