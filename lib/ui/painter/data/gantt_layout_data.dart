@@ -40,7 +40,7 @@ class GanttChartLayoutData {
     List<DateTime>? filledDays,
   }) : rowHeight = settings.gridScheme.barHeight +
             settings.gridScheme.rowSpacing +
-            settings.style.eventLabelPadding.vertical {
+            settings.style.labelPadding.vertical {
     startDate = activities.allTasks
         .reduce((value, element) =>
             value.startDate.isBefore(element.startDate) ? value : element)
@@ -83,16 +83,16 @@ class GanttChartLayoutData {
     for (var activity in activities) {
       width = max(
         width,
-        headerPainter(activity.label ?? '', settings.style.eventHeaderStyle)
+        headerPainter(activity.label ?? '', settings.style.activityLabelStyle)
                 .width +
-            settings.style.eventLabelPadding.horizontal,
+            settings.style.labelPadding.horizontal,
       );
 
       for (var task in activity.tasks) {
         width = max(
           width,
-          headerPainter(task.label, settings.style.eventLabelStyle).width +
-              settings.style.eventLabelPadding.horizontal,
+          headerPainter(task.label, settings.style.taskLabelStyle).width +
+              settings.style.labelPadding.horizontal,
         );
       }
     }

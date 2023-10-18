@@ -103,8 +103,8 @@ class GanttUiPainter extends GanttPainter {
 
     final titlePaint = Paint()
       ..color = header is _TaskHeaderData
-          ? layoutData.settings.style.eventLabelColor
-          : layoutData.settings.style.eventHeaderColor
+          ? layoutData.settings.style.taskLabelColor
+          : layoutData.settings.style.activityLabelColor
       ..style = PaintingStyle.fill;
 
     final backgroundOffset = Offset(0, panOffset.dy);
@@ -117,17 +117,17 @@ class GanttUiPainter extends GanttPainter {
     final textPainter = layoutData.headerPainter(
         header.label ?? '',
         header is _TaskHeaderData
-            ? layoutData.settings.style.eventLabelStyle
-            : layoutData.settings.style.eventHeaderStyle);
+            ? layoutData.settings.style.taskLabelStyle
+            : layoutData.settings.style.activityLabelStyle);
 
     textPainter.paint(
       canvas,
       Offset(
-            0 + ganttStyle.eventLabelPadding.left,
+            0 + ganttStyle.labelPadding.left,
             backgroundRect.top +
                 (gridScheme.barHeight / 2) -
                 (textPainter.height / 2) +
-                ganttStyle.eventLabelPadding.top,
+                ganttStyle.labelPadding.top,
           ) +
           backgroundOffset,
     );

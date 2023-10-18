@@ -5,15 +5,15 @@ A customisable Gantt Chart view for Flutter.
 
 - Sticky Title Column to display event names
 - Sticky Legend Row to display dates 
-- Customisable event bar colours
+- Customisable event bar colors
 - Customisable event bar height
 - Customisable gaps between event bars
 - Customisable event bar corner radius
 - Ability to switch from day view to week view
-- Display weekends in a different colour
-- Customisable weekend colour
+- Display weekends in a different color
+- Customisable weekend color
 - Custom highlighted dates
-- Customisable highlighted date colour
+- Customisable highlighted date color
 
 ## Usage
 
@@ -81,16 +81,45 @@ GanttDataController<ExampleEventItem>(
     activitySort: (a, b) => a.tasks.startDate.compareTo(b.tasks.startDate),
 )
 ```
+## Grid Scheme
+
+| Property         | Type               | Description                                              | Default |
+| ---------------- | ------------------ | -------------------------------------------------------- | ------- |
+| barHeight        | `double`           | Height of the task bar internal to the row               | `12.0`  |
+| rowSpacing       | `double`           | Vertical spacing between rows                            | `0.0`   |
+| columnWidth      | `double`           | Horizontal width of each column                          | `50.0`  |
+| showYear         | `bool`             | Toggle for displaying the year on the top timeline axis  | `true`  |
+| showMonth        | `bool`             | Toggle for displaying the month on the top timeline axis | `true`  |
+| showDay          | `bool`             | Toggle for displaying the day on the top timeline axis   | `true`  |
+| timelineAxisType | `TimelineAxisType` | Enum to toggle chart between daily and weekly view       | `daily` |
+
+## Styling
+
+| Property             | Type         | Description                                             | Default                                     |
+| -------------------- | ------------ | ------------------------------------------------------- | ------------------------------------------- |
+| taskBarColor         | `Color`      | Color of the task bar on the chart                      | `primaryColor`                              |
+| taskBarRadius        | `double`     | Corner radius of the task bar                           | `0.0`                                       |
+| taskLabelStyle       | `TextStyle`  | TextStyle for the task title for the row                | `labelMedium` with `onSecondary` text color |
+| taskLabelColor       | `Color`      | Color for the task title for the row                    | `secondaryColor`                            |
+| labelPadding         | `EdgeInsets` | Padding for task and activity row titles                | `EdgeInsets.all(0)`                         |
+| activityLabelStyle   | `TextStyle`  | TextStyle for the activity title                        | `labelMedium` with `onTertiary` text color  |
+| activityLabelColor   | `Color`      | Color for the activity title                            | `tertiaryColor`                             |
+| timelineColor        | `Color`      | Background color for the top timeline axis              | `surfaceColor`                              |
+| timelineStyle        | `TextStyle`  | TextStyle for the dates in the top timeline axis        | `labelSmall` with `onSurface` text color    |
+| titleStyle           | `TextStyle`  | TextStyle for the title on the top left of the chart    | `labelLarge` with `onSurface` text color    |
+| subtitleStyle        | `TextStyle`  | TextStyle for the subtitle on the top left of the chart | `labelMedium` with `onSurface` text color   |
+| titlePadding         | `EdgeInsets` | Overall padding around the Title and Subtitle           | `EdgeInsets.all(0)`                         |
+| gridColor            | `Color`      | Color of the grid lines on the chart                    | `null`                                      |
+| weekendColor         | `Color`      | Color of the weekend columns                            | `null`                                      |
+| highlightedDateColor | `Color`      | Color of the highlighted date columns                   | `tertiaryColor`                             |
 
 ## Additional information
 
 This is a WIP project and is not yet ready for production use. The API is subject to change. Any feedback is welcome, as are pull requests.
 
-The current version was made quickly, and as such, there are some performance issues. The current implementation uses a series of `ListView` widgets which have their `ScrollController` synced to display the events. This is not a very performant solution, and will be replaced in the future.
-
 ## TODO
 - [ ] Add tooltip to display event details
 - [ ] Add zooming functionality
-- [ ] Add ability to customise individual event bar colours
+- [ ] Add ability to customise individual event bar colors
 - [ ] Add ability to define custom start and end times for the entire chart
 - [ ] Tests

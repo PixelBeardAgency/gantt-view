@@ -17,7 +17,7 @@ class GanttDataPainter extends GanttPainter {
           final currentOffset = (i + layoutData.weekendOffset) % 7;
           (_cells[currentRow] ??= {})[i] = layoutData.filledDays.contains(i)
               ? _HolidayFillData()
-              : layoutData.settings.gridScheme.highlightWeekends &&
+              : layoutData.settings.style.weekendColor != null &&
                       (currentOffset == 0 || currentOffset == 1)
                   ? _WeekendFillData()
                   : _HeaderFillData();
@@ -41,7 +41,7 @@ class GanttDataPainter extends GanttPainter {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
                 ? _EventFillData(i == from, i == to, isHoliday: true)
                 : _HolidayFillData();
-          } else if (layoutData.settings.gridScheme.highlightWeekends &&
+          } else if (layoutData.settings.style.weekendColor != null &&
               (currentOffset == 0 || currentOffset == 1)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
                 ? _EventFillData(i == from, i == to, isWeekend: true)
@@ -55,7 +55,7 @@ class GanttDataPainter extends GanttPainter {
       }
     }
     _eventOffset =
-        (gridScheme.rowSpacing + ganttStyle.eventLabelPadding.vertical) / 2;
+        (gridScheme.rowSpacing + ganttStyle.labelPadding.vertical) / 2;
   }
 
   @override
@@ -78,11 +78,11 @@ class GanttDataPainter extends GanttPainter {
         var dx = x * layoutData.cellWidth + layoutData.uiOffset.dx;
         if (fill is _HeaderFillData) {
           _paintFill(
-              dx, dy, canvas, layoutData.settings.style.eventHeaderColor);
+              dx, dy, canvas, layoutData.settings.style.activityLabelColor);
         } else if (fill is _EventFillData) {
           _paintEvent(dx, dy, canvas, fill);
         } else if (fill is _WeekendFillData) {
-          _paintFill(dx, dy, canvas, layoutData.settings.style.weekendColor);
+          _paintFill(dx, dy, canvas, layoutData.settings.style.weekendColor!);
         } else if (fill is _HolidayFillData) {
           _paintFill(dx, dy, canvas, layoutData.settings.style.holidayColor);
         }
@@ -109,7 +109,7 @@ class GanttDataPainter extends GanttPainter {
   }
 
   void _paintEvent(double x, double y, Canvas canvas, _EventFillData fill) {
-    var color = layoutData.settings.style.eventColor;
+    var color = layoutData.settings.style.taskBarColor;
     if (fill.isHoliday || fill.isWeekend) {
       _paintFill(
           x,
@@ -117,14 +117,14 @@ class GanttDataPainter extends GanttPainter {
           canvas,
           fill.isHoliday
               ? layoutData.settings.style.holidayColor
-              : layoutData.settings.style.weekendColor);
+              : layoutData.settings.style.weekendColor!);
       color = color.withOpacity(0.5);
     }
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
-    final radius = layoutData.settings.style.eventRadius;
+    final radius = layoutData.settings.style.taskBarRadius;
     Rect.fromLTWH(
       0,
       y * rowHeight + layoutData.timelineHeight,
