@@ -30,6 +30,6 @@ class GanttGridData {
     final visibleColumns = (size.width / columnWidth).ceil();
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     lastVisibleColumn =
-        min(layoutData.days, firstVisibleColumn + visibleColumns);
+        min(layoutData.columns, firstVisibleColumn + visibleColumns);
   }
 }

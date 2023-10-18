@@ -23,7 +23,7 @@ class GanttChartLayoutData {
   late int weekendOffset;
   late List<int> filledDays;
 
-  late int days;
+  late int columns;
   late double cellWidth;
 
   int get widthDivisor => switch (settings.gridScheme.timelineAxisType) {
@@ -54,7 +54,9 @@ class GanttChartLayoutData {
     this.filledDays =
         filledDays?.map((e) => e.difference(startDate).inDays).toList() ?? [];
 
-    days = endDate.difference(startDate).inDays + 1;
+    final diff = endDate.difference(startDate).inDays;
+    columns = diff + (widthDivisor - (diff % widthDivisor));
+
     cellWidth = settings.gridScheme.columnWidth / widthDivisor;
 
     dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
@@ -70,7 +72,7 @@ class GanttChartLayoutData {
   }
 
   double _getHorizontalScrollBoundary(double screenWidth) {
-    var dataWidth = days * cellWidth;
+    var dataWidth = columns * cellWidth;
     var renderAreaWidth = screenWidth - labelColumnWidth;
     return dataWidth < renderAreaWidth
         ? 0

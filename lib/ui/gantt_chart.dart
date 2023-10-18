@@ -63,7 +63,7 @@ class _GanttChartContentState extends State<_GanttChartContent> {
                         widget.layoutData.timelineHeight),
                 width: min(
                     constraints.maxWidth,
-                    widget.layoutData.days *
+                    widget.layoutData.columns *
                             widget.layoutData.cellWidth +
                         widget.layoutData.labelColumnWidth),
                 child: ClipRect(

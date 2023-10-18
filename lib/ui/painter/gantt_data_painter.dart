@@ -13,7 +13,7 @@ class GanttDataPainter extends GanttPainter {
     int currentRow = 0;
     for (var activity in layoutData.activities) {
       if (activity.label != null) {
-        for (int i = 0; i < layoutData.days; i++) {
+        for (int i = 0; i < layoutData.columns; i++) {
           final currentOffset = (i + layoutData.weekendOffset) % 7;
           (_cells[currentRow] ??= {})[i] = layoutData.filledDays.contains(i)
               ? _HolidayFillData()
@@ -35,7 +35,7 @@ class GanttDataPainter extends GanttPainter {
           throw Exception('Start date must be before end date.');
         }
 
-        for (int i = 0; i < layoutData.days; i++) {
+        for (int i = 0; i < layoutData.columns; i++) {
           final currentOffset = (i + layoutData.weekendOffset) % 7;
           if (layoutData.filledDays.contains(i)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
