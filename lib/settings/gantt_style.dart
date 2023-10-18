@@ -25,13 +25,12 @@ class GanttStyle {
 
   final Color? axisDividerColor;
 
-  GanttStyle(
-    BuildContext context, {
+  GanttStyle({
     Color? taskBarColor,
-    this.taskBarRadius = 0.0,
+    this.taskBarRadius = 8.0,
     TextStyle? taskLabelStyle,
     Color? taskLabelColor,
-    this.labelPadding = const EdgeInsets.all(0),
+    this.labelPadding = const EdgeInsets.all(4),
     TextStyle? activityLabelStyle,
     Color? activityLabelColor,
     Color? timelineColor,
@@ -43,42 +42,19 @@ class GanttStyle {
     this.weekendColor,
     Color? highlightedDateColor,
     this.axisDividerColor,
-  })  : taskBarColor = taskBarColor ?? Theme.of(context).colorScheme.primary,
+  })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
         taskLabelStyle = taskLabelStyle ??
-            Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.apply(color: Theme.of(context).colorScheme.onSecondary) ??
-            const TextStyle(color: Colors.black),
-        taskLabelColor =
-            taskLabelColor ?? Theme.of(context).colorScheme.secondary,
+            const TextStyle(color: Colors.white, fontSize: 12),
+        taskLabelColor = taskLabelColor ?? Colors.blue.shade900,
         activityLabelStyle = activityLabelStyle ??
-            Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.apply(color: Theme.of(context).colorScheme.onTertiary) ??
-            const TextStyle(color: Colors.black),
-        activityLabelColor =
-            activityLabelColor ?? Theme.of(context).colorScheme.tertiary,
-        timelineColor = timelineColor ?? Theme.of(context).colorScheme.surface,
-        timelineStyle = timelineStyle ??
-            Theme.of(context)
-                .textTheme
-                .labelSmall
-                ?.apply(color: Theme.of(context).colorScheme.onSurface) ??
-            const TextStyle(color: Colors.black),
-        titleStyle = titleStyle ??
-            Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.apply(color: Theme.of(context).colorScheme.onSurface) ??
-            const TextStyle(color: Colors.black),
-        subtitleStyle = subtitleStyle ??
-            Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.apply(color: Theme.of(context).colorScheme.onSurface) ??
-            const TextStyle(color: Colors.black),
-        holidayColor =
-            highlightedDateColor ?? Theme.of(context).colorScheme.tertiary;
+            const TextStyle(color: Colors.white, fontSize: 12),
+        activityLabelColor = activityLabelColor ?? Colors.blue.shade400,
+        timelineColor = timelineColor ?? Colors.grey.shade300,
+        timelineStyle =
+            timelineStyle ?? const TextStyle(color: Colors.black, fontSize: 10),
+        titleStyle =
+            titleStyle ?? const TextStyle(color: Colors.black, fontSize: 16),
+        subtitleStyle =
+            subtitleStyle ?? const TextStyle(color: Colors.black, fontSize: 14),
+        holidayColor = highlightedDateColor ?? Colors.grey.shade300;
 }

@@ -24,39 +24,10 @@ All that is required is a `GanttDataController` and a `GanttView` widget. The `G
 There are basic theming options available for customising the look and feel of the `GanttView`, such as changing how rows look, and if headers should be displayed.
 
 ```dart
-GanttView(
+GanttChart(
     controller: _controller,
     title: 'My Lovely Gantt',
     subtitle: 'This is a subtitle',
-    gridScheme: const GridScheme(
-        columnWidth: 30,
-        rowSpacing: 0,
-        highlightWeekends: true,
-        timelineAxisType: TimelineAxisType.daily,
-    ),
-    style: GanttStyle(
-        context,
-        eventColor: Colors.blue.shade400,
-        eventHeaderColor: Colors.blue.shade100,
-        eventLabelColor: Colors.blue.shade900,
-        gridColor: Colors.grey.shade300,
-        eventRadius: 6,
-        eventHeaderStyle: Theme.of(context).textTheme.labelLarge,
-        titleStyle: Theme.of(context).textTheme.titleLarge,
-        titlePadding: const EdgeInsets.only(
-        left: 8,
-        right: 8,
-        top: 16,
-        bottom: 8,
-        ),
-        subtitleStyle: Theme.of(context).textTheme.titleMedium,
-        timelineColor: _backgroundColor,
-        eventLabelPadding:
-            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        weekendColor: Colors.blue.shade200,
-        highlightedDateColor: Colors.blue.shade300,
-    ),
-    highlightedDates: [DateTime(2023, 10, 4)],
 )
 ```
 
@@ -69,7 +40,7 @@ To sort tasks internal to a single activity, a `taskSort` function can be provid
 To sort activities in the `GanttView`, a `activitySort` function can be provided. This is a comparator function that takes 2 `GanttActivity` objects and returns an `int` value. The `GanttActivity` objects are then sorted based on the returned value.
 
 ```dart
-GanttDataController<ExampleEventItem>(
+_controller = GanttDataController<ExampleEventItem>(
     items: Data.dummyData,
     taskBuilder: (item) => GanttTask(
     label: item.title,
@@ -79,7 +50,8 @@ GanttDataController<ExampleEventItem>(
     taskSort: (a, b) => a.startDate.compareTo(b.startDate),
     activityLabelBuilder: (item) => item.group,
     activitySort: (a, b) => a.tasks.startDate.compareTo(b.tasks.startDate),
-)
+    highlightedDates: [DateTime(2023, 9, 29)],
+);
 ```
 ## Grid Scheme
 
@@ -87,7 +59,7 @@ GanttDataController<ExampleEventItem>(
 | ---------------- | ------------------ | -------------------------------------------------------- | ------- |
 | barHeight        | `double`           | Height of the task bar internal to the row               | `12.0`  |
 | rowSpacing       | `double`           | Vertical spacing between rows                            | `0.0`   |
-| columnWidth      | `double`           | Horizontal width of each column                          | `50.0`  |
+| columnWidth      | `double`           | Horizontal width of each column                          | `30.0`  |
 | showYear         | `bool`             | Toggle for displaying the year on the top timeline axis  | `true`  |
 | showMonth        | `bool`             | Toggle for displaying the month on the top timeline axis | `true`  |
 | showDay          | `bool`             | Toggle for displaying the day on the top timeline axis   | `true`  |
@@ -95,24 +67,24 @@ GanttDataController<ExampleEventItem>(
 
 ## Styling
 
-| Property             | Type         | Description                                                | Default                                     |
-| -------------------- | ------------ | ---------------------------------------------------------- | ------------------------------------------- |
-| taskBarColor         | `Color`      | Color of the task bar on the chart                         | `primaryColor`                              |
-| taskBarRadius        | `double`     | Corner radius of the task bar                              | `0.0`                                       |
-| taskLabelStyle       | `TextStyle`  | TextStyle for the task title for the row                   | `labelMedium` with `onSecondary` text color |
-| taskLabelColor       | `Color`      | Color for the task title for the row                       | `secondaryColor`                            |
-| labelPadding         | `EdgeInsets` | Padding for task and activity row titles                   | `EdgeInsets.all(0)`                         |
-| activityLabelStyle   | `TextStyle`  | TextStyle for the activity title                           | `labelMedium` with `onTertiary` text color  |
-| activityLabelColor   | `Color`      | Color for the activity title                               | `tertiaryColor`                             |
-| timelineColor        | `Color`      | Background color for the top timeline axis                 | `surfaceColor`                              |
-| timelineStyle        | `TextStyle`  | TextStyle for the dates in the top timeline axis           | `labelSmall` with `onSurface` text color    |
-| titleStyle           | `TextStyle`  | TextStyle for the title on the top left of the chart       | `labelLarge` with `onSurface` text color    |
-| subtitleStyle        | `TextStyle`  | TextStyle for the subtitle on the top left of the chart    | `labelMedium` with `onSurface` text color   |
-| titlePadding         | `EdgeInsets` | Overall padding around the Title and Subtitle              | `EdgeInsets.all(0)`                         |
-| gridColor            | `Color`      | Color of the grid lines on the chart                       | `null`                                      |
-| weekendColor         | `Color`      | Color of the weekend columns                               | `null`                                      |
-| highlightedDateColor | `Color`      | Color of the highlighted date columns                      | `tertiaryColor`                             |
-| axisDividerColor     | `Color`      | Color of the dividing lines between the axis and the chart | `null`                                      |
+| Property             | Type         | Description                                                | Default                                        |
+| -------------------- | ------------ | ---------------------------------------------------------- | ---------------------------------------------- |
+| taskBarColor         | `Color`      | Color of the task bar on the chart                         | `Colors.blue.shade200`                         |
+| taskBarRadius        | `double`     | Corner radius of the task bar                              | `0.0`                                          |
+| taskLabelStyle       | `TextStyle`  | TextStyle for the task title for the row                   | `TextStyle(color: Colors.white, fontSize: 12)` |
+| taskLabelColor       | `Color`      | Color for the task title for the row                       | `Colors.blue.shade900`                         |
+| labelPadding         | `EdgeInsets` | Padding for task and activity row titles                   | `EdgeInsets.all(4)`                            |
+| activityLabelStyle   | `TextStyle`  | TextStyle for the activity title                           | `TextStyle(color: Colors.white, fontSize: 12)` |
+| activityLabelColor   | `Color`      | Color for the activity title                               | `Colors.blue.shade400`                         |
+| timelineColor        | `Color`      | Background color for the top timeline axis                 | `Colors.grey.shade300`                         |
+| timelineStyle        | `TextStyle`  | TextStyle for the dates in the top timeline axis           | `TextStyle(color: Colors.black, fontSize: 10)` |
+| titleStyle           | `TextStyle`  | TextStyle for the title on the top left of the chart       | `TextStyle(color: Colors.black, fontSize: 16)` |
+| subtitleStyle        | `TextStyle`  | TextStyle for the subtitle on the top left of the chart    | `TextStyle(color: Colors.black, fontSize: 14)` |
+| titlePadding         | `EdgeInsets` | Overall padding around the Title and Subtitle              | `EdgeInsets.all(4)`                            |
+| gridColor            | `Color`      | Color of the grid lines on the chart                       | `null`                                         |
+| weekendColor         | `Color`      | Color of the weekend columns                               | `null`                                         |
+| highlightedDateColor | `Color`      | Color of the highlighted date columns                      | `Colors.grey.shade300`                         |
+| axisDividerColor     | `Color`      | Color of the dividing lines between the axis and the chart | `null`                                         |
 
 ## Additional information
 

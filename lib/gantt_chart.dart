@@ -37,7 +37,6 @@ class GanttChart<T> extends StatelessWidget {
             builder: (context, constraints) => _GanttChartContent(
               activities: controller.activities,
               config: GanttConfig(
-                context,
                 activities: controller.activities,
                 gridScheme: gridScheme,
                 style: style,

@@ -14,7 +14,7 @@ class GridScheme {
   const GridScheme({
     this.barHeight = 12.0,
     this.rowSpacing = 0.0,
-    this.columnWidth = 50.0,
+    this.columnWidth = 30.0,
     this.showYear = true,
     this.showMonth = true,
     this.showDay = true,

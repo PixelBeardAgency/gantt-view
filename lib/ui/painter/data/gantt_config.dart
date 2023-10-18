@@ -46,8 +46,7 @@ class GanttConfig {
 
   late Offset uiOffset;
 
-  GanttConfig(
-    BuildContext context, {
+  GanttConfig( {
     GridScheme? gridScheme,
     GanttStyle? style,
     this.title,
@@ -56,7 +55,7 @@ class GanttConfig {
     required this.containerSize,
     List<DateTime>? highlightedDates,
   })  : gridScheme = gridScheme ?? const GridScheme(),
-        style = style ?? GanttStyle(context) {
+        style = style ?? GanttStyle() {
     rowHeight = this.gridScheme.barHeight +
         this.gridScheme.rowSpacing +
         this.style.labelPadding.vertical;
