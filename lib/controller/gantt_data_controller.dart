@@ -14,7 +14,8 @@ class GanttDataController<T> extends ChangeNotifier {
   final String Function(T data)? _activityLabelBuilder;
   final int Function(GanttActivity a, GanttActivity b)? _activitySort;
 
-  final List<DateTime> highlightedDates;
+  final List<DateTime> _highlightedDates;
+  List<DateTime> get highlightedDates => List.unmodifiable(_highlightedDates);
 
   GanttDataController({
     required List<T> items,
@@ -22,32 +23,33 @@ class GanttDataController<T> extends ChangeNotifier {
     int Function(GanttTask a, GanttTask b)? taskSort,
     String Function(T item)? activityLabelBuilder,
     int Function(GanttActivity a, GanttActivity b)? activitySort,
-    this.highlightedDates = const [],
+    List<DateTime> highlightedDates = const [],
   })  : _taskBuilder = taskBuilder,
         _taskSort = taskSort,
         _activityLabelBuilder = activityLabelBuilder,
-        _activitySort = activitySort {
+        _activitySort = activitySort,
+        _highlightedDates = highlightedDates {
     _items.addAll(items);
-    sortItems();
+    _sortItems();
   }
 
   void setItems(List<T> items) {
     _items.clear();
     _items.addAll(items);
-    sortItems();
+    _sortItems();
   }
 
   void addItems(List<T> items) {
     _items.addAll(items);
-    sortItems();
+    _sortItems();
   }
 
   void removeItem(T item) {
     _items.remove(item);
-    sortItems();
+    _sortItems();
   }
 
-  void sortItems() {
+  void _sortItems() {
     _activities.clear();
     List<T> items = List.from(_items);
 
@@ -80,6 +82,22 @@ class GanttDataController<T> extends ChangeNotifier {
       _activities.add(GanttActivity(tasks: tasks));
     }
 
+    notifyListeners();
+  }
+
+  void setHighlightedDates(List<DateTime> dates) {
+    _highlightedDates.clear();
+    _highlightedDates.addAll(dates);
+    notifyListeners();
+  }
+
+  void addHighlightedDates(List<DateTime> dates) {
+    _highlightedDates.addAll(dates);
+    notifyListeners();
+  }
+
+  void removeHighlightedDate(DateTime date) {
+    _highlightedDates.remove(date);
     notifyListeners();
   }
 }
