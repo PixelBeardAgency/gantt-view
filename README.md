@@ -11,9 +11,9 @@ A customisable Gantt Chart view for Flutter.
 - Customisable event bar corner radius
 - Ability to switch from day view to week view
 - Display weekends in a different colour
-- Add ability to customise weekend colour
-- Add ability to add custom holiday dates
-- Add ability to customise holiday colour
+- Customisable weekend colour
+- Custom highlighted dates
+- Customisable highlighted date colour
 
 ## Usage
 
@@ -31,18 +31,32 @@ GanttView(
     gridScheme: const GridScheme(
         columnWidth: 30,
         rowSpacing: 0,
+        highlightWeekends: true,
         timelineAxisType: TimelineAxisType.daily,
     ),
     style: GanttStyle(
         context,
-        eventColor: Colors.blue.shade200,
-        eventHeaderColor: Colors.blue.shade400,
+        eventColor: Colors.blue.shade400,
+        eventHeaderColor: Colors.blue.shade100,
         eventLabelColor: Colors.blue.shade900,
         gridColor: Colors.grey.shade300,
-        eventLabelPadding: const EdgeInsets.all(4),
-        eventRadius: 10,
-        timelineColor: Colors.grey.shade300,
+        eventRadius: 6,
+        eventHeaderStyle: Theme.of(context).textTheme.labelLarge,
+        titleStyle: Theme.of(context).textTheme.titleLarge,
+        titlePadding: const EdgeInsets.only(
+        left: 8,
+        right: 8,
+        top: 16,
+        bottom: 8,
+        ),
+        subtitleStyle: Theme.of(context).textTheme.titleMedium,
+        timelineColor: _backgroundColor,
+        eventLabelPadding:
+            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        weekendColor: Colors.blue.shade200,
+        highlightedDateColor: Colors.blue.shade300,
     ),
+    highlightedDates: [DateTime(2023, 10, 4)],
 )
 ```
 
