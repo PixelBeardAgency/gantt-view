@@ -1,0 +1,12 @@
+name: Pull Request Tests
+on: [push]
+jobs:
+  Run-Flutter-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter analyze
+      - run: flutter test
