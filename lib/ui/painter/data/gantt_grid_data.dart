@@ -1,12 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
-import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 
 class GanttGridData {
-  final double rowHeight;
-
   late int visibleRows;
   late int firstVisibleRow;
   late int lastVisibleRow;
@@ -16,23 +12,20 @@ class GanttGridData {
   late int lastVisibleColumn;
 
   GanttGridData(
-    GanttChartLayoutData layoutData,
     Size size,
+    int rows,
+    Offset uiOffset,
+    int columns,
+    double columnWidth,
     Offset panOffset,
-    this.rowHeight,
+    double rowHeight,
   ) {
-    final columnWidth = layoutData.cellWidth;
-
-    visibleRows =
-        ((size.height - layoutData.timelineHeight) / rowHeight).ceil() + 1;
+    visibleRows = ((size.height - uiOffset.dy) / rowHeight).ceil() + 1;
     firstVisibleRow = max(0, (-panOffset.dy ~/ rowHeight));
-    lastVisibleRow = min(
-        layoutData.activities.length + layoutData.activities.allTasks.length,
-        firstVisibleRow + visibleRows);
+    lastVisibleRow = min(rows, firstVisibleRow + visibleRows);
 
-    visibleColumns = (size.width / columnWidth).ceil();
+    visibleColumns = ((size.width - uiOffset.dx) / columnWidth).ceil() + 1;
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
-    lastVisibleColumn =
-        min(layoutData.columns, firstVisibleColumn + visibleColumns);
+    lastVisibleColumn = min(columns, firstVisibleColumn + visibleColumns);
   }
 }

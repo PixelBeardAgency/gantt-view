@@ -1,32 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/settings/theme/gantt_style.dart';
-import 'package:gantt_view/settings/theme/grid_scheme.dart';
-import 'package:gantt_view/ui/painter/data/gantt_grid_data.dart';
-import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
+import 'package:gantt_view/settings/gantt_style.dart';
+import 'package:gantt_view/settings/grid_scheme.dart';
+import 'package:gantt_view/ui/painter/data/gantt_config.dart';
 
 abstract class GanttPainter extends CustomPainter {
-  final Offset panOffset;
-  final GanttChartLayoutData layoutData;
+  final GanttConfig config;
 
-  GridScheme get gridScheme => layoutData.settings.gridScheme;
-  GanttStyle get ganttStyle => layoutData.settings.style;
+  GridScheme get gridScheme => config.gridScheme;
+  GanttStyle get ganttStyle => config.style;
 
-  DateTime get startDate => layoutData.startDate;
+  DateTime get startDate => config.startDate;
 
-  double get rowHeight => layoutData.rowHeight;
+  double get rowHeight => config.rowHeight;
 
-  GanttPainter({required this.panOffset, required this.layoutData});
+  GanttPainter({required this.config});
 
   @override
   bool shouldRepaint(covariant GanttPainter oldDelegate) {
-    return oldDelegate.panOffset != panOffset ||
-        oldDelegate.layoutData != layoutData;
+    return oldDelegate.config != config;
   }
-
-  GanttGridData gridData(Size size) => GanttGridData(
-        layoutData,
-        size,
-        panOffset,
-        rowHeight,
-      );
 }

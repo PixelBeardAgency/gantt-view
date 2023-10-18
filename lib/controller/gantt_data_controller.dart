@@ -14,12 +14,15 @@ class GanttDataController<T> extends ChangeNotifier {
   final String Function(T data)? _activityLabelBuilder;
   final int Function(GanttActivity a, GanttActivity b)? _activitySort;
 
+  final List<DateTime> highlightedDates;
+
   GanttDataController({
     required List<T> items,
     required GanttTask Function(T data) taskBuilder,
     int Function(GanttTask a, GanttTask b)? taskSort,
     String Function(T item)? activityLabelBuilder,
     int Function(GanttActivity a, GanttActivity b)? activitySort,
+    this.highlightedDates = const [],
   })  : _taskBuilder = taskBuilder,
         _taskSort = taskSort,
         _activityLabelBuilder = activityLabelBuilder,

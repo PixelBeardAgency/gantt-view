@@ -1,4 +1,4 @@
-import 'package:gantt_view/settings/gantt_settings.dart';
+import 'package:gantt_view/model/timeline_axis_type.dart';
 
 class GridScheme {
   final double barHeight;

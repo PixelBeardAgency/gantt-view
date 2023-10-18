@@ -7,18 +7,15 @@ class GanttDataPainter extends GanttPainter {
 
   late double _eventOffset;
 
-  GanttDataPainter({
-    required super.panOffset,
-    required super.layoutData,
-  }) {
+  GanttDataPainter({required super.config}) {
     int currentRow = 0;
-    for (var activity in layoutData.activities) {
+    for (var activity in config.activities) {
       if (activity.label != null) {
-        for (int i = 0; i < layoutData.columns; i++) {
-          final currentOffset = (i + layoutData.weekendOffset) % 7;
-          (_cells[currentRow] ??= {})[i] = layoutData.filledDays.contains(i)
+        for (int i = 0; i < config.columns; i++) {
+          final currentOffset = (i + config.weekendOffset) % 7;
+          (_cells[currentRow] ??= {})[i] = config.highlightedColumns.contains(i)
               ? _HolidayFillData()
-              : layoutData.settings.style.weekendColor != null &&
+              : config.style.weekendColor != null &&
                       (currentOffset == 0 || currentOffset == 1)
                   ? _WeekendFillData()
                   : _HeaderFillData();
@@ -36,13 +33,13 @@ class GanttDataPainter extends GanttPainter {
           throw Exception('Start date must be before end date.');
         }
 
-        for (int i = 0; i < layoutData.columns; i++) {
-          final currentOffset = (i + layoutData.weekendOffset) % 7;
-          if (layoutData.filledDays.contains(i)) {
+        for (int i = 0; i < config.columns; i++) {
+          final currentOffset = (i + config.weekendOffset) % 7;
+          if (config.highlightedColumns.contains(i)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
                 ? _EventFillData(i == from, i == to, isHoliday: true)
                 : _HolidayFillData();
-          } else if (layoutData.settings.style.weekendColor != null &&
+          } else if (config.style.weekendColor != null &&
               (currentOffset == 0 || currentOffset == 1)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
                 ? _EventFillData(i == from, i == to, isWeekend: true)
@@ -61,33 +58,31 @@ class GanttDataPainter extends GanttPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final gridData = super.gridData(size);
+    final gridData = config.gridData;
 
-    if (layoutData.settings.style.gridColor != null) {
+    if (config.style.gridColor != null) {
       _paintGrid(canvas, size, gridData);
     }
 
-    _paintCells(canvas, size);
+    _paintCells(canvas, size, gridData);
   }
 
-  void _paintCells(Canvas canvas, Size size) {
-    final gridData = super.gridData(size);
+  void _paintCells(Canvas canvas, Size size, GanttGridData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
-      var dy = y * rowHeight + layoutData.uiOffset.dy;
+      var dy = y * rowHeight + config.uiOffset.dy;
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
         final fill = _cells[y]?[x];
-        var dx = x * layoutData.cellWidth + layoutData.uiOffset.dx;
+        var dx = x * config.cellWidth + config.uiOffset.dx;
         if (fill is _HeaderFillData) {
-          _paintFill(
-              dx, dy, canvas, layoutData.settings.style.activityLabelColor);
+          _paintFill(dx, dy, canvas, config.style.activityLabelColor);
         } else if (fill is _EventFillData) {
           _paintEvent(dx, dy, canvas, fill);
         } else if (fill is _WeekendFillData) {
-          _paintFill(dx, dy, canvas, layoutData.settings.style.weekendColor!);
+          _paintFill(dx, dy, canvas, config.style.weekendColor!);
         } else if (fill is _HolidayFillData) {
-          _paintFill(dx, dy, canvas, layoutData.settings.style.holidayColor);
+          _paintFill(dx, dy, canvas, config.style.holidayColor);
         }
       }
     }
@@ -101,38 +96,38 @@ class GanttDataPainter extends GanttPainter {
     final rect = Rect.fromLTWH(
       x,
       y,
-      layoutData.cellWidth + 1,
+      config.cellWidth + 1,
       rowHeight,
     );
 
     canvas.drawRect(
-      rect.shift(panOffset),
+      rect.shift(config.panOffset),
       paint,
     );
   }
 
   void _paintEvent(double x, double y, Canvas canvas, _EventFillData fill) {
-    var color = layoutData.settings.style.taskBarColor;
+    var color = config.style.taskBarColor;
     if (fill.isHoliday || fill.isWeekend) {
       _paintFill(
           x,
           y,
           canvas,
           fill.isHoliday
-              ? layoutData.settings.style.holidayColor
-              : layoutData.settings.style.weekendColor!);
+              ? config.style.holidayColor
+              : config.style.weekendColor!);
       color = color.withOpacity(0.5);
     }
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
-    final radius = layoutData.settings.style.taskBarRadius;
+    final radius = config.style.taskBarRadius;
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,
         y + _eventOffset,
-        layoutData.cellWidth + 1,
+        config.cellWidth + 1,
         gridScheme.barHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -141,7 +136,7 @@ class GanttDataPainter extends GanttPainter {
       bottomRight: Radius.circular(fill.isLast ? radius : 0),
     );
     canvas.drawRRect(
-      rect.shift(panOffset),
+      rect.shift(config.panOffset),
       paint,
     );
   }
@@ -153,28 +148,28 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridRows(Size size, Canvas canvas, int rows) {
     final double rowVerticalOffset =
-        layoutData.timelineHeight + (panOffset.dy % rowHeight);
+        config.timelineHeight + (config.panOffset.dy % rowHeight);
 
     for (int y = 0; y < rows; y++) {
       final py = y * rowHeight + rowVerticalOffset;
-      final p1 = Offset(layoutData.labelColumnWidth, py);
+      final p1 = Offset(config.labelColumnWidth, py);
       final p2 = Offset(size.width, py);
       final paint = Paint()
-        ..color = layoutData.settings.style.gridColor!
+        ..color = config.style.gridColor!
         ..strokeWidth = 1;
       canvas.drawLine(p1, p2, paint);
     }
   }
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
-    final double columnHorizontalOffset =
-        layoutData.labelColumnWidth + (panOffset.dx % gridScheme.columnWidth);
+    final double columnHorizontalOffset = config.labelColumnWidth +
+        (config.panOffset.dx % gridScheme.columnWidth);
     for (int x = 0; x < columns; x++) {
       final px = x * gridScheme.columnWidth + columnHorizontalOffset;
-      final p1 = Offset(px, layoutData.timelineHeight);
+      final p1 = Offset(px, config.timelineHeight);
       final p2 = Offset(px, size.height);
       final paint = Paint()
-        ..color = layoutData.settings.style.gridColor!
+        ..color = config.style.gridColor!
         ..strokeWidth = 1;
       canvas.drawLine(p1, p2, paint);
     }

@@ -7,10 +7,9 @@ class GanttUiPainter extends GanttPainter {
   final List<_HeaderData> _headers = [];
 
   GanttUiPainter({
-    required super.panOffset,
-    required super.layoutData,
+    required super.config,
   }) {
-    for (var activity in layoutData.activities) {
+    for (var activity in config.activities) {
       if (activity.label != null) {
         _headers.add(_ActivityHeaderData(activity.label));
       }
@@ -20,7 +19,7 @@ class GanttUiPainter extends GanttPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var gridData = super.gridData(size);
+    var gridData = config.gridData;
 
     _paintHeaders(
       gridData.firstVisibleRow,
@@ -36,9 +35,8 @@ class GanttUiPainter extends GanttPainter {
 
     _paintTitle(canvas);
 
-    
-    if (layoutData.settings.style.axisDividerColor != null) {
-    _paintDividers(canvas, size);
+    if (config.style.axisDividerColor != null) {
+      _paintDividers(canvas, size);
     }
   }
 
@@ -51,28 +49,28 @@ class GanttUiPainter extends GanttPainter {
     double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
       final paint = Paint()
-        ..color = layoutData.settings.style.timelineColor
+        ..color = config.style.timelineColor
         ..style = PaintingStyle.fill;
 
       final rect = Rect.fromLTWH(
-        (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
-        0 - panOffset.dy,
+        (x * gridScheme.columnWidth) + config.uiOffset.dx,
+        0 - config.panOffset.dy,
         gridScheme.columnWidth + 1,
-        layoutData.timelineHeight,
+        config.timelineHeight,
       );
       canvas.drawRect(
-        rect.shift(panOffset),
+        rect.shift(config.panOffset),
         paint,
       );
 
       final date = DateTime(startDate.year, startDate.month,
-          startDate.day + (x * layoutData.widthDivisor));
-      final textPainter = layoutData.datePainter([
-        if (layoutData.settings.gridScheme.showYear)
+          startDate.day + (x * config.widthDivisor));
+      final textPainter = config.datePainter([
+        if (config.gridScheme.showYear)
           previousYear == date.year ? '' : '${date.year}',
-        if (layoutData.settings.gridScheme.showMonth)
+        if (config.gridScheme.showMonth)
           previousMonth == date.month ? '' : '${date.month}',
-        if (layoutData.settings.gridScheme.showDay)
+        if (config.gridScheme.showDay)
           previousDay == date.day ? '' : '${date.day}',
       ]);
 
@@ -84,9 +82,9 @@ class GanttUiPainter extends GanttPainter {
                   (textPainter.width / 2),
               rect.bottom -
                   textPainter.height -
-                  layoutData.settings.style.titlePadding.bottom,
+                  config.style.titlePadding.bottom,
             ) +
-            panOffset,
+            config.panOffset,
       );
 
       previousYear = date.year;
@@ -103,29 +101,29 @@ class GanttUiPainter extends GanttPainter {
 
       var backgroundRect = Rect.fromLTWH(
         0,
-        index * rowHeight + layoutData.timelineHeight,
-        layoutData.labelColumnWidth,
+        index * rowHeight + config.timelineHeight,
+        config.labelColumnWidth,
         rowHeight + 1,
       );
 
       final titlePaint = Paint()
         ..color = header is _TaskHeaderData
-            ? layoutData.settings.style.taskLabelColor
-            : layoutData.settings.style.activityLabelColor
+            ? config.style.taskLabelColor
+            : config.style.activityLabelColor
         ..style = PaintingStyle.fill;
 
-      final backgroundOffset = Offset(0, panOffset.dy);
+      final backgroundOffset = Offset(0, config.panOffset.dy);
 
       canvas.drawRect(
         backgroundRect.shift(backgroundOffset),
         titlePaint,
       );
 
-      final textPainter = layoutData.headerPainter(
+      final textPainter = config.headerPainter(
           header.label ?? '',
           header is _TaskHeaderData
-              ? layoutData.settings.style.taskLabelStyle
-              : layoutData.settings.style.activityLabelStyle);
+              ? config.style.taskLabelStyle
+              : config.style.activityLabelStyle);
 
       textPainter.paint(
         canvas,
@@ -145,8 +143,8 @@ class GanttUiPainter extends GanttPainter {
     const startOffset = Offset.zero;
 
     final endOffset = Offset(
-      layoutData.uiOffset.dx,
-      layoutData.uiOffset.dy,
+      config.uiOffset.dx,
+      config.uiOffset.dy,
     );
 
     var titleRect = Rect.fromPoints(
@@ -155,7 +153,7 @@ class GanttUiPainter extends GanttPainter {
     );
 
     final titlePaint = Paint()
-      ..color = layoutData.settings.style.timelineColor
+      ..color = config.style.timelineColor
       ..style = PaintingStyle.fill;
 
     canvas.drawRect(
@@ -163,7 +161,7 @@ class GanttUiPainter extends GanttPainter {
       titlePaint,
     );
 
-    final textPainter = layoutData.titlePainter();
+    final textPainter = config.titlePainter();
 
     textPainter.paint(
       canvas,
@@ -175,10 +173,10 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintDividers(Canvas canvas, Size size) {
-    final py = layoutData.timelineHeight;
-    final px = layoutData.labelColumnWidth;
+    final py = config.timelineHeight;
+    final px = config.labelColumnWidth;
     final paint = Paint()
-      ..color = layoutData.settings.style.axisDividerColor!
+      ..color = config.style.axisDividerColor!
       ..strokeWidth = 1;
     canvas.drawLine(Offset(0, py), Offset(size.width, py), paint);
     canvas.drawLine(Offset(px, 0), Offset(px, size.height), paint);
