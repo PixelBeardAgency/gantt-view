@@ -125,12 +125,6 @@ class GanttDataPainter extends GanttPainter {
       ..style = PaintingStyle.fill;
 
     final radius = layoutData.settings.style.taskBarRadius;
-    Rect.fromLTWH(
-      0,
-      y * rowHeight + layoutData.timelineHeight,
-      layoutData.labelColumnWidth,
-      rowHeight + 1,
-    );
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,

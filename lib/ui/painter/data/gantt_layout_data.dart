@@ -31,7 +31,7 @@ class GanttChartLayoutData {
         TimelineAxisType.weekly => 7,
       };
 
-  Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
+  late Offset uiOffset;
 
   GanttChartLayoutData({
     required this.activities,
@@ -62,6 +62,11 @@ class GanttChartLayoutData {
     timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(size.width);
     maxDy = _getVerticalScrollBoundary(size.height);
+
+    uiOffset = Offset(
+      labelColumnWidth,
+      timelineHeight,
+    );
   }
 
   double _getHorizontalScrollBoundary(double screenWidth) {
