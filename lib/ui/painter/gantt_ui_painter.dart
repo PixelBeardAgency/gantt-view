@@ -59,8 +59,9 @@ class GanttUiPainter extends GanttPainter {
         rect.shift(panOffset),
         paint,
       );
-
-      final date = startDate.add(Duration(days: x * layoutData.widthDivisor));
+      
+      final date = DateTime(startDate.year, startDate.month,
+          startDate.day + (x * layoutData.widthDivisor));
       final textPainter = layoutData.datePainter([
         if (layoutData.settings.gridScheme.showYear)
           previousYear == date.year ? '' : '${date.year}',
