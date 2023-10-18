@@ -1,5 +1,8 @@
 name: Pull Request Tests
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 jobs:
   Run-Flutter-Tests:
     runs-on: ubuntu-latest
