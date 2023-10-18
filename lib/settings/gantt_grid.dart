@@ -1,6 +1,6 @@
 import 'package:gantt_view/model/timeline_axis_type.dart';
 
-class GridScheme {
+class GanttGrid {
   final double barHeight;
   final double rowSpacing;
   final double columnWidth;
@@ -11,7 +11,7 @@ class GridScheme {
 
   final TimelineAxisType timelineAxisType;
 
-  const GridScheme({
+  const GanttGrid({
     this.barHeight = 12.0,
     this.rowSpacing = 0.0,
     this.columnWidth = 30.0,

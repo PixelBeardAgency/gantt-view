@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
 import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
+import 'package:gantt_view/painter/gantt_data_painter.dart';
+import 'package:gantt_view/painter/gantt_ui_painter.dart';
+import 'package:gantt_view/settings/gantt_config.dart';
+import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
-import 'package:gantt_view/settings/grid_scheme.dart';
-import 'package:gantt_view/ui/painter/data/gantt_config.dart';
-import 'package:gantt_view/ui/painter/gantt_data_painter.dart';
-import 'package:gantt_view/ui/painter/gantt_ui_painter.dart';
 
 class GanttChart<T> extends StatelessWidget {
   final GanttDataController<T> controller;
-  final GridScheme? gridScheme;
+  final GanttGrid? grid;
   final GanttStyle? style;
   final String? title;
   final String? subtitle;
@@ -21,7 +21,7 @@ class GanttChart<T> extends StatelessWidget {
   GanttChart({
     super.key,
     required this.controller,
-    this.gridScheme,
+    this.grid,
     this.style,
     this.title,
     this.subtitle,
@@ -38,7 +38,7 @@ class GanttChart<T> extends StatelessWidget {
               activities: controller.activities,
               config: GanttConfig(
                 activities: controller.activities,
-                gridScheme: gridScheme,
+                grid: grid,
                 style: style,
                 title: title,
                 subtitle: subtitle,

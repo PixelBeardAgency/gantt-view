@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/ui/painter/data/gantt_grid_data.dart';
-import 'package:gantt_view/ui/painter/gantt_painter.dart';
+import 'package:gantt_view/settings/gantt_visible_data.dart';
+import 'package:gantt_view/painter/gantt_painter.dart';
 
 class GanttDataPainter extends GanttPainter {
   final Map<int, Map<int, _FillData>> _cells = {};
@@ -53,7 +53,7 @@ class GanttDataPainter extends GanttPainter {
       }
     }
     _eventOffset =
-        (gridScheme.rowSpacing + ganttStyle.labelPadding.vertical) / 2;
+        (grid.rowSpacing + ganttStyle.labelPadding.vertical) / 2;
   }
 
   @override
@@ -67,7 +67,7 @@ class GanttDataPainter extends GanttPainter {
     _paintCells(canvas, size, gridData);
   }
 
-  void _paintCells(Canvas canvas, Size size, GanttGridData gridData) {
+  void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
       var dy = y * rowHeight + config.uiOffset.dy;
       for (int x = gridData.firstVisibleColumn;
@@ -128,7 +128,7 @@ class GanttDataPainter extends GanttPainter {
         x,
         y + _eventOffset,
         config.cellWidth + 1,
-        gridScheme.barHeight,
+        grid.barHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
       bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -141,7 +141,7 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintGrid(Canvas canvas, Size size, GanttGridData gridData) {
+  void _paintGrid(Canvas canvas, Size size, GanttVisibleData gridData) {
     _paintGridRows(size, canvas, gridData.visibleRows);
     _paintGridColumns(size, canvas, gridData.visibleColumns);
   }
@@ -163,9 +163,9 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset = config.labelColumnWidth +
-        (config.panOffset.dx % gridScheme.columnWidth);
+        (config.panOffset.dx % grid.columnWidth);
     for (int x = 0; x < columns; x++) {
-      final px = x * gridScheme.columnWidth + columnHorizontalOffset;
+      final px = x * grid.columnWidth + columnHorizontalOffset;
       final p1 = Offset(px, config.timelineHeight);
       final p2 = Offset(px, size.height);
       final paint = Paint()

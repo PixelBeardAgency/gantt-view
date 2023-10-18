@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class GanttGridData {
+class GanttVisibleData {
   late int visibleRows;
   late int firstVisibleRow;
   late int lastVisibleRow;
@@ -11,7 +11,7 @@ class GanttGridData {
   late int firstVisibleColumn;
   late int lastVisibleColumn;
 
-  GanttGridData(
+  GanttVisibleData(
     Size size,
     int rows,
     Offset uiOffset,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gantt_view/settings/gantt_config.dart';
+import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
-import 'package:gantt_view/settings/grid_scheme.dart';
-import 'package:gantt_view/ui/painter/data/gantt_config.dart';
 
 abstract class GanttPainter extends CustomPainter {
   final GanttConfig config;
 
-  GridScheme get gridScheme => config.gridScheme;
+  GanttGrid get grid => config.grid;
   GanttStyle get ganttStyle => config.style;
 
   DateTime get startDate => config.startDate;

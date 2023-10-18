@@ -258,30 +258,6 @@ void main() {
   test('activitySort correctly sorts grouped tasks', () {
     // Arrange
     final items = [1, 2, 3, 4];
-    final expectedOdd = [
-      GanttTask(
-        label: '1',
-        startDate: DateTime(2021, 1, 1),
-        endDate: DateTime(2021, 1, 2),
-      ),
-      GanttTask(
-        label: '3',
-        startDate: DateTime(2021, 1, 3),
-        endDate: DateTime(2021, 1, 4),
-      ),
-    ];
-    final expectedEven = [
-      GanttTask(
-        label: '2',
-        startDate: DateTime(2021, 1, 2),
-        endDate: DateTime(2021, 1, 3),
-      ),
-      GanttTask(
-        label: '4',
-        startDate: DateTime(2021, 1, 4),
-        endDate: DateTime(2021, 1, 5),
-      ),
-    ];
 
     // Act
     final controller = GanttDataController<int>(

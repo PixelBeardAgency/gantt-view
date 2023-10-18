@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/ui/painter/gantt_painter.dart';
+import 'package:gantt_view/painter/gantt_painter.dart';
 
 class GanttUiPainter extends GanttPainter {
   final List<_HeaderData> _headers = [];
@@ -53,9 +53,9 @@ class GanttUiPainter extends GanttPainter {
         ..style = PaintingStyle.fill;
 
       final rect = Rect.fromLTWH(
-        (x * gridScheme.columnWidth) + config.uiOffset.dx,
+        (x * grid.columnWidth) + config.uiOffset.dx,
         0 - config.panOffset.dy,
-        gridScheme.columnWidth + 1,
+        grid.columnWidth + 1,
         config.timelineHeight,
       );
       canvas.drawRect(
@@ -66,11 +66,11 @@ class GanttUiPainter extends GanttPainter {
       final date = DateTime(startDate.year, startDate.month,
           startDate.day + (x * config.widthDivisor));
       final textPainter = config.datePainter([
-        if (config.gridScheme.showYear)
+        if (config.grid.showYear)
           previousYear == date.year ? '' : '${date.year}',
-        if (config.gridScheme.showMonth)
+        if (config.grid.showMonth)
           previousMonth == date.month ? '' : '${date.month}',
-        if (config.gridScheme.showDay)
+        if (config.grid.showDay)
           previousDay == date.day ? '' : '${date.day}',
       ]);
 
@@ -78,7 +78,7 @@ class GanttUiPainter extends GanttPainter {
         canvas,
         Offset(
               rect.left +
-                  (gridScheme.columnWidth / 2) -
+                  (grid.columnWidth / 2) -
                   (textPainter.width / 2),
               rect.bottom -
                   textPainter.height -
@@ -130,7 +130,7 @@ class GanttUiPainter extends GanttPainter {
         Offset(
               0 + ganttStyle.labelPadding.left,
               backgroundRect.top +
-                  (gridScheme.barHeight / 2) -
+                  (grid.barHeight / 2) -
                   (textPainter.height / 2) +
                   ganttStyle.labelPadding.top,
             ) +

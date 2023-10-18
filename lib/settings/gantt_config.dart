@@ -5,13 +5,13 @@ import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
-import 'package:gantt_view/settings/grid_scheme.dart';
-import 'package:gantt_view/ui/painter/data/gantt_grid_data.dart';
+import 'package:gantt_view/settings/gantt_grid.dart';
+import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttConfig {
   final Iterable<GanttActivity> activities;
 
-  final GridScheme gridScheme;
+  final GanttGrid grid;
   final GanttStyle style;
 
   final String? title;
@@ -39,7 +39,7 @@ class GanttConfig {
   late int columns;
   late double cellWidth;
 
-  int get widthDivisor => switch (gridScheme.timelineAxisType) {
+  int get widthDivisor => switch (grid.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
       };
@@ -47,17 +47,17 @@ class GanttConfig {
   late Offset uiOffset;
 
   GanttConfig( {
-    GridScheme? gridScheme,
+    GanttGrid? grid,
     GanttStyle? style,
     this.title,
     this.subtitle,
     required this.activities,
     required this.containerSize,
     List<DateTime>? highlightedDates,
-  })  : gridScheme = gridScheme ?? const GridScheme(),
+  })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
-    rowHeight = this.gridScheme.barHeight +
-        this.gridScheme.rowSpacing +
+    rowHeight = this.grid.barHeight +
+        this.grid.rowSpacing +
         this.style.labelPadding.vertical;
 
     startDate = activities.allTasks
@@ -78,7 +78,7 @@ class GanttConfig {
     final diff = endDate.difference(startDate).inDays;
     columns = diff + (widthDivisor - (diff % widthDivisor));
 
-    cellWidth = this.gridScheme.columnWidth / widthDivisor;
+    cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
     labelColumnWidth = _titleWidth;
@@ -129,9 +129,9 @@ class GanttConfig {
   double get _legendHeight => max(
         datePainter(
               [
-                if (gridScheme.showYear) '2022',
-                if (gridScheme.showMonth) '12',
-                if (gridScheme.showDay) '31',
+                if (grid.showYear) '2022',
+                if (grid.showMonth) '12',
+                if (grid.showDay) '31',
               ],
             ).height +
             style.titlePadding.bottom,
@@ -176,7 +176,7 @@ class GanttConfig {
 
     textPainter.layout(
       minWidth: 0,
-      maxWidth: gridScheme.columnWidth,
+      maxWidth: grid.columnWidth,
     );
 
     return textPainter;
@@ -198,7 +198,7 @@ class GanttConfig {
     return textPainter;
   }
 
-  GanttGridData get gridData => GanttGridData(
+  GanttVisibleData get gridData => GanttVisibleData(
         containerSize,
         activities.length + activities.allTasks.length,
         uiOffset,
