@@ -3,12 +3,12 @@ A customisable Gantt Chart view for Flutter.
 
 ## Features
 
-- Sticky Title Column to display event names
+- Sticky Title Column to display task names
 - Sticky Legend Row to display dates 
-- Customisable event bar colors
-- Customisable event bar height
-- Customisable gaps between event bars
-- Customisable event bar corner radius
+- Customisable task bar colors
+- Customisable task bar height
+- Customisable gaps between task bars
+- Customisable task bar corner radius
 - Ability to switch from day view to week view
 - Display weekends in a different color
 - Customisable weekend color
@@ -45,16 +45,16 @@ GanttChart(
 )
 ```
 
-To display events in the `GanttView`, a `GanttDataController` is required. The `GanttDataController` has 2 required fields, `items` and `eventBuilder`. The `items` field is a list of items that are used by the `GanttDataController` to build an internal data model for the `GanttView` to display. The `eventBuilder` is a function that takes an item from the `items` list and returns a `GanttEvent` data object. The `GanttEvent` data object provides the required data to display an event in the `GanttView`.
+To display tasks in the `GanttView`, a `GanttDataController` is required. The `GanttDataController` has 2 required fields, `items` and `taskBuilder`. The `items` field is a list of items that are used by the `GanttDataController` to build an internal data model for the `GanttView` to display. The `taskBuilder` is a function that takes an item from the `items` list and returns a `GanttTask` data object. The `GanttTask` data object provides the required data to display an task in the `GanttView`.
 
-If an `activityLabelBuilder` is provided, the `GanttView` will display a header row above the events which for that activity. The `activityLabelBuilder` is a function that takes an item from the `items` list and returns a `String`. The header String is then used to group events together to be displayed as part of the same activity.
+If an `activityLabelBuilder` is provided, the `GanttView` will display a header row above the tasks which for that activity. The `activityLabelBuilder` is a function that takes an item from the `items` list and returns a `String`. The header String is then used to group tasks together to be displayed as part of the same activity.
 
 To sort tasks internal to a single activity, a `taskSort` function can be provided. This is a comparator function that takes 2 `GanttTask` objects and returns an `int` value. The `GanttTask` objects are then sorted based on the returned value.
 
 To sort activities in the `GanttView`, a `activitySort` function can be provided. This is a comparator function that takes 2 `GanttActivity` objects and returns an `int` value. The `GanttActivity` objects are then sorted based on the returned value.
 
 ```dart
-_controller = GanttDataController<ExampleEventItem>(
+_controller = GanttDataController<ExampleTaskItem>(
     items: Data.dummyData,
     taskBuilder: (item) => GanttTask(
         label: item.title,
@@ -105,8 +105,8 @@ _controller = GanttDataController<ExampleEventItem>(
 This is a WIP project and is not yet ready for production use. The API is subject to change. Any feedback is welcome, as are pull requests.
 
 ## TODO
-- [ ] Add tooltip to display event details
+- [ ] Add tooltip to display task details
 - [ ] Add zooming functionality
-- [ ] Add ability to customise individual event bar colors
+- [ ] Add ability to customise individual task bar colors
 - [ ] Add ability to define custom start and end times for the entire chart
 - [ ] Tests

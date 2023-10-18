@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/settings/gantt_visible_data.dart';
 import 'package:gantt_view/painter/gantt_painter.dart';
+import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
   final Map<int, Map<int, _FillData>> _cells = {};
 
-  late double _eventOffset;
+  late double _taskOffset;
 
   GanttDataPainter({required super.config}) {
     int currentRow = 0;
@@ -37,23 +37,22 @@ class GanttDataPainter extends GanttPainter {
           final currentOffset = (i + config.weekendOffset) % 7;
           if (config.highlightedColumns.contains(i)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
-                ? _EventFillData(i == from, i == to, isHoliday: true)
+                ? _TaskFillData(i == from, i == to, isHoliday: true)
                 : _HolidayFillData();
           } else if (config.style.weekendColor != null &&
               (currentOffset == 0 || currentOffset == 1)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
-                ? _EventFillData(i == from, i == to, isWeekend: true)
+                ? _TaskFillData(i == from, i == to, isWeekend: true)
                 : _WeekendFillData();
           } else if (i >= from && i <= to) {
-            (_cells[currentRow] ??= {})[i] = _EventFillData(i == from, i == to);
+            (_cells[currentRow] ??= {})[i] = _TaskFillData(i == from, i == to);
           }
         }
 
         currentRow++;
       }
     }
-    _eventOffset =
-        (grid.rowSpacing + ganttStyle.labelPadding.vertical) / 2;
+    _taskOffset = (grid.rowSpacing + ganttStyle.labelPadding.vertical) / 2;
   }
 
   @override
@@ -77,8 +76,8 @@ class GanttDataPainter extends GanttPainter {
         var dx = x * config.cellWidth + config.uiOffset.dx;
         if (fill is _HeaderFillData) {
           _paintFill(dx, dy, canvas, config.style.activityLabelColor);
-        } else if (fill is _EventFillData) {
-          _paintEvent(dx, dy, canvas, fill);
+        } else if (fill is _TaskFillData) {
+          _paintTask(dx, dy, canvas, fill);
         } else if (fill is _WeekendFillData) {
           _paintFill(dx, dy, canvas, config.style.weekendColor!);
         } else if (fill is _HolidayFillData) {
@@ -106,7 +105,7 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintEvent(double x, double y, Canvas canvas, _EventFillData fill) {
+  void _paintTask(double x, double y, Canvas canvas, _TaskFillData fill) {
     var color = config.style.taskBarColor;
     if (fill.isHoliday || fill.isWeekend) {
       _paintFill(
@@ -126,7 +125,7 @@ class GanttDataPainter extends GanttPainter {
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,
-        y + _eventOffset,
+        y + _taskOffset,
         config.cellWidth + 1,
         grid.barHeight,
       ),
@@ -162,8 +161,8 @@ class GanttDataPainter extends GanttPainter {
   }
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
-    final double columnHorizontalOffset = config.labelColumnWidth +
-        (config.panOffset.dx % grid.columnWidth);
+    final double columnHorizontalOffset =
+        config.labelColumnWidth + (config.panOffset.dx % grid.columnWidth);
     for (int x = 0; x < columns; x++) {
       final px = x * grid.columnWidth + columnHorizontalOffset;
       final p1 = Offset(px, config.timelineHeight);
@@ -180,13 +179,13 @@ abstract class _FillData {}
 
 class _HeaderFillData extends _FillData {}
 
-class _EventFillData extends _FillData {
+class _TaskFillData extends _FillData {
   final bool isHoliday;
   final bool isWeekend;
   final bool isFirst;
   final bool isLast;
 
-  _EventFillData(
+  _TaskFillData(
     this.isFirst,
     this.isLast, {
     this.isHoliday = false,

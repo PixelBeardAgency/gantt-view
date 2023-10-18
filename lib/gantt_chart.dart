@@ -27,7 +27,7 @@ class GanttChart<T> extends StatelessWidget {
     this.subtitle,
   }) : assert(
             controller.activities.allTasks.every(
-                (event) => event.endDate.compareTo(event.startDate) >= 0),
+                (task) => task.endDate.compareTo(task.startDate) >= 0),
             'All tasks must have a start date before or equal to the end date.');
 
   @override
