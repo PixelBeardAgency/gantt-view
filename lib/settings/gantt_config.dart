@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
-import 'package:gantt_view/settings/gantt_style.dart';
 import 'package:gantt_view/settings/gantt_grid.dart';
+import 'package:gantt_view/settings/gantt_style.dart';
 import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttConfig {
@@ -46,7 +46,7 @@ class GanttConfig {
 
   late Offset uiOffset;
 
-  GanttConfig( {
+  GanttConfig({
     GanttGrid? grid,
     GanttStyle? style,
     this.title,
@@ -100,11 +100,10 @@ class GanttConfig {
         : dataWidth - containerSize.width + labelColumnWidth;
   }
 
-  double get _verticalScrollBoundary {
-    return dataHeight < (containerSize.height - timelineHeight)
-        ? 0
-        : dataHeight - containerSize.height + timelineHeight;
-  }
+  double get _verticalScrollBoundary =>
+      dataHeight < (containerSize.height - timelineHeight)
+          ? 0
+          : dataHeight - containerSize.height + timelineHeight;
 
   double get _titleWidth {
     double width = 0;
