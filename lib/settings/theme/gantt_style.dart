@@ -16,6 +16,7 @@ class GanttStyle {
 
   final TextStyle titleStyle;
   final TextStyle subtitleStyle;
+  final EdgeInsets titlePadding;
 
   final Color? gridColor;
 
@@ -35,6 +36,7 @@ class GanttStyle {
     TextStyle? timelineStyle,
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
+    this.titlePadding = const EdgeInsets.all(4),
     this.gridColor,
     Color? weekendColor,
     Color? highlightedDateColor,

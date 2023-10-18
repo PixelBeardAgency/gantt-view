@@ -76,7 +76,9 @@ class GanttUiPainter extends GanttPainter {
               rect.left +
                   (gridScheme.columnWidth / 2) -
                   (textPainter.width / 2),
-              rect.bottom - textPainter.height,
+              rect.bottom -
+                  textPainter.height -
+                  layoutData.settings.style.titlePadding.bottom,
             ) +
             panOffset,
       );
@@ -158,8 +160,8 @@ class GanttUiPainter extends GanttPainter {
     textPainter.paint(
       canvas,
       Offset(
-        0,
-        titleRect.bottom - textPainter.height,
+        0 + ganttStyle.titlePadding.left,
+        titleRect.bottom - textPainter.height - ganttStyle.titlePadding.bottom,
       ),
     );
   }

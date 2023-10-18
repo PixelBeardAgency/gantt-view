@@ -40,8 +40,7 @@ class GanttChartLayoutData {
     List<DateTime>? filledDays,
   }) : rowHeight = settings.gridScheme.barHeight +
             settings.gridScheme.rowSpacing +
-            settings.style.eventLabelPadding.top +
-            settings.style.eventLabelPadding.bottom {
+            settings.style.eventLabelPadding.vertical {
     startDate = activities.allTasks
         .reduce((value, element) =>
             value.startDate.isBefore(element.startDate) ? value : element)
@@ -97,18 +96,20 @@ class GanttChartLayoutData {
         );
       }
     }
-    return max(width, titlePainter().width);
+    return max(
+        width, titlePainter().width + settings.style.titlePadding.horizontal);
   }
 
   double _getLegendHeight() => max(
         datePainter(
-          [
-            if (settings.gridScheme.showYear) '2021',
-            if (settings.gridScheme.showMonth) '12',
-            if (settings.gridScheme.showDay) '31',
-          ],
-        ).height,
-        titlePainter().height,
+              [
+                if (settings.gridScheme.showYear) '2022',
+                if (settings.gridScheme.showMonth) '12',
+                if (settings.gridScheme.showDay) '31',
+              ],
+            ).height +
+            settings.style.titlePadding.bottom,
+        titlePainter().height + settings.style.titlePadding.vertical,
       );
 
   TextPainter titlePainter() {

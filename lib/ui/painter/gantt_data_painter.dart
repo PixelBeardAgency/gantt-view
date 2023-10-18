@@ -98,7 +98,7 @@ class GanttDataPainter extends GanttPainter {
     final rect = Rect.fromLTWH(
       x,
       y,
-      layoutData.cellWidth,
+      layoutData.cellWidth + 1,
       rowHeight,
     );
 
