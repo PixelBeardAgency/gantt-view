@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gantt_view/ui/painter/data/gantt_grid_data.dart';
 import 'package:gantt_view/ui/painter/gantt_painter.dart';
 
 class GanttDataPainter extends GanttPainter {
@@ -60,8 +61,10 @@ class GanttDataPainter extends GanttPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final gridData = super.gridData(size);
+
     if (layoutData.settings.style.gridColor != null) {
-      _paintGrid(canvas, size);
+      _paintGrid(canvas, size, gridData);
     }
 
     _paintCells(canvas, size);
@@ -143,48 +146,32 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintGrid(Canvas canvas, Size size) {
-    final double verticalOffset = layoutData.timelineHeight;
-    final double horizontalOffset = layoutData.labelColumnWidth;
-
-    _paintGridRows(size, verticalOffset, horizontalOffset, canvas);
-    _paintGridColumns(size, horizontalOffset, verticalOffset, canvas);
+  void _paintGrid(Canvas canvas, Size size, GanttGridData gridData) {
+    _paintGridRows(size, canvas, gridData.visibleRows);
+    _paintGridColumns(size, canvas, gridData.visibleColumns);
   }
 
-  void _paintGridRows(Size size, double verticalOffset, double horizontalOffset,
-      Canvas canvas) {
-    final gridData = super.gridData(size);
-
+  void _paintGridRows(Size size, Canvas canvas, int rows) {
     final double rowVerticalOffset =
-        verticalOffset + (panOffset.dy % rowHeight);
-    final rows = gridData.lastVisibleRow - gridData.firstVisibleRow + 1;
+        layoutData.timelineHeight + (panOffset.dy % rowHeight);
 
     for (int y = 0; y < rows; y++) {
       final py = y * rowHeight + rowVerticalOffset;
       final p1 = Offset(layoutData.labelColumnWidth, py);
       final p2 = Offset(size.width, py);
-      if (p1.dy > verticalOffset) {
-        final paint = Paint()
-          ..color = layoutData.settings.style.gridColor!
-          ..strokeWidth = 1;
-        canvas.drawLine(p1, p2, paint);
-      }
+      final paint = Paint()
+        ..color = layoutData.settings.style.gridColor!
+        ..strokeWidth = 1;
+      canvas.drawLine(p1, p2, paint);
     }
   }
 
-  void _paintGridColumns(Size size, double horizontalOffset,
-      double verticalOffset, Canvas canvas) {
-    final gridData = super.gridData(size);
-
+  void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset =
-        horizontalOffset + (panOffset.dx % gridScheme.columnWidth);
-
-    final columns =
-        gridData.lastVisibleColumn - gridData.firstVisibleColumn + 1;
-
+        layoutData.labelColumnWidth + (panOffset.dx % gridScheme.columnWidth);
     for (int x = 0; x < columns; x++) {
       final px = x * gridScheme.columnWidth + columnHorizontalOffset;
-      final p1 = Offset(px, verticalOffset);
+      final p1 = Offset(px, layoutData.timelineHeight);
       final p2 = Offset(px, size.height);
       final paint = Paint()
         ..color = layoutData.settings.style.gridColor!

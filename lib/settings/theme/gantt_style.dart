@@ -23,6 +23,8 @@ class GanttStyle {
   final Color? weekendColor;
   final Color holidayColor;
 
+  final Color? axisDividerColor;
+
   GanttStyle(
     BuildContext context, {
     Color? taskBarColor,
@@ -40,6 +42,7 @@ class GanttStyle {
     this.gridColor,
     this.weekendColor,
     Color? highlightedDateColor,
+    this.axisDividerColor,
   })  : taskBarColor = taskBarColor ?? Theme.of(context).colorScheme.primary,
         taskLabelStyle = taskLabelStyle ??
             Theme.of(context)

@@ -7,8 +7,11 @@ import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 class GanttGridData {
   final double rowHeight;
 
+  late int visibleRows;
   late int firstVisibleRow;
   late int lastVisibleRow;
+
+  late int visibleColumns;
   late int firstVisibleColumn;
   late int lastVisibleColumn;
 
@@ -18,16 +21,16 @@ class GanttGridData {
     Offset panOffset,
     this.rowHeight,
   ) {
-    final columnWidth = layoutData.cellWidth ;
+    final columnWidth = layoutData.cellWidth;
 
-    final visibleRows =
+    visibleRows =
         ((size.height - layoutData.timelineHeight) / rowHeight).ceil() + 1;
     firstVisibleRow = max(0, (-panOffset.dy ~/ rowHeight));
     lastVisibleRow = min(
         layoutData.activities.length + layoutData.activities.allTasks.length,
         firstVisibleRow + visibleRows);
 
-    final visibleColumns = (size.width / columnWidth).ceil();
+    visibleColumns = (size.width / columnWidth).ceil();
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     lastVisibleColumn =
         min(layoutData.columns, firstVisibleColumn + visibleColumns);

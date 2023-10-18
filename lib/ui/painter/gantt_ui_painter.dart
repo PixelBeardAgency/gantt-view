@@ -22,11 +22,11 @@ class GanttUiPainter extends GanttPainter {
   void paint(Canvas canvas, Size size) {
     var gridData = super.gridData(size);
 
-    for (int index = gridData.firstVisibleRow;
-        index < gridData.lastVisibleRow;
-        index++) {
-      _paintHeaders(index, canvas);
-    }
+    _paintHeaders(
+      gridData.firstVisibleRow,
+      gridData.lastVisibleRow,
+      canvas,
+    );
 
     _paintLegend(
       gridData.firstVisibleColumn,
@@ -35,6 +35,11 @@ class GanttUiPainter extends GanttPainter {
     );
 
     _paintTitle(canvas);
+
+    
+    if (layoutData.settings.style.axisDividerColor != null) {
+    _paintDividers(canvas, size);
+    }
   }
 
   void _paintLegend(
@@ -59,7 +64,7 @@ class GanttUiPainter extends GanttPainter {
         rect.shift(panOffset),
         paint,
       );
-      
+
       final date = DateTime(startDate.year, startDate.month,
           startDate.day + (x * layoutData.widthDivisor));
       final textPainter = layoutData.datePainter([
@@ -92,46 +97,48 @@ class GanttUiPainter extends GanttPainter {
     }
   }
 
-  void _paintHeaders(int index, Canvas canvas) {
-    final header = _headers[index];
+  void _paintHeaders(int firstVisibleRow, int lastVisibleRow, Canvas canvas) {
+    for (int index = firstVisibleRow; index < lastVisibleRow; index++) {
+      final header = _headers[index];
 
-    var backgroundRect = Rect.fromLTWH(
-      0,
-      index * rowHeight + layoutData.timelineHeight,
-      layoutData.labelColumnWidth,
-      rowHeight + 1,
-    );
+      var backgroundRect = Rect.fromLTWH(
+        0,
+        index * rowHeight + layoutData.timelineHeight,
+        layoutData.labelColumnWidth,
+        rowHeight + 1,
+      );
 
-    final titlePaint = Paint()
-      ..color = header is _TaskHeaderData
-          ? layoutData.settings.style.taskLabelColor
-          : layoutData.settings.style.activityLabelColor
-      ..style = PaintingStyle.fill;
+      final titlePaint = Paint()
+        ..color = header is _TaskHeaderData
+            ? layoutData.settings.style.taskLabelColor
+            : layoutData.settings.style.activityLabelColor
+        ..style = PaintingStyle.fill;
 
-    final backgroundOffset = Offset(0, panOffset.dy);
+      final backgroundOffset = Offset(0, panOffset.dy);
 
-    canvas.drawRect(
-      backgroundRect.shift(backgroundOffset),
-      titlePaint,
-    );
+      canvas.drawRect(
+        backgroundRect.shift(backgroundOffset),
+        titlePaint,
+      );
 
-    final textPainter = layoutData.headerPainter(
-        header.label ?? '',
-        header is _TaskHeaderData
-            ? layoutData.settings.style.taskLabelStyle
-            : layoutData.settings.style.activityLabelStyle);
+      final textPainter = layoutData.headerPainter(
+          header.label ?? '',
+          header is _TaskHeaderData
+              ? layoutData.settings.style.taskLabelStyle
+              : layoutData.settings.style.activityLabelStyle);
 
-    textPainter.paint(
-      canvas,
-      Offset(
-            0 + ganttStyle.labelPadding.left,
-            backgroundRect.top +
-                (gridScheme.barHeight / 2) -
-                (textPainter.height / 2) +
-                ganttStyle.labelPadding.top,
-          ) +
-          backgroundOffset,
-    );
+      textPainter.paint(
+        canvas,
+        Offset(
+              0 + ganttStyle.labelPadding.left,
+              backgroundRect.top +
+                  (gridScheme.barHeight / 2) -
+                  (textPainter.height / 2) +
+                  ganttStyle.labelPadding.top,
+            ) +
+            backgroundOffset,
+      );
+    }
   }
 
   void _paintTitle(Canvas canvas) {
@@ -165,6 +172,16 @@ class GanttUiPainter extends GanttPainter {
         titleRect.bottom - textPainter.height - ganttStyle.titlePadding.bottom,
       ),
     );
+  }
+
+  void _paintDividers(Canvas canvas, Size size) {
+    final py = layoutData.timelineHeight;
+    final px = layoutData.labelColumnWidth;
+    final paint = Paint()
+      ..color = layoutData.settings.style.axisDividerColor!
+      ..strokeWidth = 1;
+    canvas.drawLine(Offset(0, py), Offset(size.width, py), paint);
+    canvas.drawLine(Offset(px, 0), Offset(px, size.height), paint);
   }
 }
 

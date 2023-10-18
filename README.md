@@ -95,23 +95,24 @@ GanttDataController<ExampleEventItem>(
 
 ## Styling
 
-| Property             | Type         | Description                                             | Default                                     |
-| -------------------- | ------------ | ------------------------------------------------------- | ------------------------------------------- |
-| taskBarColor         | `Color`      | Color of the task bar on the chart                      | `primaryColor`                              |
-| taskBarRadius        | `double`     | Corner radius of the task bar                           | `0.0`                                       |
-| taskLabelStyle       | `TextStyle`  | TextStyle for the task title for the row                | `labelMedium` with `onSecondary` text color |
-| taskLabelColor       | `Color`      | Color for the task title for the row                    | `secondaryColor`                            |
-| labelPadding         | `EdgeInsets` | Padding for task and activity row titles                | `EdgeInsets.all(0)`                         |
-| activityLabelStyle   | `TextStyle`  | TextStyle for the activity title                        | `labelMedium` with `onTertiary` text color  |
-| activityLabelColor   | `Color`      | Color for the activity title                            | `tertiaryColor`                             |
-| timelineColor        | `Color`      | Background color for the top timeline axis              | `surfaceColor`                              |
-| timelineStyle        | `TextStyle`  | TextStyle for the dates in the top timeline axis        | `labelSmall` with `onSurface` text color    |
-| titleStyle           | `TextStyle`  | TextStyle for the title on the top left of the chart    | `labelLarge` with `onSurface` text color    |
-| subtitleStyle        | `TextStyle`  | TextStyle for the subtitle on the top left of the chart | `labelMedium` with `onSurface` text color   |
-| titlePadding         | `EdgeInsets` | Overall padding around the Title and Subtitle           | `EdgeInsets.all(0)`                         |
-| gridColor            | `Color`      | Color of the grid lines on the chart                    | `null`                                      |
-| weekendColor         | `Color`      | Color of the weekend columns                            | `null`                                      |
-| highlightedDateColor | `Color`      | Color of the highlighted date columns                   | `tertiaryColor`                             |
+| Property             | Type         | Description                                                | Default                                     |
+| -------------------- | ------------ | ---------------------------------------------------------- | ------------------------------------------- |
+| taskBarColor         | `Color`      | Color of the task bar on the chart                         | `primaryColor`                              |
+| taskBarRadius        | `double`     | Corner radius of the task bar                              | `0.0`                                       |
+| taskLabelStyle       | `TextStyle`  | TextStyle for the task title for the row                   | `labelMedium` with `onSecondary` text color |
+| taskLabelColor       | `Color`      | Color for the task title for the row                       | `secondaryColor`                            |
+| labelPadding         | `EdgeInsets` | Padding for task and activity row titles                   | `EdgeInsets.all(0)`                         |
+| activityLabelStyle   | `TextStyle`  | TextStyle for the activity title                           | `labelMedium` with `onTertiary` text color  |
+| activityLabelColor   | `Color`      | Color for the activity title                               | `tertiaryColor`                             |
+| timelineColor        | `Color`      | Background color for the top timeline axis                 | `surfaceColor`                              |
+| timelineStyle        | `TextStyle`  | TextStyle for the dates in the top timeline axis           | `labelSmall` with `onSurface` text color    |
+| titleStyle           | `TextStyle`  | TextStyle for the title on the top left of the chart       | `labelLarge` with `onSurface` text color    |
+| subtitleStyle        | `TextStyle`  | TextStyle for the subtitle on the top left of the chart    | `labelMedium` with `onSurface` text color   |
+| titlePadding         | `EdgeInsets` | Overall padding around the Title and Subtitle              | `EdgeInsets.all(0)`                         |
+| gridColor            | `Color`      | Color of the grid lines on the chart                       | `null`                                      |
+| weekendColor         | `Color`      | Color of the weekend columns                               | `null`                                      |
+| highlightedDateColor | `Color`      | Color of the highlighted date columns                      | `tertiaryColor`                             |
+| axisDividerColor     | `Color`      | Color of the dividing lines between the axis and the chart | `null`                                      |
 
 ## Additional information
 
