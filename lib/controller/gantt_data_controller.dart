@@ -5,8 +5,8 @@ import 'package:gantt_view/model/gantt_task.dart';
 class GanttDataController<T> extends ChangeNotifier {
   final List<T> _items = [];
 
-  final List<GanttActivity> _data = [];
-  List<GanttActivity> get data => List.unmodifiable(_data);
+  final List<GanttActivity> _activities = [];
+  List<GanttActivity> get activities => List.unmodifiable(_activities);
 
   final GanttTask Function(T data) _taskBuilder;
   final int Function(GanttTask a, GanttTask b)? _taskSort;
@@ -45,7 +45,7 @@ class GanttDataController<T> extends ChangeNotifier {
   }
 
   void sortItems() {
-    _data.clear();
+    _activities.clear();
     List<T> items = List.from(_items);
 
     if (_activityLabelBuilder != null) {
@@ -67,14 +67,14 @@ class GanttDataController<T> extends ChangeNotifier {
         activities.sort(_activitySort!);
       }
 
-      _data.addAll(activities);
+      _activities.addAll(activities);
     } else {
       final tasks = items.map<GanttTask>(_taskBuilder).toList();
 
       if (_taskSort != null) {
         tasks.sort(_taskSort!);
       }
-      _data.add(GanttActivity(tasks: tasks));
+      _activities.add(GanttActivity(tasks: tasks));
     }
 
     notifyListeners();

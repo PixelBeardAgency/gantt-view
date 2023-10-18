@@ -12,6 +12,7 @@ class GanttView<T> extends StatelessWidget {
   final GanttStyle? style;
   final String? title;
   final String? subtitle;
+  final List<DateTime>? highlightedDates;
 
   GanttView({
     super.key,
@@ -20,21 +21,25 @@ class GanttView<T> extends StatelessWidget {
     this.style,
     this.title,
     this.subtitle,
+    this.highlightedDates,
   }) : assert(
-            controller.data.allTasks.every(
+            controller.activities.allTasks.every(
                 (event) => event.endDate.compareTo(event.startDate) >= 0),
             'All events must have a start date before or equal to the end date.');
 
   @override
   Widget build(BuildContext context) {
-    return controller.data.isNotEmpty
+    return controller.activities.isNotEmpty
         ? GanttSettings(
             context,
             gridScheme: gridScheme,
             style: style,
             title: title,
             subtitle: subtitle,
-            child: GanttChart(data: controller.data),
+            child: GanttChart(
+              activities: controller.activities,
+              filledDays: highlightedDates,
+            ),
           )
         : const Center(child: Text('No data'));
   }

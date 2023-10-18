@@ -9,6 +9,9 @@ class GridScheme {
   final bool showMonth;
   final bool showDay;
 
+  final bool highlightWeekends;
+  final bool blockWeekends;
+
   final TimelineAxisType timelineAxisType;
 
   const GridScheme({
@@ -19,5 +22,7 @@ class GridScheme {
     this.showMonth = true,
     this.showDay = true,
     this.timelineAxisType = TimelineAxisType.daily,
+    this.highlightWeekends = false,
+    this.blockWeekends = false,
   });
 }

@@ -10,22 +10,25 @@ import 'package:gantt_view/ui/painter/gantt_data_painter.dart';
 import 'package:gantt_view/ui/painter/gantt_ui_painter.dart';
 
 class GanttChart extends StatelessWidget {
-  final List<GanttActivity> data;
+  final List<GanttActivity> activities;
+  final List<DateTime>? filledDays;
 
   const GanttChart({
     super.key,
-    required this.data,
+    required this.activities,
+    this.filledDays,
   });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => _GanttChartContent(
-        data: data,
+        activities: activities,
         layoutData: GanttChartLayoutData(
-          data: data,
+          activities: activities,
           settings: GanttSettings.of(context),
           size: constraints.biggest,
+          filledDays: filledDays,
         ),
       ),
     );
@@ -33,10 +36,11 @@ class GanttChart extends StatelessWidget {
 }
 
 class _GanttChartContent extends StatefulWidget {
-  final List<GanttActivity> data;
+  final List<GanttActivity> activities;
   final GanttChartLayoutData layoutData;
 
-  const _GanttChartContent({required this.data, required this.layoutData});
+  const _GanttChartContent(
+      {required this.activities, required this.layoutData});
 
   @override
   State<_GanttChartContent> createState() => _GanttChartContentState();
@@ -53,13 +57,14 @@ class _GanttChartContentState extends State<_GanttChartContent> {
               child: SizedBox(
                 height: min(
                     constraints.maxHeight,
-                    (widget.data.length + widget.data.allTasks.length) *
+                    (widget.activities.length +
+                                widget.activities.allTasks.length) *
                             widget.layoutData.rowHeight +
                         widget.layoutData.timelineHeight),
                 width: min(
                     constraints.maxWidth,
-                    widget.layoutData.maxColumns *
-                            widget.layoutData.settings.gridScheme.columnWidth +
+                    widget.layoutData.days *
+                            widget.layoutData.cellWidth +
                         widget.layoutData.labelColumnWidth),
                 child: ClipRect(
                   child: Listener(
@@ -79,12 +84,10 @@ class _GanttChartContentState extends State<_GanttChartContent> {
                         size: Size.infinite,
                         willChange: true,
                         foregroundPainter: GanttUiPainter(
-                          data: widget.data,
                           panOffset: panOffset,
                           layoutData: widget.layoutData,
                         ),
                         painter: GanttDataPainter(
-                          data: widget.data,
                           panOffset: panOffset,
                           layoutData: widget.layoutData,
                         ),

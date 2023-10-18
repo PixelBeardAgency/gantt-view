@@ -2,13 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
-import 'package:gantt_view/extension/gantt_task_iterable_extension.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/settings/gantt_settings.dart';
 
 class GanttChartLayoutData {
   final GanttSettings settings;
-  final Iterable<GanttActivity> data;
+  final Iterable<GanttActivity> activities;
 
   late double labelColumnWidth;
   late double timelineHeight;
@@ -18,27 +17,48 @@ class GanttChartLayoutData {
   final double rowHeight;
   late double dataHeight;
 
+  late DateTime startDate;
+  late DateTime endDate;
+
+  late int weekendOffset;
+  late List<int> filledDays;
+
+  late int days;
+  late double cellWidth;
+
   int get widthDivisor => switch (settings.gridScheme.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
       };
 
   Offset get uiOffset => Offset(labelColumnWidth, timelineHeight);
-  final int maxColumns;
 
-  GanttChartLayoutData(
-      {required this.data, required this.settings, required Size size})
-      : rowHeight = settings.gridScheme.barHeight +
+  GanttChartLayoutData({
+    required this.activities,
+    required this.settings,
+    required Size size,
+    List<DateTime>? filledDays,
+  }) : rowHeight = settings.gridScheme.barHeight +
             settings.gridScheme.rowSpacing +
             settings.style.eventLabelPadding.top +
-            settings.style.eventLabelPadding.bottom,
-        maxColumns = switch (settings.gridScheme.timelineAxisType) {
-          TimelineAxisType.daily =>
-            data.expand((element) => element.tasks).days,
-          TimelineAxisType.weekly =>
-            data.expand((element) => element.tasks).weeks,
-        } {
-    dataHeight = (data.length + data.allTasks.length) * rowHeight;
+            settings.style.eventLabelPadding.bottom {
+    startDate = activities.allTasks
+        .reduce((value, element) =>
+            value.startDate.isBefore(element.startDate) ? value : element)
+        .startDate;
+    endDate = activities.allTasks
+        .reduce((value, element) =>
+            value.endDate.isAfter(element.endDate) ? value : element)
+        .endDate;
+
+    weekendOffset = startDate.weekday - DateTime.sunday + 1;
+    this.filledDays =
+        filledDays?.map((e) => e.difference(startDate).inDays).toList() ?? [];
+
+    days = endDate.difference(startDate).inDays + 1;
+    cellWidth = settings.gridScheme.columnWidth / widthDivisor;
+
+    dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
     labelColumnWidth = _getTitleWidth();
     timelineHeight = _getLegendHeight();
     maxDx = _getHorizontalScrollBoundary(size.width);
@@ -46,7 +66,7 @@ class GanttChartLayoutData {
   }
 
   double _getHorizontalScrollBoundary(double screenWidth) {
-    var dataWidth = maxColumns * settings.gridScheme.columnWidth;
+    var dataWidth = days * cellWidth;
     var renderAreaWidth = screenWidth - labelColumnWidth;
     return dataWidth < renderAreaWidth
         ? 0
@@ -61,7 +81,7 @@ class GanttChartLayoutData {
 
   double _getTitleWidth() {
     double width = 0;
-    for (var activity in data) {
+    for (var activity in activities) {
       width = max(
         width,
         headerPainter(activity.label ?? '', settings.style.eventHeaderStyle)

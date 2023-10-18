@@ -10,6 +10,10 @@ A customisable Gantt Chart view for Flutter.
 - Customisable gaps between event bars
 - Customisable event bar corner radius
 - Ability to switch from day view to week view
+- Display weekends in a different colour
+- Add ability to customise weekend colour
+- Add ability to add custom holiday dates
+- Add ability to customise holiday colour
 
 ## Usage
 
@@ -71,11 +75,6 @@ This is a WIP project and is not yet ready for production use. The API is subjec
 The current version was made quickly, and as such, there are some performance issues. The current implementation uses a series of `ListView` widgets which have their `ScrollController` synced to display the events. This is not a very performant solution, and will be replaced in the future.
 
 ## TODO
-- [ ] Add ability to switch from day view to week view
-- [ ] Display weekends in a different colour
-- [ ] Add ability to customise weekend colour
-- [ ] Add ability to add custom holiday dates
-- [ ] Add ability to customise holiday colour
 - [ ] Add tooltip to display event details
 - [ ] Add zooming functionality
 - [ ] Add ability to customise individual event bar colours

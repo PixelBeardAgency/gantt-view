@@ -7,15 +7,20 @@ class GanttDataPainter extends GanttPainter {
   late double _eventOffset;
 
   GanttDataPainter({
-    required super.data,
     required super.panOffset,
     required super.layoutData,
   }) {
     int currentRow = 0;
-    for (var activity in data) {
+    for (var activity in layoutData.activities) {
       if (activity.label != null) {
-        for (int j = 0; j < layoutData.maxColumns; j++) {
-          (_cells[currentRow] ??= {})[j] = _HeaderFillData();
+        for (int i = 0; i < layoutData.days; i++) {
+          final currentOffset = (i + layoutData.weekendOffset) % 7;
+          (_cells[currentRow] ??= {})[i] = layoutData.filledDays.contains(i)
+              ? _HolidayFillData()
+              : layoutData.settings.gridScheme.highlightWeekends &&
+                      (currentOffset == 0 || currentOffset == 1)
+                  ? _WeekendFillData()
+                  : _HeaderFillData();
         }
         currentRow++;
       }
@@ -30,19 +35,27 @@ class GanttDataPainter extends GanttPainter {
           throw Exception('Start date must be before end date.');
         }
 
-        for (int k = from; k <= to; k++) {
-          (_cells[currentRow] ??= {})[k] = _EventFillData(
-            k == from,
-            k == to,
-          );
+        for (int i = 0; i < layoutData.days; i++) {
+          final currentOffset = (i + layoutData.weekendOffset) % 7;
+          if (layoutData.filledDays.contains(i)) {
+            (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
+                ? _EventFillData(i == from, i == to, isHoliday: true)
+                : _HolidayFillData();
+          } else if (layoutData.settings.gridScheme.highlightWeekends &&
+              (currentOffset == 0 || currentOffset == 1)) {
+            (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
+                ? _EventFillData(i == from, i == to, isWeekend: true)
+                : _WeekendFillData();
+          } else if (i >= from && i <= to) {
+            (_cells[currentRow] ??= {})[i] = _EventFillData(i == from, i == to);
+          }
         }
+
         currentRow++;
       }
     }
-    _eventOffset = (gridScheme.rowSpacing +
-            ganttStyle.eventLabelPadding.top +
-            ganttStyle.eventLabelPadding.bottom) /
-        2;
+    _eventOffset =
+        (gridScheme.rowSpacing + ganttStyle.eventLabelPadding.vertical) / 2;
   }
 
   @override
@@ -57,30 +70,35 @@ class GanttDataPainter extends GanttPainter {
   void _paintCells(Canvas canvas, Size size) {
     final gridData = super.gridData(size);
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
+      var dy = y * rowHeight + layoutData.uiOffset.dy;
       for (int x = gridData.firstVisibleColumn;
-          x / layoutData.widthDivisor < gridData.lastVisibleColumn;
+          x < gridData.lastVisibleColumn;
           x++) {
         final fill = _cells[y]?[x];
-        if (fill != null) {
-          if (fill is _HeaderFillData) {
-            _paintHeader(x, y, canvas, fill);
-          } else if (fill is _EventFillData) {
-            _paintEvent(x, y, canvas, fill);
-          }
+        var dx = x * layoutData.cellWidth + layoutData.uiOffset.dx;
+        if (fill is _HeaderFillData) {
+          _paintFill(
+              dx, dy, canvas, layoutData.settings.style.eventHeaderColor);
+        } else if (fill is _EventFillData) {
+          _paintEvent(dx, dy, canvas, fill);
+        } else if (fill is _WeekendFillData) {
+          _paintFill(dx, dy, canvas, layoutData.settings.style.weekendColor);
+        } else if (fill is _HolidayFillData) {
+          _paintFill(dx, dy, canvas, layoutData.settings.style.holidayColor);
         }
       }
     }
   }
 
-  void _paintHeader(int x, int y, Canvas canvas, _HeaderFillData fill) {
+  void _paintFill(double x, double y, Canvas canvas, Color color) {
     final paint = Paint()
-      ..color = layoutData.settings.style.eventHeaderColor
+      ..color = color
       ..style = PaintingStyle.fill;
 
     final rect = Rect.fromLTWH(
-      (x * gridScheme.columnWidth) + layoutData.uiOffset.dx,
-      y * rowHeight + layoutData.uiOffset.dy,
-      (gridScheme.columnWidth) + 1,
+      x,
+      y,
+      layoutData.cellWidth,
       rowHeight,
     );
 
@@ -90,9 +108,20 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintEvent(int x, int y, Canvas canvas, _EventFillData fill) {
+  void _paintEvent(double x, double y, Canvas canvas, _EventFillData fill) {
+    var color = layoutData.settings.style.eventColor;
+    if (fill.isHoliday || fill.isWeekend) {
+      _paintFill(
+          x,
+          y,
+          canvas,
+          fill.isHoliday
+              ? layoutData.settings.style.holidayColor
+              : layoutData.settings.style.weekendColor);
+      color = color.withOpacity(0.5);
+    }
     final paint = Paint()
-      ..color = layoutData.settings.style.eventColor
+      ..color = color
       ..style = PaintingStyle.fill;
 
     final radius = layoutData.settings.style.eventRadius;
@@ -104,10 +133,9 @@ class GanttDataPainter extends GanttPainter {
     );
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
-        (x * gridScheme.columnWidth) / layoutData.widthDivisor +
-            layoutData.uiOffset.dx,
-        y * rowHeight + _eventOffset + layoutData.uiOffset.dy,
-        (gridScheme.columnWidth / layoutData.widthDivisor) + 1,
+        x,
+        y + _eventOffset,
+        layoutData.cellWidth + 1,
         gridScheme.barHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -177,8 +205,19 @@ abstract class _FillData {}
 class _HeaderFillData extends _FillData {}
 
 class _EventFillData extends _FillData {
+  final bool isHoliday;
+  final bool isWeekend;
   final bool isFirst;
   final bool isLast;
 
-  _EventFillData(this.isFirst, this.isLast);
+  _EventFillData(
+    this.isFirst,
+    this.isLast, {
+    this.isHoliday = false,
+    this.isWeekend = false,
+  });
 }
+
+class _WeekendFillData extends _FillData {}
+
+class _HolidayFillData extends _FillData {}

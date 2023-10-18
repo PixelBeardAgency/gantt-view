@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
 import 'package:gantt_view/ui/painter/data/gantt_layout_data.dart';
 
 class GanttGridData {
@@ -15,19 +16,20 @@ class GanttGridData {
     GanttChartLayoutData layoutData,
     Size size,
     Offset panOffset,
-    int rows,
     this.rowHeight,
   ) {
-    final columnWidth = layoutData.settings.gridScheme.columnWidth;
+    final columnWidth = layoutData.cellWidth ;
 
     final visibleRows =
         ((size.height - layoutData.timelineHeight) / rowHeight).ceil() + 1;
     firstVisibleRow = max(0, (-panOffset.dy ~/ rowHeight));
-    lastVisibleRow = min(rows, firstVisibleRow + visibleRows);
+    lastVisibleRow = min(
+        layoutData.activities.length + layoutData.activities.allTasks.length,
+        firstVisibleRow + visibleRows);
 
     final visibleColumns = (size.width / columnWidth).ceil();
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     lastVisibleColumn =
-        min(layoutData.maxColumns, firstVisibleColumn + visibleColumns);
+        min(layoutData.days, firstVisibleColumn + visibleColumns);
   }
 }

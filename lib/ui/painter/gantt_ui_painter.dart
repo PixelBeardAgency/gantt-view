@@ -7,11 +7,10 @@ class GanttUiPainter extends GanttPainter {
   final List<_HeaderData> _headers = [];
 
   GanttUiPainter({
-    required super.data,
     required super.panOffset,
     required super.layoutData,
   }) {
-    for (var activity in data) {
+    for (var activity in layoutData.activities) {
       if (activity.label != null) {
         _headers.add(_ActivityHeaderData(activity.label));
       }

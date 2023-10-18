@@ -19,6 +19,9 @@ class GanttStyle {
 
   final Color? gridColor;
 
+  final Color weekendColor;
+  final Color holidayColor;
+
   GanttStyle(
     BuildContext context, {
     Color? eventColor,
@@ -33,6 +36,8 @@ class GanttStyle {
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
     this.gridColor,
+    Color? weekendColor,
+    Color? highlightedDateColor,
   })  : eventColor = eventColor ?? Theme.of(context).colorScheme.primary,
         eventLabelStyle = eventLabelStyle ??
             Theme.of(context)
@@ -68,5 +73,12 @@ class GanttStyle {
                 .textTheme
                 .labelMedium
                 ?.apply(color: Theme.of(context).colorScheme.onSurface) ??
-            const TextStyle(color: Colors.black);
+            const TextStyle(color: Colors.black),
+        weekendColor = weekendColor ??
+            eventHeaderColor ??
+            Theme.of(context).colorScheme.tertiary,
+        holidayColor = highlightedDateColor ??
+            highlightedDateColor ??
+            eventHeaderColor ??
+            Theme.of(context).colorScheme.tertiary;
 }
