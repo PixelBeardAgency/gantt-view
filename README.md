@@ -28,6 +28,20 @@ GanttChart(
     controller: _controller,
     title: 'My Lovely Gantt',
     subtitle: 'This is a subtitle',
+    grid: const GanttGrid(
+        columnWidth: 30,
+        rowSpacing: 0,
+        timelineAxisType: TimelineAxisType.daily,
+    ),
+    style: GanttStyle(
+        taskBarColor: Colors.blue.shade200,
+        taskLabelColor: Colors.blue.shade900,
+        activityLabelColor: Colors.blue.shade400,
+        gridColor: Colors.grey.shade300,
+        labelPadding: const EdgeInsets.all(4),
+        taskBarRadius: 10,
+        timelineColor: Colors.grey.shade300,
+    ),
 )
 ```
 
@@ -43,9 +57,9 @@ To sort activities in the `GanttView`, a `activitySort` function can be provided
 _controller = GanttDataController<ExampleEventItem>(
     items: Data.dummyData,
     taskBuilder: (item) => GanttTask(
-    label: item.title,
-    startDate: item.start,
-    endDate: item.end,
+        label: item.title,
+        startDate: item.start,
+        endDate: item.end,
     ),
     taskSort: (a, b) => a.startDate.compareTo(b.startDate),
     activityLabelBuilder: (item) => item.group,
