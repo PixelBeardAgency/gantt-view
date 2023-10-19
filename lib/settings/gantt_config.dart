@@ -141,10 +141,7 @@ class GanttConfig {
 
   void setPanOffset(Offset offset) => _panOffset = offset;
 
-  void setTooltipOffset(Offset offset) {
-    tooltipOffset = offset;
-    debugPrint('toolTipOffset: $tooltipOffset');
-  }
+  void setTooltipOffset(Offset offset) => tooltipOffset = offset;
 
   TextPainter titlePainter() {
     final textPainter = TextPainter(

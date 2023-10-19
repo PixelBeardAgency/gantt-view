@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/painter/gantt_painter.dart';
+import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
@@ -65,8 +66,8 @@ class GanttDataPainter extends GanttPainter {
 
     _paintCells(canvas, size, gridData);
 
-    if (config.tooltipOffset != Offset.zero) {
-      _paintTooltip(canvas);
+    if (config.grid.tooltipType != TooltipType.none) {
+      _paintTooltip(canvas, gridData);
     }
   }
 
@@ -178,30 +179,62 @@ class GanttDataPainter extends GanttPainter {
     }
   }
 
-  void _paintTooltip(Canvas canvas) {
-    final textPainter =
-        config.headerPainter('tooltip', config.style.taskLabelStyle);
+  void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
+    final tooltipOffset = config.tooltipOffset;
+
+    final firstColumnOffset = ((-config.panOffset.dx) % grid.columnWidth);
+    final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
+
+    var column = (currentPosX + firstColumnOffset) ~/ grid.columnWidth +
+        gridData.firstVisibleColumn;
+
+    final firstRowOffset = ((-config.panOffset.dy) % rowHeight);
+    final currentPosY = tooltipOffset.dy - config.timelineHeight;
+
+    final row = ((currentPosY + firstRowOffset) ~/ rowHeight) +
+        gridData.firstVisibleRow;
+
+    final isFilled = _cells[row]?[column] is _TaskFillData;
+
+    if (!isFilled) {
+      return;
+    }
+
+    final textPainter = config.headerPainter('$row', config.style.tooltipStyle);
 
     final startOffset = Offset(
       config.tooltipOffset.dx - textPainter.width / 2,
-      config.tooltipOffset.dy - textPainter.height,
+      config.tooltipOffset.dy -
+          config.style.tooltipPadding.bottom -
+          textPainter.height,
     );
 
     final endOffset =
         startOffset + Offset(textPainter.width, textPainter.height);
 
-    var titleRect = Rect.fromPoints(
-      startOffset,
-      endOffset,
+    var backgroundRect = RRect.fromRectAndCorners(
+      Rect.fromLTWH(
+        startOffset.dx,
+        endOffset.dy,
+        textPainter.width + config.style.tooltipPadding.horizontal,
+        textPainter.height + config.style.tooltipPadding.vertical,
+      ),
+      topLeft: Radius.circular(config.style.tooltipRadius),
+      bottomLeft: Radius.circular(config.style.tooltipRadius),
+      topRight: Radius.circular(config.style.tooltipRadius),
+      bottomRight: Radius.circular(config.style.tooltipRadius),
     );
 
-    final titlePaint = Paint()
-      ..color = Colors.red
+    final backgroundPaint = Paint()
+      ..color = config.style.tooltipColor
       ..style = PaintingStyle.fill;
 
-    canvas.drawRect(
-      titleRect,
-      titlePaint,
+    canvas.drawRRect(
+      backgroundRect.shift(Offset(
+        -config.style.tooltipPadding.horizontal / 2,
+        -textPainter.height - config.style.tooltipPadding.bottom,
+      )),
+      backgroundPaint,
     );
 
     textPainter.paint(

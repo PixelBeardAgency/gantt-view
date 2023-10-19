@@ -82,10 +82,12 @@ class _GanttChartContentState extends State<_GanttChartContent> {
           child: ClipRect(
             child: MouseRegion(
               onHover: (event) {
-                setState(() {
-                  mouseX = event.localPosition.dx;
-                  mouseY = event.localPosition.dy;
-                });
+                mouseX = event.localPosition.dx;
+                mouseY = event.localPosition.dy;
+                if (widget.config.grid.tooltipType == TooltipType.hover) {
+                  setState(() =>
+                      widget.config.setTooltipOffset(Offset(mouseX, mouseY)));
+                }
               },
               child: Listener(
                 onPointerSignal: (event) {
@@ -99,8 +101,10 @@ class _GanttChartContentState extends State<_GanttChartContent> {
                 },
                 child: GestureDetector(
                   onTap: () {
-                    setState(() =>
-                        widget.config.setTooltipOffset(Offset(mouseX, mouseY)));
+                    if (widget.config.grid.tooltipType == TooltipType.tap) {
+                      setState(() => widget.config
+                          .setTooltipOffset(Offset(mouseX, mouseY)));
+                    }
                   },
                   onPanUpdate: (details) => _updateOffset(
                       details.delta, widget.config.maxDx, widget.config.maxDy),
@@ -134,21 +138,19 @@ class _GanttChartContentState extends State<_GanttChartContent> {
     if (panOffset.dy < -maxDy) {
       panOffset = Offset(panOffset.dx, -maxDy);
     }
- 
-    final diff = (widget.config.panOffset - panOffset);
-    var tooltipOffset = widget.config.tooltipOffset;
 
-    // tooltipOffset += diff;
-    if (diff.dx != 0) {
-      tooltipOffset = Offset(tooltipOffset.dx - diff.dx, tooltipOffset.dy);
-    }
-    if (diff.dy != 0) {
-      tooltipOffset = Offset(tooltipOffset.dx , tooltipOffset.dy- diff.dy);
-    }
+    if (widget.config.grid.tooltipType == TooltipType.tap) {
+      final diff = (widget.config.panOffset - panOffset);
+      var tooltipOffset = widget.config.tooltipOffset;
 
-    setState(() {
-      widget.config.setPanOffset(panOffset);
-      widget.config.setTooltipOffset(tooltipOffset);
-    });
+      if (diff.dx != 0) {
+        tooltipOffset = Offset(tooltipOffset.dx - diff.dx, tooltipOffset.dy);
+      }
+      if (diff.dy != 0) {
+        tooltipOffset = Offset(tooltipOffset.dx, tooltipOffset.dy - diff.dy);
+      }
+      setState(() => widget.config.setTooltipOffset(tooltipOffset));
+    }
+    setState(() => widget.config.setPanOffset(panOffset));
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:gantt_view/painter/gantt_painter.dart';
 
@@ -46,7 +44,6 @@ class GanttUiPainter extends GanttPainter {
     int previousMonth = 0;
     int previousDay = 0;
 
-    double height = 0;
     for (int x = firstVisibleColumn; x < lastVisibleColumn; x++) {
       final paint = Paint()
         ..color = config.style.timelineColor
@@ -87,8 +84,6 @@ class GanttUiPainter extends GanttPainter {
       previousYear = date.year;
       previousMonth = date.month;
       previousDay = date.day;
-
-      height = max(height, textPainter.height);
     }
   }
 

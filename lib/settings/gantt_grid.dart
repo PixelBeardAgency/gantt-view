@@ -10,6 +10,7 @@ class GanttGrid {
   final bool showDay;
 
   final TimelineAxisType timelineAxisType;
+  final TooltipType tooltipType;
 
   const GanttGrid({
     this.barHeight = 12.0,
@@ -19,5 +20,12 @@ class GanttGrid {
     this.showMonth = true,
     this.showDay = true,
     this.timelineAxisType = TimelineAxisType.daily,
+    this.tooltipType = TooltipType.none,
   });
+}
+
+enum TooltipType {
+  none,
+  hover,
+  tap,
 }
