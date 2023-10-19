@@ -39,6 +39,8 @@ class GanttConfig {
   late int columns;
   late double cellWidth;
 
+  Offset tooltipOffset = Offset.zero;
+
   int get widthDivisor => switch (grid.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
@@ -137,8 +139,11 @@ class GanttConfig {
         titlePainter().height + style.titlePadding.vertical,
       );
 
-  void setPanOffset(Offset offset) {
-    _panOffset = offset;
+  void setPanOffset(Offset offset) => _panOffset = offset;
+
+  void setTooltipOffset(Offset offset) {
+    tooltipOffset = offset;
+    debugPrint('toolTipOffset: $tooltipOffset');
   }
 
   TextPainter titlePainter() {

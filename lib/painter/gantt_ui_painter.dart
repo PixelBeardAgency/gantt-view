@@ -70,16 +70,13 @@ class GanttUiPainter extends GanttPainter {
           previousYear == date.year ? '' : '${date.year}',
         if (config.grid.showMonth)
           previousMonth == date.month ? '' : '${date.month}',
-        if (config.grid.showDay)
-          previousDay == date.day ? '' : '${date.day}',
+        if (config.grid.showDay) previousDay == date.day ? '' : '${date.day}',
       ]);
 
       textPainter.paint(
         canvas,
         Offset(
-              rect.left +
-                  (grid.columnWidth / 2) -
-                  (textPainter.width / 2),
+              rect.left + (grid.columnWidth / 2) - (textPainter.width / 2),
               rect.bottom -
                   textPainter.height -
                   config.style.titlePadding.bottom,

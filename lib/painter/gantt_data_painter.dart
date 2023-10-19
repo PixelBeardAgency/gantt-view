@@ -64,6 +64,10 @@ class GanttDataPainter extends GanttPainter {
     }
 
     _paintCells(canvas, size, gridData);
+
+    if (config.tooltipOffset != Offset.zero) {
+      _paintTooltip(canvas);
+    }
   }
 
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
@@ -172,6 +176,38 @@ class GanttDataPainter extends GanttPainter {
         ..strokeWidth = 1;
       canvas.drawLine(p1, p2, paint);
     }
+  }
+
+  void _paintTooltip(Canvas canvas) {
+    final textPainter =
+        config.headerPainter('tooltip', config.style.taskLabelStyle);
+
+    final startOffset = Offset(
+      config.tooltipOffset.dx - textPainter.width / 2,
+      config.tooltipOffset.dy - textPainter.height,
+    );
+
+    final endOffset =
+        startOffset + Offset(textPainter.width, textPainter.height);
+
+    var titleRect = Rect.fromPoints(
+      startOffset,
+      endOffset,
+    );
+
+    final titlePaint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRect(
+      titleRect,
+      titlePaint,
+    );
+
+    textPainter.paint(
+      canvas,
+      startOffset,
+    );
   }
 }
 
