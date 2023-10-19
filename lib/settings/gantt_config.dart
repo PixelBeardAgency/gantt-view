@@ -19,8 +19,7 @@ class GanttConfig {
 
   final Size containerSize;
 
-  Offset _panOffset = Offset.zero;
-  Offset get panOffset => _panOffset;
+  final Offset panOffset;
 
   late double labelColumnWidth;
   late double timelineHeight;
@@ -49,12 +48,13 @@ class GanttConfig {
   late Offset uiOffset;
 
   GanttConfig({
+    required this.activities,
     GanttGrid? grid,
     GanttStyle? style,
     this.title,
     this.subtitle,
-    required this.activities,
     required this.containerSize,
+    required this.panOffset,
     List<DateTime>? highlightedDates,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
@@ -138,8 +138,6 @@ class GanttConfig {
             style.titlePadding.bottom,
         titlePainter().height + style.titlePadding.vertical,
       );
-
-  void setPanOffset(Offset offset) => _panOffset = offset;
 
   void setTooltipOffset(Offset offset) => tooltipOffset = offset;
 

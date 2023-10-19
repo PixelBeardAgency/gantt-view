@@ -43,6 +43,7 @@ void main() {
     final config = GanttConfig(
       activities: activities,
       containerSize: const Size(100, 100),
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -75,6 +76,7 @@ void main() {
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -106,6 +108,7 @@ void main() {
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -132,6 +135,7 @@ void main() {
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -158,6 +162,7 @@ void main() {
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -209,6 +214,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -262,6 +268,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -313,6 +320,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -366,6 +374,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -421,6 +430,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -475,6 +485,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert
@@ -530,6 +541,7 @@ void main() {
       style: style,
       title: '1',
       subtitle: '1',
+      panOffset: Offset.zero,
     );
 
     // Assert

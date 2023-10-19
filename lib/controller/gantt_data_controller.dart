@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/model/gantt_task.dart';
 
-class GanttDataController<T> extends ChangeNotifier {
+class GanttChartController<T> extends ChangeNotifier {
   final List<T> _items = [];
 
   final List<GanttActivity> _activities = [];
@@ -17,7 +17,10 @@ class GanttDataController<T> extends ChangeNotifier {
   final List<DateTime> _highlightedDates;
   List<DateTime> get highlightedDates => List.unmodifiable(_highlightedDates);
 
-  GanttDataController({
+  Offset _panOffset = Offset.zero;
+  Offset get panOffset => _panOffset;
+
+  GanttChartController({
     required List<T> items,
     required GanttTask Function(T data) taskBuilder,
     int Function(GanttTask a, GanttTask b)? taskSort,
@@ -98,6 +101,11 @@ class GanttDataController<T> extends ChangeNotifier {
 
   void removeHighlightedDate(DateTime date) {
     _highlightedDates.remove(date);
+    notifyListeners();
+  }
+
+  void setPanOffset(Offset offset) {
+    _panOffset = offset;
     notifyListeners();
   }
 }

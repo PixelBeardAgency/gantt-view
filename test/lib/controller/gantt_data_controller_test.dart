@@ -55,7 +55,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -102,7 +102,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -153,7 +153,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -218,7 +218,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -260,7 +260,7 @@ void main() {
     final items = [1, 2, 3, 4];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',

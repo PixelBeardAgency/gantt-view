@@ -38,15 +38,18 @@ class GanttDataPainter extends GanttPainter {
           final currentOffset = (i + config.weekendOffset) % 7;
           if (config.highlightedColumns.contains(i)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
-                ? _TaskFillData(i == from, i == to, isHoliday: true)
+                ? _TaskFillData(task.tooltip, i == from, i == to,
+                    isHoliday: true)
                 : _HolidayFillData();
           } else if (config.style.weekendColor != null &&
               (currentOffset == 0 || currentOffset == 1)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
-                ? _TaskFillData(i == from, i == to, isWeekend: true)
+                ? _TaskFillData(task.tooltip, i == from, i == to,
+                    isWeekend: true)
                 : _WeekendFillData();
           } else if (i >= from && i <= to) {
-            (_cells[currentRow] ??= {})[i] = _TaskFillData(i == from, i == to);
+            (_cells[currentRow] ??= {})[i] =
+                _TaskFillData(task.tooltip, i == from, i == to);
           }
         }
 
@@ -194,13 +197,15 @@ class GanttDataPainter extends GanttPainter {
     final row = ((currentPosY + firstRowOffset) ~/ rowHeight) +
         gridData.firstVisibleRow;
 
-    final isFilled = _cells[row]?[column] is _TaskFillData;
+    final data = _cells[row]?[column];
+    final isFilled = data is _TaskFillData;
 
-    if (!isFilled) {
+    if (!isFilled || (data.tooltip?.isEmpty ?? true)) {
       return;
     }
 
-    final textPainter = config.headerPainter('$row', config.style.tooltipStyle);
+    final textPainter =
+        config.headerPainter(data.tooltip!, config.style.tooltipStyle);
 
     final startOffset = Offset(
       config.tooltipOffset.dx - textPainter.width / 2,
@@ -249,12 +254,14 @@ abstract class _FillData {}
 class _HeaderFillData extends _FillData {}
 
 class _TaskFillData extends _FillData {
+  final String? tooltip;
   final bool isHoliday;
   final bool isWeekend;
   final bool isFirst;
   final bool isLast;
 
   _TaskFillData(
+    this.tooltip,
     this.isFirst,
     this.isLast, {
     this.isHoliday = false,

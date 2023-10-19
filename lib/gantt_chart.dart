@@ -12,7 +12,7 @@ import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
 
 class GanttChart<T> extends StatelessWidget {
-  final GanttDataController<T> controller;
+  final GanttChartController<T> controller;
   final GanttGrid? grid;
   final GanttStyle? style;
   final String? title;
@@ -34,15 +34,20 @@ class GanttChart<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return controller.activities.isNotEmpty
         ? LayoutBuilder(
-            builder: (context, constraints) => _GanttChartContent(
-              activities: controller.activities,
-              config: GanttConfig(
+            builder: (context, constraints) => ListenableBuilder(
+              listenable: controller,
+              builder: (context, child) => _GanttChartContent(
                 activities: controller.activities,
-                grid: grid,
-                style: style,
-                title: title,
-                subtitle: subtitle,
-                containerSize: constraints.biggest,
+                config: GanttConfig(
+                  activities: controller.activities,
+                  grid: grid,
+                  style: style,
+                  title: title,
+                  subtitle: subtitle,
+                  containerSize: constraints.biggest,
+                  panOffset: controller.panOffset,
+                ),
+                controller: controller,
               ),
             ),
           )
@@ -50,17 +55,22 @@ class GanttChart<T> extends StatelessWidget {
   }
 }
 
-class _GanttChartContent extends StatefulWidget {
+class _GanttChartContent<T> extends StatefulWidget {
   final List<GanttActivity> activities;
+  final GanttChartController<T> controller;
   final GanttConfig config;
 
-  const _GanttChartContent({required this.activities, required this.config});
+  const _GanttChartContent({
+    required this.activities,
+    required this.config,
+    required this.controller,
+  });
 
   @override
-  State<_GanttChartContent> createState() => _GanttChartContentState();
+  State<_GanttChartContent<T>> createState() => _GanttChartContentState<T>();
 }
 
-class _GanttChartContentState extends State<_GanttChartContent> {
+class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
   double mouseX = 0;
   double mouseY = 0;
 
@@ -81,6 +91,7 @@ class _GanttChartContentState extends State<_GanttChartContent> {
                   widget.config.labelColumnWidth),
           child: ClipRect(
             child: MouseRegion(
+              onExit: (event) => widget.config.setTooltipOffset(Offset.zero),
               onHover: (event) {
                 mouseX = event.localPosition.dx;
                 mouseY = event.localPosition.dy;
@@ -151,6 +162,6 @@ class _GanttChartContentState extends State<_GanttChartContent> {
       }
       setState(() => widget.config.setTooltipOffset(tooltipOffset));
     }
-    setState(() => widget.config.setPanOffset(panOffset));
+    setState(() => widget.controller.setPanOffset(panOffset));
   }
 }

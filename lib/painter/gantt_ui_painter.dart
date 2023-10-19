@@ -4,9 +4,7 @@ import 'package:gantt_view/painter/gantt_painter.dart';
 class GanttUiPainter extends GanttPainter {
   final List<_HeaderData> _headers = [];
 
-  GanttUiPainter({
-    required super.config,
-  }) {
+  GanttUiPainter({required super.config}) {
     for (var activity in config.activities) {
       if (activity.label != null) {
         _headers.add(_ActivityHeaderData(activity.label));
