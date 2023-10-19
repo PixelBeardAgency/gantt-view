@@ -5,8 +5,8 @@ import 'package:gantt_view/model/gantt_task.dart';
 class GanttDataController<T> extends ChangeNotifier {
   final List<T> _items = [];
 
-  final List<GanttActivity> _data = [];
-  List<GanttActivity> get data => List.unmodifiable(_data);
+  final List<GanttActivity> _activities = [];
+  List<GanttActivity> get activities => List.unmodifiable(_activities);
 
   final GanttTask Function(T data) _taskBuilder;
   final int Function(GanttTask a, GanttTask b)? _taskSort;
@@ -14,38 +14,43 @@ class GanttDataController<T> extends ChangeNotifier {
   final String Function(T data)? _activityLabelBuilder;
   final int Function(GanttActivity a, GanttActivity b)? _activitySort;
 
+  final List<DateTime> _highlightedDates;
+  List<DateTime> get highlightedDates => List.unmodifiable(_highlightedDates);
+
   GanttDataController({
     required List<T> items,
     required GanttTask Function(T data) taskBuilder,
     int Function(GanttTask a, GanttTask b)? taskSort,
     String Function(T item)? activityLabelBuilder,
     int Function(GanttActivity a, GanttActivity b)? activitySort,
+    List<DateTime> highlightedDates = const [],
   })  : _taskBuilder = taskBuilder,
         _taskSort = taskSort,
         _activityLabelBuilder = activityLabelBuilder,
-        _activitySort = activitySort {
+        _activitySort = activitySort,
+        _highlightedDates = highlightedDates {
     _items.addAll(items);
-    sortItems();
+    _sortItems();
   }
 
   void setItems(List<T> items) {
     _items.clear();
     _items.addAll(items);
-    sortItems();
+    _sortItems();
   }
 
   void addItems(List<T> items) {
     _items.addAll(items);
-    sortItems();
+    _sortItems();
   }
 
   void removeItem(T item) {
     _items.remove(item);
-    sortItems();
+    _sortItems();
   }
 
-  void sortItems() {
-    _data.clear();
+  void _sortItems() {
+    _activities.clear();
     List<T> items = List.from(_items);
 
     if (_activityLabelBuilder != null) {
@@ -67,16 +72,32 @@ class GanttDataController<T> extends ChangeNotifier {
         activities.sort(_activitySort!);
       }
 
-      _data.addAll(activities);
+      _activities.addAll(activities);
     } else {
       final tasks = items.map<GanttTask>(_taskBuilder).toList();
 
       if (_taskSort != null) {
         tasks.sort(_taskSort!);
       }
-      _data.add(GanttActivity(tasks: tasks));
+      _activities.add(GanttActivity(tasks: tasks));
     }
 
+    notifyListeners();
+  }
+
+  void setHighlightedDates(List<DateTime> dates) {
+    _highlightedDates.clear();
+    _highlightedDates.addAll(dates);
+    notifyListeners();
+  }
+
+  void addHighlightedDates(List<DateTime> dates) {
+    _highlightedDates.addAll(dates);
+    notifyListeners();
+  }
+
+  void removeHighlightedDate(DateTime date) {
+    _highlightedDates.remove(date);
     notifyListeners();
   }
 }

@@ -1,12 +1,11 @@
 import 'package:example/data.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
-import 'package:gantt_view/extension/gantt_task_iterable_extension.dart';
-import 'package:gantt_view/gantt_view.dart';
+import 'package:gantt_view/gantt_chart.dart';
 import 'package:gantt_view/model/gantt_task.dart';
-import 'package:gantt_view/settings/gantt_settings.dart';
-import 'package:gantt_view/settings/theme/gantt_style.dart';
-import 'package:gantt_view/settings/theme/grid_scheme.dart';
+import 'package:gantt_view/model/timeline_axis_type.dart';
+import 'package:gantt_view/settings/gantt_grid.dart';
+import 'package:gantt_view/settings/gantt_style.dart';
 
 void main() {
   runApp(const MyApp());
@@ -49,7 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       taskSort: (a, b) => a.startDate.compareTo(b.startDate),
       activityLabelBuilder: (item) => item.group,
-      activitySort: (a, b) => a.tasks.startDate.compareTo(b.tasks.startDate),
+      activitySort: (a, b) => a.tasks
+          .map((e) => e.startDate)
+          .reduce((a, b) => a.isBefore(b) ? a : b)
+          .compareTo(b.tasks
+              .map((e) => e.startDate)
+              .reduce((a, b) => a.isBefore(b) ? a : b)),
+      highlightedDates: [DateTime(2023, 9, 29)],
     );
   }
 
@@ -62,23 +67,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GanttView(
+      body: GanttChart(
         controller: _controller,
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
-        gridScheme: const GridScheme(
+        grid: const GanttGrid(
           columnWidth: 30,
           rowSpacing: 0,
           timelineAxisType: TimelineAxisType.daily,
         ),
         style: GanttStyle(
-          context,
-          eventColor: Colors.blue.shade200,
-          eventHeaderColor: Colors.blue.shade400,
-          eventLabelColor: Colors.blue.shade900,
+          taskBarColor: Colors.blue.shade200,
+          taskLabelColor: Colors.blue.shade900,
+          activityLabelColor: Colors.blue.shade400,
           gridColor: Colors.grey.shade300,
-          eventLabelPadding: const EdgeInsets.all(4),
-          eventRadius: 10,
+          labelPadding: const EdgeInsets.all(4),
+          taskBarRadius: 10,
           timelineColor: Colors.grey.shade300,
         ),
       ),
