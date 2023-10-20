@@ -50,7 +50,7 @@ class GanttStyle {
     Color? tooltipColor,
     TextStyle? tooltipStyle,
     this.tooltipPadding = const EdgeInsets.all(4),
-    this.tooltipRadius = 4,
+    this.tooltipRadius = 4.0,
   })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
         taskLabelStyle = taskLabelStyle ??
             const TextStyle(color: Colors.white, fontSize: 12),
