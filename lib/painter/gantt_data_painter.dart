@@ -204,8 +204,11 @@ class GanttDataPainter extends GanttPainter {
       return;
     }
 
-    final textPainter =
-        config.headerPainter(data.tooltip!, config.style.tooltipStyle);
+    final textPainter = config.textPainter(
+      data.tooltip!,
+      config.style.tooltipStyle,
+      maxWidth: config.grid.tooltipWidth,
+    );
 
     final startOffset = Offset(
       config.tooltipOffset.dx - textPainter.width / 2,

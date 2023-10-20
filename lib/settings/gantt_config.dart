@@ -112,14 +112,15 @@ class GanttConfig {
     for (var activity in activities) {
       width = max(
         width,
-        headerPainter(activity.label ?? '', style.activityLabelStyle).width +
+        textPainter(activity.label ?? '', style.activityLabelStyle, maxLines: 1)
+                .width +
             style.labelPadding.horizontal,
       );
 
       for (var task in activity.tasks) {
         width = max(
           width,
-          headerPainter(task.label, style.taskLabelStyle).width +
+          textPainter(task.label, style.taskLabelStyle, maxLines: 1).width +
               style.labelPadding.horizontal,
         );
       }
@@ -147,10 +148,11 @@ class GanttConfig {
         text: title,
         style: style.titleStyle,
         children: [
-          TextSpan(
-            text: '\n$subtitle',
-            style: style.subtitleStyle,
-          )
+          if (subtitle != null)
+            TextSpan(
+              text: '\n$subtitle',
+              style: style.subtitleStyle,
+            )
         ],
       ),
       textDirection: TextDirection.ltr,
@@ -181,9 +183,14 @@ class GanttConfig {
     return textPainter;
   }
 
-  TextPainter headerPainter(String label, TextStyle style) {
+  TextPainter textPainter(
+    String label,
+    TextStyle style, {
+    double maxWidth = double.infinity,
+    int? maxLines,
+  }) {
     final textPainter = TextPainter(
-      maxLines: 1,
+      maxLines: maxLines,
       text: TextSpan(
         text: label,
         style: style,
@@ -192,7 +199,7 @@ class GanttConfig {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: double.infinity,
+      maxWidth: maxWidth,
     );
     return textPainter;
   }

@@ -109,11 +109,13 @@ class GanttUiPainter extends GanttPainter {
         titlePaint,
       );
 
-      final textPainter = config.headerPainter(
-          header.label ?? '',
-          header is _TaskHeaderData
-              ? config.style.taskLabelStyle
-              : config.style.activityLabelStyle);
+      final textPainter = config.textPainter(
+        header.label ?? '',
+        header is _TaskHeaderData
+            ? config.style.taskLabelStyle
+            : config.style.activityLabelStyle,
+        maxLines: 1,
+      );
 
       textPainter.paint(
         canvas,
