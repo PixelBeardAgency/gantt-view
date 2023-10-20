@@ -46,6 +46,7 @@ class GanttChart<T> extends StatelessWidget {
                   subtitle: subtitle,
                   containerSize: constraints.biggest,
                   panOffset: controller.panOffset,
+                  tooltipOffset: controller.tooltipOffset,
                 ),
                 controller: controller,
               ),
@@ -91,13 +92,17 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
                   widget.config.labelColumnWidth),
           child: ClipRect(
             child: MouseRegion(
-              onExit: (event) => widget.config.setTooltipOffset(Offset.zero),
+              onExit: (event) {
+                if (widget.config.grid.tooltipType == TooltipType.hover) {
+                  widget.controller.setTooltipOffset(Offset.zero);
+                }
+              },
               onHover: (event) {
                 mouseX = event.localPosition.dx;
                 mouseY = event.localPosition.dy;
                 if (widget.config.grid.tooltipType == TooltipType.hover) {
-                  setState(() =>
-                      widget.config.setTooltipOffset(Offset(mouseX, mouseY)));
+                  setState(() => widget.controller
+                      .setTooltipOffset(Offset(mouseX, mouseY)));
                 }
               },
               child: Listener(
@@ -113,7 +118,7 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
                 child: GestureDetector(
                   onTap: () {
                     if (widget.config.grid.tooltipType == TooltipType.tap) {
-                      setState(() => widget.config
+                      setState(() => widget.controller
                           .setTooltipOffset(Offset(mouseX, mouseY)));
                     }
                   },
@@ -135,7 +140,7 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
   }
 
   void _updateOffset(Offset delta, double maxDx, double maxDy) {
-    var panOffset = widget.config.panOffset;
+    var panOffset = widget.controller.panOffset;
     panOffset += delta;
     if (panOffset.dx > 0) {
       panOffset = Offset(0, panOffset.dy);
@@ -150,18 +155,6 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
       panOffset = Offset(panOffset.dx, -maxDy);
     }
 
-    if (widget.config.grid.tooltipType == TooltipType.tap) {
-      final diff = (widget.config.panOffset - panOffset);
-      var tooltipOffset = widget.config.tooltipOffset;
-
-      if (diff.dx != 0) {
-        tooltipOffset = Offset(tooltipOffset.dx - diff.dx, tooltipOffset.dy);
-      }
-      if (diff.dy != 0) {
-        tooltipOffset = Offset(tooltipOffset.dx, tooltipOffset.dy - diff.dy);
-      }
-      setState(() => widget.config.setTooltipOffset(tooltipOffset));
-    }
-    setState(() => widget.controller.setPanOffset(panOffset));
+    widget.controller.setPanOffset(panOffset);
   }
 }

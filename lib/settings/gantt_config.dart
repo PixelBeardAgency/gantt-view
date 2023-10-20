@@ -20,6 +20,7 @@ class GanttConfig {
   final Size containerSize;
 
   final Offset panOffset;
+  final Offset tooltipOffset;
 
   late double labelColumnWidth;
   late double timelineHeight;
@@ -38,8 +39,6 @@ class GanttConfig {
   late int columns;
   late double cellWidth;
 
-  Offset tooltipOffset = Offset.zero;
-
   int get widthDivisor => switch (grid.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
@@ -55,6 +54,7 @@ class GanttConfig {
     this.subtitle,
     required this.containerSize,
     required this.panOffset,
+    required this.tooltipOffset,
     List<DateTime>? highlightedDates,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
@@ -139,8 +139,6 @@ class GanttConfig {
             style.titlePadding.bottom,
         titlePainter().height + style.titlePadding.vertical,
       );
-
-  void setTooltipOffset(Offset offset) => tooltipOffset = offset;
 
   TextPainter titlePainter() {
     final textPainter = TextPainter(

@@ -20,6 +20,9 @@ class GanttChartController<T> extends ChangeNotifier {
   Offset _panOffset = Offset.zero;
   Offset get panOffset => _panOffset;
 
+  Offset _tooltipOffset = Offset.zero;
+  Offset get tooltipOffset => _tooltipOffset;
+
   GanttChartController({
     required List<T> items,
     required GanttTask Function(T data) taskBuilder,
@@ -104,7 +107,19 @@ class GanttChartController<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setTooltipOffset(Offset offset) {
+    _tooltipOffset = offset;
+    notifyListeners();
+  }
+
   void setPanOffset(Offset offset) {
+    final diff = (panOffset - offset);
+    if (diff.dx != 0) {
+      _tooltipOffset = Offset(tooltipOffset.dx - diff.dx, tooltipOffset.dy);
+    }
+    if (diff.dy != 0) {
+      _tooltipOffset = Offset(tooltipOffset.dx, tooltipOffset.dy - diff.dy);
+    }
     _panOffset = offset;
     notifyListeners();
   }

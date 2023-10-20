@@ -44,6 +44,7 @@ void main() {
       activities: activities,
       containerSize: const Size(100, 100),
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -77,6 +78,7 @@ void main() {
       grid: grid,
       style: style,
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -109,6 +111,7 @@ void main() {
       grid: grid,
       style: style,
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -136,6 +139,7 @@ void main() {
       containerSize: const Size(100, 100),
       grid: grid,
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -163,6 +167,7 @@ void main() {
       containerSize: const Size(100, 100),
       grid: grid,
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -215,6 +220,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -269,6 +275,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -321,6 +328,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -375,6 +383,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -431,6 +440,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -486,6 +496,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
@@ -542,6 +553,7 @@ void main() {
       title: '1',
       subtitle: '1',
       panOffset: Offset.zero,
+      tooltipOffset: Offset.zero,
     );
 
     // Assert
