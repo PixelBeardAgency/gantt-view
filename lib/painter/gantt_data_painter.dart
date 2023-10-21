@@ -201,9 +201,6 @@ class GanttDataPainter extends GanttPainter {
     final data = _cells[row]?[column];
     final isFilled = data is _TaskFillData;
 
-    // debugPrint('row: $row');
-    // debugPrint('column: $column');
-    // debugPrint('${config.containerSize.width}');
     if (!isFilled || (data.tooltip?.isEmpty ?? true)) {
       return;
     }
@@ -226,7 +223,7 @@ class GanttDataPainter extends GanttPainter {
     final backgroundHeight =
         textPainter.height + config.style.tooltipPadding.vertical;
 
-    // Tooltip is rendered off the start edge of the screen
+    // Tooltip is rendered off the start edge of the available space
     if (startOffset.dx < config.labelColumnWidth) {
       startOffset = Offset(
         config.labelColumnWidth,
@@ -234,7 +231,7 @@ class GanttDataPainter extends GanttPainter {
       );
     }
 
-    // Tooltip is rendered off the end edge of the screen
+    // Tooltip is rendered off the end edge of the available space
     var limit = config.maxDx + config.renderAreaSize.width;
     var currentStartOffset =
         startOffset.dx + backgroundWidth + -config.panOffset.dx;
@@ -246,11 +243,11 @@ class GanttDataPainter extends GanttPainter {
       );
     }
 
-    // Tooltip is rendered off the top edge of the screen
-    if (startOffset.dy < config.timelineHeight) {
+    // Tooltip is rendered off the top edge of the available space
+    if (startOffset.dy - config.panOffset.dy < config.timelineHeight) {
       startOffset = Offset(
         startOffset.dx,
-        config.timelineHeight,
+        config.timelineHeight + config.panOffset.dy,
       );
     }
 

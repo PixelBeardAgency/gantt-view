@@ -48,14 +48,14 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip:
             '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
       ),
-      taskSort: (a, b) => b.endDate.compareTo(a.endDate),
+      taskSort: (a, b) => a.startDate.compareTo(b.startDate),
       activityLabelBuilder: (item) => item.group,
-      activitySort: (b, a) => a.tasks
-          .map((e) => e.endDate)
-          .reduce((a, b) => a.isAfter(b) ? a : b)
+      activitySort: (a, b) => a.tasks
+          .map((e) => e.startDate)
+          .reduce((a, b) => a.isBefore(b) ? a : b)
           .compareTo(b.tasks
-              .map((e) => e.endDate)
-              .reduce((a, b) => a.isAfter(b) ? a : b)),
+              .map((e) => e.startDate)
+              .reduce((a, b) => a.isBefore(b) ? a : b)),
       highlightedDates: [DateTime(2023, 9, 29)],
     );
   }
