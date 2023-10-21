@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
           columnWidth: 40,
           rowSpacing: 0,
           timelineAxisType: TimelineAxisType.weekly,
-          tooltipType: TooltipType.hover,
+          tooltipType: TooltipType.tap,
         ),
         style: GanttStyle(
           taskBarColor: Colors.blue.shade400,

@@ -55,7 +55,6 @@ class GanttConfig {
     required this.panOffset,
     required this.tooltipOffset,
     List<DateTime>? highlightedDates,
-    bool showFullWeeks = false,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
     rowHeight = this.grid.barHeight +
@@ -66,52 +65,39 @@ class GanttConfig {
         .reduce((value, element) =>
             value.startDate.isBefore(element.startDate) ? value : element)
         .startDate;
-    if (showFullWeeks) {
-      startDate = DateTime(
-        firstTaskStartDate.year,
-        firstTaskStartDate.month,
-        firstTaskStartDate.day + DateTime.monday - firstTaskStartDate.weekday,
-      );
-    } else {
-      startDate = DateTime(
-        firstTaskStartDate.year,
-        firstTaskStartDate.month,
-        firstTaskStartDate.day,
-      );
-    }
+
+    startDate = DateTime(
+      firstTaskStartDate.year,
+      firstTaskStartDate.month,
+      firstTaskStartDate.day +
+          (this.grid.showFullWeeks
+              ? DateTime.monday - firstTaskStartDate.weekday
+              : 0),
+    );
 
     var lastTaskEndDate = activities.allTasks
         .reduce((value, element) =>
             value.endDate.isAfter(element.endDate) ? value : element)
         .endDate;
 
-    if (showFullWeeks) {
-      endDate = DateTime(
-        lastTaskEndDate.year,
-        lastTaskEndDate.month,
-        lastTaskEndDate.day + ((DateTime.sunday - lastTaskEndDate.weekday)),
-      );
-    } else {
-      endDate = DateTime(
-        lastTaskEndDate.year,
-        lastTaskEndDate.month,
-        lastTaskEndDate.day,
-      );
-    }
+    endDate = DateTime(
+      lastTaskEndDate.year,
+      lastTaskEndDate.month,
+      lastTaskEndDate.day,
+    );
 
     highlightedColumns =
         highlightedDates?.map((e) => e.difference(startDate).inDays).toList() ??
             [];
 
     final diff = endDate.difference(startDate).inDays;
-    debugPrint('diff: $diff');
-    columns = diff + (widthDivisor - (diff % widthDivisor));
+    columns =
+        diff + 1 + (this.grid.showFullWeeks ? 7 - lastTaskEndDate.weekday : 0);
     cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
     labelColumnWidth = _titleWidth;
     timelineHeight = _legendHeight;
-    debugPrint('------');
 
     renderAreaSize = Size(
       min(containerSize.width, (columns * cellWidth) + labelColumnWidth),
@@ -120,10 +106,6 @@ class GanttConfig {
           (activities.length + activities.allTasks.length) * rowHeight +
               timelineHeight),
     );
-    debugPrint('containerSize.width: ${containerSize.width}');
-    debugPrint(
-        'width: ${min(containerSize.width, (columns * cellWidth) + labelColumnWidth)}');
-    debugPrint('renderAreaSize: $renderAreaSize');
 
     maxDx = _horizontalScrollBoundary;
     maxDy = _verticalScrollBoundary;
