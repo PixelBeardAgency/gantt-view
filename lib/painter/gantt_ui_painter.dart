@@ -4,7 +4,7 @@ import 'package:gantt_view/painter/gantt_painter.dart';
 class GanttUiPainter extends GanttPainter {
   final List<_HeaderData> _headers = [];
 
-  GanttUiPainter({required super.config}) {
+  GanttUiPainter({required super.config, required super.panOffset}) {
     for (var activity in config.activities) {
       if (activity.label != null) {
         _headers.add(_ActivityHeaderData(activity.label));
@@ -15,8 +15,6 @@ class GanttUiPainter extends GanttPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var gridData = config.gridData;
-
     _paintHeaders(
       gridData.firstVisibleRow,
       gridData.lastVisibleRow,
@@ -48,18 +46,18 @@ class GanttUiPainter extends GanttPainter {
         ..style = PaintingStyle.fill;
 
       final rect = Rect.fromLTWH(
-        (x * grid.columnWidth) + config.uiOffset.dx,
-        0 - config.panOffset.dy,
-        grid.columnWidth + 1,
+        (x * config.grid.columnWidth) + config.uiOffset.dx,
+        0 - panOffset.dy,
+        config.grid.columnWidth + 1,
         config.timelineHeight,
       );
       canvas.drawRect(
-        rect.shift(config.panOffset),
+        rect.shift(panOffset),
         paint,
       );
 
-      final date = DateTime(startDate.year, startDate.month,
-          startDate.day + (x * config.widthDivisor));
+      final date = DateTime(config.startDate.year, config.startDate.month,
+          config.startDate.day + (x * config.widthDivisor));
       final textPainter = config.datePainter([
         if (config.grid.showYear)
           previousYear == date.year ? '' : '${date.year}',
@@ -71,12 +69,14 @@ class GanttUiPainter extends GanttPainter {
       textPainter.paint(
         canvas,
         Offset(
-              rect.left + (grid.columnWidth / 2) - (textPainter.width / 2),
+              rect.left +
+                  (config.grid.columnWidth / 2) -
+                  (textPainter.width / 2),
               rect.bottom -
                   textPainter.height -
                   config.style.titlePadding.bottom,
             ) +
-            config.panOffset,
+            panOffset,
       );
 
       previousYear = date.year;
@@ -91,9 +91,9 @@ class GanttUiPainter extends GanttPainter {
 
       var backgroundRect = Rect.fromLTWH(
         0,
-        index * rowHeight + config.timelineHeight,
+        index * config.rowHeight + config.timelineHeight,
         config.labelColumnWidth,
-        rowHeight + 1,
+        config.rowHeight + 1,
       );
 
       final titlePaint = Paint()
@@ -102,7 +102,7 @@ class GanttUiPainter extends GanttPainter {
             : config.style.activityLabelColor
         ..style = PaintingStyle.fill;
 
-      final backgroundOffset = Offset(0, config.panOffset.dy);
+      final backgroundOffset = Offset(0, panOffset.dy);
 
       canvas.drawRect(
         backgroundRect.shift(backgroundOffset),
@@ -120,11 +120,11 @@ class GanttUiPainter extends GanttPainter {
       textPainter.paint(
         canvas,
         Offset(
-              0 + ganttStyle.labelPadding.left,
+              0 + config.style.labelPadding.left,
               backgroundRect.top +
-                  (grid.barHeight / 2) -
+                  (config.grid.barHeight / 2) -
                   (textPainter.height / 2) +
-                  ganttStyle.labelPadding.top,
+                  config.style.labelPadding.top,
             ) +
             backgroundOffset,
       );
@@ -158,8 +158,10 @@ class GanttUiPainter extends GanttPainter {
     textPainter.paint(
       canvas,
       Offset(
-        0 + ganttStyle.titlePadding.left,
-        titleRect.bottom - textPainter.height - ganttStyle.titlePadding.bottom,
+        0 + config.style.titlePadding.left,
+        titleRect.bottom -
+            textPainter.height -
+            config.style.titlePadding.bottom,
       ),
     );
   }

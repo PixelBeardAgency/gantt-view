@@ -6,7 +6,6 @@ import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
 import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
-import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttConfig {
   final Iterable<GanttActivity> activities;
@@ -17,9 +16,6 @@ class GanttConfig {
   final String? title;
   final String? subtitle;
 
-  final Offset panOffset;
-  final Offset tooltipOffset;
-
   late Size renderAreaSize;
 
   late double labelColumnWidth;
@@ -27,6 +23,7 @@ class GanttConfig {
   late double maxDx;
   late double maxDy;
 
+  late int rows;
   late double rowHeight;
   late double dataHeight;
 
@@ -52,11 +49,10 @@ class GanttConfig {
     this.title,
     this.subtitle,
     required Size containerSize,
-    required this.panOffset,
-    required this.tooltipOffset,
     List<DateTime>? highlightedDates,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
+    rows = activities.length + activities.allTasks.length;
     rowHeight = this.grid.barHeight +
         this.grid.rowSpacing +
         this.style.labelPadding.vertical;
@@ -223,14 +219,4 @@ class GanttConfig {
     );
     return textPainter;
   }
-
-  GanttVisibleData get gridData => GanttVisibleData(
-        renderAreaSize,
-        activities.length + activities.allTasks.length,
-        uiOffset,
-        columns,
-        cellWidth,
-        panOffset,
-        rowHeight,
-      );
 }

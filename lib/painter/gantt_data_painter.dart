@@ -5,10 +5,15 @@ import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
   final Map<int, Map<int, _FillData>> _cells = {};
+  final Offset tooltipOffset;
 
   late double _taskOffset;
 
-  GanttDataPainter({required super.config}) {
+  GanttDataPainter(
+      {required super.config,
+      required super.panOffset,
+      required this.tooltipOffset}) {
+    debugPrint('dsnkadsa');
     int currentRow = 0;
     for (var activity in config.activities) {
       if (activity.label != null) {
@@ -27,8 +32,8 @@ class GanttDataPainter extends GanttPainter {
         final start = task.startDate;
         final end = task.endDate;
 
-        final int from = start.difference(startDate).inDays;
-        final int to = end.difference(startDate).inDays;
+        final int from = start.difference(config.startDate).inDays;
+        final int to = end.difference(config.startDate).inDays;
 
         if (start.isAfter(end)) {
           throw Exception('Start date must be before end date.');
@@ -56,13 +61,12 @@ class GanttDataPainter extends GanttPainter {
         currentRow++;
       }
     }
-    _taskOffset = (grid.rowSpacing + ganttStyle.labelPadding.vertical) / 2;
+    _taskOffset =
+        (config.grid.rowSpacing + config.style.labelPadding.vertical) / 2;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
-    final gridData = config.gridData;
-
     if (config.style.gridColor != null) {
       _paintGrid(canvas, size, gridData);
     }
@@ -74,9 +78,13 @@ class GanttDataPainter extends GanttPainter {
     }
   }
 
+  @override
+  bool shouldRepaint(covariant GanttPainter oldDelegate) =>
+      super.shouldRepaint(oldDelegate) || oldDelegate.panOffset != panOffset;
+
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
-      var dy = y * rowHeight + config.uiOffset.dy;
+      var dy = y * config.rowHeight + config.uiOffset.dy;
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
@@ -104,11 +112,11 @@ class GanttDataPainter extends GanttPainter {
       x,
       y,
       config.cellWidth + 1,
-      rowHeight,
+      config.rowHeight,
     );
 
     canvas.drawRect(
-      rect.shift(config.panOffset),
+      rect.shift(panOffset),
       paint,
     );
   }
@@ -135,7 +143,7 @@ class GanttDataPainter extends GanttPainter {
         x,
         y + _taskOffset,
         config.cellWidth + 1,
-        grid.barHeight,
+        config.grid.barHeight,
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
       bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -143,7 +151,7 @@ class GanttDataPainter extends GanttPainter {
       bottomRight: Radius.circular(fill.isLast ? radius : 0),
     );
     canvas.drawRRect(
-      rect.shift(config.panOffset),
+      rect.shift(panOffset),
       paint,
     );
   }
@@ -155,10 +163,10 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridRows(Size size, Canvas canvas, int rows) {
     final double rowVerticalOffset =
-        config.timelineHeight + (config.panOffset.dy % rowHeight);
+        config.timelineHeight + (panOffset.dy % config.rowHeight);
 
     for (int y = 0; y < rows; y++) {
-      final py = y * rowHeight + rowVerticalOffset;
+      final py = y * config.rowHeight + rowVerticalOffset;
       final p1 = Offset(config.labelColumnWidth, py);
       final p2 = Offset(size.width, py);
       final paint = Paint()
@@ -170,9 +178,9 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset =
-        config.labelColumnWidth + (config.panOffset.dx % grid.columnWidth);
+        config.labelColumnWidth + (panOffset.dx % config.grid.columnWidth);
     for (int x = 0; x < columns; x++) {
-      final px = x * grid.columnWidth + columnHorizontalOffset;
+      final px = x * config.grid.columnWidth + columnHorizontalOffset;
       final p1 = Offset(px, config.timelineHeight);
       final p2 = Offset(px, size.height);
       final paint = Paint()
@@ -183,19 +191,17 @@ class GanttDataPainter extends GanttPainter {
   }
 
   void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
-    final tooltipOffset = config.tooltipOffset;
-
-    final firstColumnOffset = ((-config.panOffset.dx) % grid.columnWidth);
+    final firstColumnOffset = ((-panOffset.dx) % config.grid.columnWidth);
     final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
 
     var column = (currentPosX + firstColumnOffset) ~/
-            (grid.columnWidth / config.widthDivisor) +
+            (config.grid.columnWidth / config.widthDivisor) +
         gridData.firstVisibleColumn;
 
-    final firstRowOffset = ((-config.panOffset.dy) % rowHeight);
+    final firstRowOffset = ((-panOffset.dy) % config.rowHeight);
     final currentPosY = tooltipOffset.dy - config.timelineHeight;
 
-    final row = ((currentPosY + firstRowOffset) ~/ rowHeight) +
+    final row = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
         gridData.firstVisibleRow;
 
     final data = _cells[row]?[column];
@@ -212,8 +218,8 @@ class GanttDataPainter extends GanttPainter {
     );
 
     var startOffset = Offset(
-      config.tooltipOffset.dx - textPainter.width / 2,
-      config.tooltipOffset.dy -
+      tooltipOffset.dx - textPainter.width / 2,
+      tooltipOffset.dy -
           config.style.tooltipPadding.vertical -
           textPainter.height,
     );
@@ -224,30 +230,29 @@ class GanttDataPainter extends GanttPainter {
         textPainter.height + config.style.tooltipPadding.vertical;
 
     // Tooltip is rendered off the start edge of the available space
-    if (startOffset.dx - config.panOffset.dx < config.labelColumnWidth) {
+    if (startOffset.dx - panOffset.dx < config.labelColumnWidth) {
       startOffset = Offset(
-        config.labelColumnWidth + config.panOffset.dx,
+        config.labelColumnWidth + panOffset.dx,
         startOffset.dy,
       );
     }
 
     // Tooltip is rendered off the end edge of the available space
     var limit = config.maxDx + config.renderAreaSize.width;
-    var currentStartOffset =
-        startOffset.dx + backgroundWidth + -config.panOffset.dx;
+    var currentStartOffset = startOffset.dx + backgroundWidth + -panOffset.dx;
 
     if (currentStartOffset > limit) {
       startOffset = Offset(
-        limit - backgroundWidth + config.panOffset.dx,
+        limit - backgroundWidth + panOffset.dx,
         startOffset.dy,
       );
     }
 
     // Tooltip is rendered off the top edge of the available space
-    if (startOffset.dy - config.panOffset.dy < config.timelineHeight) {
+    if (startOffset.dy - panOffset.dy < config.timelineHeight) {
       startOffset = Offset(
         startOffset.dx,
-        config.timelineHeight + config.panOffset.dy,
+        config.timelineHeight + panOffset.dy,
       );
     }
 

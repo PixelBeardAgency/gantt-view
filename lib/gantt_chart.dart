@@ -43,8 +43,6 @@ class GanttChart<T> extends StatelessWidget {
                   title: title,
                   subtitle: subtitle,
                   containerSize: constraints.biggest,
-                  panOffset: controller.panOffset,
-                  tooltipOffset: controller.tooltipOffset,
                 ),
                 controller: controller,
               ),
@@ -118,8 +116,15 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
                   child: CustomPaint(
                     size: Size.infinite,
                     willChange: true,
-                    foregroundPainter: GanttUiPainter(config: widget.config),
-                    painter: GanttDataPainter(config: widget.config),
+                    foregroundPainter: GanttUiPainter(
+                      config: widget.config,
+                      panOffset: widget.controller.panOffset,
+                    ),
+                    painter: GanttDataPainter(
+                      config: widget.config,
+                      panOffset: widget.controller.panOffset,
+                      tooltipOffset: widget.controller.tooltipOffset,
+                    ),
                   ),
                 ),
               ),
