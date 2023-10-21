@@ -89,7 +89,6 @@ class GanttChartController<T> {
       }
       _activities.value = [GanttActivity(tasks: tasks)];
     }
-    _activities.notifyListeners();
   }
 
   void setHighlightedDates(List<DateTime> dates) {
