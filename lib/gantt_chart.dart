@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
-import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
+import 'package:gantt_view/model/cell/grid/grid_cell.dart';
+import 'package:gantt_view/model/cell/header/header_cell.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/painter/gantt_data_painter.dart';
 import 'package:gantt_view/painter/gantt_ui_painter.dart';
@@ -16,51 +17,123 @@ class GanttChart<T> extends StatelessWidget {
   final String? title;
   final String? subtitle;
 
-  GanttChart({
+  const GanttChart({
     super.key,
     required this.controller,
     this.grid,
     this.style,
     this.title,
     this.subtitle,
-  }) : assert(
-            controller.activities.allTasks
-                .every((task) => task.endDate.compareTo(task.startDate) >= 0),
-            'All tasks must have a start date before or equal to the end date.');
+  });
 
   @override
   Widget build(BuildContext context) {
-    return controller.activities.isNotEmpty
-        ? LayoutBuilder(
-            builder: (context, constraints) => ListenableBuilder(
-              listenable: controller,
-              builder: (context, child) => _GanttChartContent(
-                activities: controller.activities,
-                config: GanttConfig(
-                  activities: controller.activities,
-                  grid: grid,
-                  style: style,
-                  title: title,
-                  subtitle: subtitle,
-                  containerSize: constraints.biggest,
-                ),
-                controller: controller,
-              ),
-            ),
-          )
-        : const Center(child: Text('No data'));
+    return LayoutBuilder(
+      builder: (context, constraints) => ValueListenableBuilder(
+        valueListenable: controller.activities,
+        builder: (context, activities, child) {
+          final config = GanttConfig(
+            activities: activities,
+            grid: grid,
+            style: style,
+            title: title,
+            subtitle: subtitle,
+            containerSize: constraints.biggest,
+          );
+          return activities.isNotEmpty
+              ? _GanttChartContent(
+                  config: config,
+                  controller: controller,
+                  gridCells: _buildGridCells(activities, config),
+                  headerCells: _buildHeaderCells(activities),
+                )
+              : const Center(child: Text('No data'));
+        },
+      ),
+    );
+  }
+
+  Map<int, Map<int, GridCell>> _buildGridCells(
+    List<GanttActivity> activities,
+    GanttConfig config,
+  ) {
+    debugPrint('asdasd');
+    Map<int, Map<int, GridCell>> cells = {};
+    int currentRow = 0;
+    for (var activity in activities) {
+      if (activity.label != null) {
+        for (int i = 0; i < config.columns; i++) {
+          final currentOffset = i % 7;
+          (cells[currentRow] ??= {})[i] = config.highlightedColumns.contains(i)
+              ? HolidayGridCell()
+              : config.style.weekendColor != null &&
+                      (currentOffset == 5 || currentOffset == 6)
+                  ? WeekendGridCell()
+                  : HeaderGridCell();
+        }
+        currentRow++;
+      }
+      for (var task in activity.tasks) {
+        final start = task.startDate;
+        final end = task.endDate;
+
+        final int from = start.difference(config.startDate).inDays;
+        final int to = end.difference(config.startDate).inDays;
+
+        if (start.isAfter(end)) {
+          throw Exception('Start date must be before end date.');
+        }
+
+        for (int i = 0; i < config.columns; i++) {
+          final currentOffset = i % 7;
+          if (config.highlightedColumns.contains(i)) {
+            (cells[currentRow] ??= {})[i] = (i >= from && i <= to)
+                ? TaskGridCell(task.tooltip, i == from, i == to,
+                    isHoliday: true)
+                : HolidayGridCell();
+          } else if (config.style.weekendColor != null &&
+              (currentOffset == 5 || currentOffset == 6)) {
+            (cells[currentRow] ??= {})[i] = (i >= from && i <= to)
+                ? TaskGridCell(task.tooltip, i == from, i == to,
+                    isWeekend: true)
+                : WeekendGridCell();
+          } else if (i >= from && i <= to) {
+            (cells[currentRow] ??= {})[i] =
+                TaskGridCell(task.tooltip, i == from, i == to);
+          }
+        }
+
+        currentRow++;
+      }
+    }
+    return cells;
+  }
+
+  List<HeaderCell> _buildHeaderCells(List<GanttActivity> activities) {
+    List<HeaderCell> headers = [];
+
+    for (var activity in activities) {
+      if (activity.label != null) {
+        headers.add(ActivityHeaderCell(activity.label));
+      }
+      headers.addAll(activity.tasks.map((e) => TaskHeaderCell(e.label)));
+    }
+    return headers;
   }
 }
 
 class _GanttChartContent<T> extends StatefulWidget {
-  final List<GanttActivity> activities;
   final GanttChartController<T> controller;
   final GanttConfig config;
 
+  final Map<int, Map<int, GridCell>> gridCells;
+  final List<HeaderCell> headerCells;
+
   const _GanttChartContent({
-    required this.activities,
     required this.config,
     required this.controller,
+    required this.gridCells,
+    required this.headerCells,
   });
 
   @override
@@ -73,57 +146,60 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => Align(
-        alignment: Alignment.topLeft,
-        child: SizedBox(
-          height: widget.config.renderAreaSize.height,
-          width: widget.config.renderAreaSize.width,
-          child: ClipRect(
-            child: MouseRegion(
-              onExit: (event) {
-                if (widget.config.grid.tooltipType == TooltipType.hover) {
-                  widget.controller.setTooltipOffset(Offset.zero);
-                }
-              },
-              onHover: (event) {
-                mouseX = event.localPosition.dx;
-                mouseY = event.localPosition.dy;
-                if (widget.config.grid.tooltipType == TooltipType.hover) {
+    return SizedBox(
+      height: widget.config.renderAreaSize.height,
+      width: widget.config.renderAreaSize.width,
+      child: ClipRect(
+        child: MouseRegion(
+          onExit: (event) {
+            if (widget.config.grid.tooltipType == TooltipType.hover) {
+              widget.controller.setTooltipOffset(Offset.zero);
+            }
+          },
+          onHover: (event) {
+            mouseX = event.localPosition.dx;
+            mouseY = event.localPosition.dy;
+            if (widget.config.grid.tooltipType == TooltipType.hover) {
+              setState(() =>
+                  widget.controller.setTooltipOffset(Offset(mouseX, mouseY)));
+            }
+          },
+          child: Listener(
+            onPointerSignal: (event) {
+              if (event is PointerScrollEvent) {
+                _updateOffset(
+                  -event.scrollDelta,
+                  widget.config.maxDx,
+                  widget.config.maxDy,
+                );
+              }
+            },
+            child: GestureDetector(
+              onTap: () {
+                if (widget.config.grid.tooltipType == TooltipType.tap) {
                   setState(() => widget.controller
                       .setTooltipOffset(Offset(mouseX, mouseY)));
                 }
               },
-              child: Listener(
-                onPointerSignal: (event) {
-                  if (event is PointerScrollEvent) {
-                    _updateOffset(
-                      -event.scrollDelta,
-                      widget.config.maxDx,
-                      widget.config.maxDy,
-                    );
-                  }
-                },
-                child: GestureDetector(
-                  onTap: () {
-                    if (widget.config.grid.tooltipType == TooltipType.tap) {
-                      setState(() => widget.controller
-                          .setTooltipOffset(Offset(mouseX, mouseY)));
-                    }
-                  },
-                  onPanUpdate: (details) => _updateOffset(
-                      details.delta, widget.config.maxDx, widget.config.maxDy),
-                  child: CustomPaint(
+              onPanUpdate: (details) => _updateOffset(
+                  details.delta, widget.config.maxDx, widget.config.maxDy),
+              child: ValueListenableBuilder(
+                valueListenable: widget.controller.panOffset,
+                builder: (context, panOffset, child) => ValueListenableBuilder(
+                  valueListenable: widget.controller.tooltipOffset,
+                  builder: (context, tooltipOffset, child) => CustomPaint(
                     size: Size.infinite,
                     willChange: true,
                     foregroundPainter: GanttUiPainter(
                       config: widget.config,
-                      panOffset: widget.controller.panOffset,
+                      panOffset: panOffset,
+                      headers: widget.headerCells,
                     ),
                     painter: GanttDataPainter(
+                      cells: widget.gridCells,
                       config: widget.config,
-                      panOffset: widget.controller.panOffset,
-                      tooltipOffset: widget.controller.tooltipOffset,
+                      panOffset: panOffset,
+                      tooltipOffset: tooltipOffset,
                     ),
                   ),
                 ),
@@ -136,7 +212,7 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
   }
 
   void _updateOffset(Offset delta, double maxDx, double maxDy) {
-    var panOffset = widget.controller.panOffset;
+    var panOffset = widget.controller.panOffset.value;
     panOffset += delta;
     if (panOffset.dx > 0) {
       panOffset = Offset(0, panOffset.dy);

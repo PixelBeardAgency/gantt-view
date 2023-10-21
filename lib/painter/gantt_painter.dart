@@ -6,22 +6,22 @@ abstract class GanttPainter extends CustomPainter {
   final GanttConfig config;
   final Offset panOffset;
 
+  final GanttVisibleData gridData;
+
   GanttPainter({
     required this.config,
     required this.panOffset,
-  });
+  }) : gridData = GanttVisibleData(
+          config.renderAreaSize,
+          config.rows,
+          config.uiOffset,
+          config.columns,
+          config.cellWidth,
+          panOffset,
+          config.rowHeight,
+        );
 
   @override
   bool shouldRepaint(covariant GanttPainter oldDelegate) =>
       oldDelegate.config != config || oldDelegate.panOffset != panOffset;
-
-  GanttVisibleData get gridData => GanttVisibleData(
-        config.renderAreaSize,
-        config.rows,
-        config.uiOffset,
-        config.columns,
-        config.cellWidth,
-        panOffset,
-        config.rowHeight,
-      );
 }

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:gantt_view/model/cell/header/header_cell.dart';
 import 'package:gantt_view/painter/gantt_painter.dart';
 
 class GanttUiPainter extends GanttPainter {
-  final List<_HeaderData> _headers = [];
+  final List<HeaderCell> headers;
 
-  GanttUiPainter({required super.config, required super.panOffset}) {
-    for (var activity in config.activities) {
-      if (activity.label != null) {
-        _headers.add(_ActivityHeaderData(activity.label));
-      }
-      _headers.addAll(activity.tasks.map((e) => _TaskHeaderData(e.label)));
-    }
-  }
+  GanttUiPainter({
+    required super.config,
+    required super.panOffset,
+    required this.headers,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -87,7 +85,7 @@ class GanttUiPainter extends GanttPainter {
 
   void _paintHeaders(int firstVisibleRow, int lastVisibleRow, Canvas canvas) {
     for (int index = firstVisibleRow; index < lastVisibleRow; index++) {
-      final header = _headers[index];
+      final header = headers[index];
 
       var backgroundRect = Rect.fromLTWH(
         0,
@@ -97,7 +95,7 @@ class GanttUiPainter extends GanttPainter {
       );
 
       final titlePaint = Paint()
-        ..color = header is _TaskHeaderData
+        ..color = header is TaskHeaderCell
             ? config.style.taskLabelColor
             : config.style.activityLabelColor
         ..style = PaintingStyle.fill;
@@ -111,7 +109,7 @@ class GanttUiPainter extends GanttPainter {
 
       final textPainter = config.textPainter(
         header.label ?? '',
-        header is _TaskHeaderData
+        header is TaskHeaderCell
             ? config.style.taskLabelStyle
             : config.style.activityLabelStyle,
         maxLines: 1,
@@ -175,18 +173,4 @@ class GanttUiPainter extends GanttPainter {
     canvas.drawLine(Offset(0, py), Offset(size.width, py), paint);
     canvas.drawLine(Offset(px, 0), Offset(px, size.height), paint);
   }
-}
-
-abstract class _HeaderData {
-  final String? label;
-
-  _HeaderData(this.label);
-}
-
-class _ActivityHeaderData extends _HeaderData {
-  _ActivityHeaderData(String? label) : super(label);
-}
-
-class _TaskHeaderData extends _HeaderData {
-  _TaskHeaderData(String label) : super(label);
 }

@@ -8,8 +8,6 @@ import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
 
 class GanttConfig {
-  final Iterable<GanttActivity> activities;
-
   final GanttGrid grid;
   final GanttStyle style;
 
@@ -43,7 +41,7 @@ class GanttConfig {
   late Offset uiOffset;
 
   GanttConfig({
-    required this.activities,
+    required Iterable<GanttActivity> activities,
     GanttGrid? grid,
     GanttStyle? style,
     this.title,
@@ -92,7 +90,7 @@ class GanttConfig {
     cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
-    labelColumnWidth = _titleWidth;
+    labelColumnWidth = _titleWidth(activities);
     timelineHeight = _legendHeight;
 
     renderAreaSize = Size(
@@ -125,7 +123,7 @@ class GanttConfig {
           ? 0
           : dataHeight - renderAreaSize.height + timelineHeight;
 
-  double get _titleWidth {
+  double _titleWidth(Iterable<GanttActivity> activities) {
     double width = 0;
     for (var activity in activities) {
       width = max(
