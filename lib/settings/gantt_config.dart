@@ -17,10 +17,10 @@ class GanttConfig {
   final String? title;
   final String? subtitle;
 
-  final Size containerSize;
-
   final Offset panOffset;
   final Offset tooltipOffset;
+
+  late Size renderAreaSize;
 
   late double labelColumnWidth;
   late double timelineHeight;
@@ -33,7 +33,6 @@ class GanttConfig {
   late DateTime startDate;
   late DateTime endDate;
 
-  late int weekendOffset;
   late List<int> highlightedColumns;
 
   late int columns;
@@ -52,39 +51,80 @@ class GanttConfig {
     GanttStyle? style,
     this.title,
     this.subtitle,
-    required this.containerSize,
+    required Size containerSize,
     required this.panOffset,
     required this.tooltipOffset,
     List<DateTime>? highlightedDates,
+    bool showFullWeeks = false,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
     rowHeight = this.grid.barHeight +
         this.grid.rowSpacing +
         this.style.labelPadding.vertical;
 
-    startDate = activities.allTasks
+    var firstTaskStartDate = activities.allTasks
         .reduce((value, element) =>
             value.startDate.isBefore(element.startDate) ? value : element)
         .startDate;
-    endDate = activities.allTasks
+    if (showFullWeeks) {
+      startDate = DateTime(
+        firstTaskStartDate.year,
+        firstTaskStartDate.month,
+        firstTaskStartDate.day + DateTime.monday - firstTaskStartDate.weekday,
+      );
+    } else {
+      startDate = DateTime(
+        firstTaskStartDate.year,
+        firstTaskStartDate.month,
+        firstTaskStartDate.day,
+      );
+    }
+
+    var lastTaskEndDate = activities.allTasks
         .reduce((value, element) =>
             value.endDate.isAfter(element.endDate) ? value : element)
         .endDate;
 
-    weekendOffset = startDate.weekday - DateTime.sunday + 1;
+    if (showFullWeeks) {
+      endDate = DateTime(
+        lastTaskEndDate.year,
+        lastTaskEndDate.month,
+        lastTaskEndDate.day + ((DateTime.sunday - lastTaskEndDate.weekday)),
+      );
+    } else {
+      endDate = DateTime(
+        lastTaskEndDate.year,
+        lastTaskEndDate.month,
+        lastTaskEndDate.day,
+      );
+    }
 
     highlightedColumns =
         highlightedDates?.map((e) => e.difference(startDate).inDays).toList() ??
             [];
 
     final diff = endDate.difference(startDate).inDays;
+    debugPrint('diff: $diff');
     columns = diff + (widthDivisor - (diff % widthDivisor));
-
     cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
     labelColumnWidth = _titleWidth;
     timelineHeight = _legendHeight;
+    debugPrint('------');
+
+    renderAreaSize = Size(
+      min(containerSize.width, (columns * cellWidth) + labelColumnWidth),
+      min(
+          containerSize.height,
+          (activities.length + activities.allTasks.length) * rowHeight +
+              timelineHeight),
+    );
+    debugPrint('containerSize.width: ${containerSize.width}');
+    debugPrint(
+        'width: ${min(containerSize.width, (columns * cellWidth) + labelColumnWidth)}');
+    debugPrint('renderAreaSize: $renderAreaSize');
+
     maxDx = _horizontalScrollBoundary;
     maxDy = _verticalScrollBoundary;
 
@@ -96,16 +136,16 @@ class GanttConfig {
 
   double get _horizontalScrollBoundary {
     var dataWidth = columns * cellWidth;
-    var renderAreaWidth = containerSize.width - labelColumnWidth;
+    var renderAreaWidth = renderAreaSize.width - labelColumnWidth;
     return dataWidth < renderAreaWidth
         ? 0
-        : dataWidth - containerSize.width + labelColumnWidth;
+        : dataWidth - renderAreaSize.width + labelColumnWidth;
   }
 
   double get _verticalScrollBoundary =>
-      dataHeight < (containerSize.height - timelineHeight)
+      dataHeight < (renderAreaSize.height - timelineHeight)
           ? 0
-          : dataHeight - containerSize.height + timelineHeight;
+          : dataHeight - renderAreaSize.height + timelineHeight;
 
   double get _titleWidth {
     double width = 0;
@@ -203,7 +243,7 @@ class GanttConfig {
   }
 
   GanttVisibleData get gridData => GanttVisibleData(
-        containerSize,
+        renderAreaSize,
         activities.length + activities.allTasks.length,
         uiOffset,
         columns,

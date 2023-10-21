@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
@@ -81,15 +79,8 @@ class _GanttChartContentState<T> extends State<_GanttChartContent<T>> {
       builder: (context, constraints) => Align(
         alignment: Alignment.topLeft,
         child: SizedBox(
-          height: min(
-              constraints.maxHeight,
-              (widget.activities.length + widget.activities.allTasks.length) *
-                      widget.config.rowHeight +
-                  widget.config.timelineHeight),
-          width: min(
-              constraints.maxWidth,
-              widget.config.columns * widget.config.cellWidth +
-                  widget.config.labelColumnWidth),
+          height: widget.config.renderAreaSize.height,
+          width: widget.config.renderAreaSize.width,
           child: ClipRect(
             child: MouseRegion(
               onExit: (event) {

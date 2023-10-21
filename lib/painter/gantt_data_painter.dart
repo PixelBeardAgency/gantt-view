@@ -13,11 +13,11 @@ class GanttDataPainter extends GanttPainter {
     for (var activity in config.activities) {
       if (activity.label != null) {
         for (int i = 0; i < config.columns; i++) {
-          final currentOffset = (i + config.weekendOffset) % 7;
+          final currentOffset = i % 7;
           (_cells[currentRow] ??= {})[i] = config.highlightedColumns.contains(i)
               ? _HolidayFillData()
               : config.style.weekendColor != null &&
-                      (currentOffset == 0 || currentOffset == 1)
+                      (currentOffset == 5 || currentOffset == 6)
                   ? _WeekendFillData()
                   : _HeaderFillData();
         }
@@ -35,14 +35,14 @@ class GanttDataPainter extends GanttPainter {
         }
 
         for (int i = 0; i < config.columns; i++) {
-          final currentOffset = (i + config.weekendOffset) % 7;
+          final currentOffset = i % 7;
           if (config.highlightedColumns.contains(i)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
                 ? _TaskFillData(task.tooltip, i == from, i == to,
                     isHoliday: true)
                 : _HolidayFillData();
           } else if (config.style.weekendColor != null &&
-              (currentOffset == 0 || currentOffset == 1)) {
+              (currentOffset == 5 || currentOffset == 6)) {
             (_cells[currentRow] ??= {})[i] = (i >= from && i <= to)
                 ? _TaskFillData(task.tooltip, i == from, i == to,
                     isWeekend: true)
@@ -188,7 +188,8 @@ class GanttDataPainter extends GanttPainter {
     final firstColumnOffset = ((-config.panOffset.dx) % grid.columnWidth);
     final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
 
-    var column = (currentPosX + firstColumnOffset) ~/ grid.columnWidth +
+    var column = (currentPosX + firstColumnOffset) ~/
+            (grid.columnWidth / config.widthDivisor) +
         gridData.firstVisibleColumn;
 
     final firstRowOffset = ((-config.panOffset.dy) % rowHeight);
@@ -200,6 +201,9 @@ class GanttDataPainter extends GanttPainter {
     final data = _cells[row]?[column];
     final isFilled = data is _TaskFillData;
 
+    // debugPrint('row: $row');
+    // debugPrint('column: $column');
+    // debugPrint('${config.containerSize.width}');
     if (!isFilled || (data.tooltip?.isEmpty ?? true)) {
       return;
     }
@@ -231,11 +235,13 @@ class GanttDataPainter extends GanttPainter {
     }
 
     // Tooltip is rendered off the end edge of the screen
-    var limit = config.maxDx - config.containerSize.width - backgroundWidth;
+    var limit = config.maxDx + config.renderAreaSize.width;
+    var currentStartOffset =
+        startOffset.dx + backgroundWidth + -config.panOffset.dx;
 
-    if (startOffset.dx + backgroundWidth > limit) {
+    if (currentStartOffset > limit) {
       startOffset = Offset(
-        config.containerSize.width - backgroundWidth,
+        limit - backgroundWidth + config.panOffset.dx,
         startOffset.dy,
       );
     }

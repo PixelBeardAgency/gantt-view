@@ -25,6 +25,7 @@ class GanttVisibleData {
     lastVisibleRow = min(rows, firstVisibleRow + visibleRows);
 
     visibleColumns = ((size.width - uiOffset.dx) / columnWidth).ceil() + 1;
+    debugPrint('visibleColumns: $visibleColumns');
     firstVisibleColumn = max(0, (-panOffset.dx ~/ columnWidth));
     lastVisibleColumn = min(columns, firstVisibleColumn + visibleColumns);
   }

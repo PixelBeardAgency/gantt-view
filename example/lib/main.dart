@@ -48,14 +48,14 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip:
             '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
       ),
-      taskSort: (a, b) => a.startDate.compareTo(b.startDate),
+      taskSort: (a, b) => b.endDate.compareTo(a.endDate),
       activityLabelBuilder: (item) => item.group,
-      activitySort: (a, b) => a.tasks
-          .map((e) => e.startDate)
-          .reduce((a, b) => a.isBefore(b) ? a : b)
+      activitySort: (b, a) => a.tasks
+          .map((e) => e.endDate)
+          .reduce((a, b) => a.isAfter(b) ? a : b)
           .compareTo(b.tasks
-              .map((e) => e.startDate)
-              .reduce((a, b) => a.isBefore(b) ? a : b)),
+              .map((e) => e.endDate)
+              .reduce((a, b) => a.isAfter(b) ? a : b)),
       highlightedDates: [DateTime(2023, 9, 29)],
     );
   }
@@ -69,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: GanttChart(
         controller: _controller,
         title: 'My Lovely Gantt',
@@ -77,8 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
         grid: const GanttGrid(
           columnWidth: 40,
           rowSpacing: 0,
-          timelineAxisType: TimelineAxisType.daily,
-          tooltipType: TooltipType.tap,
+          timelineAxisType: TimelineAxisType.weekly,
+          tooltipType: TooltipType.hover,
         ),
         style: GanttStyle(
           taskBarColor: Colors.blue.shade400,
@@ -106,7 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.redAccent,
-        onPressed: () => _controller.setPanOffset(Offset.zero),
+        onPressed: () => _controller.addItems(Data.dummyData),
+        // onPressed: () => _controller.setPanOffset(Offset.zero),
         child: const Icon(Icons.restore, color: Colors.white),
       ),
     );
