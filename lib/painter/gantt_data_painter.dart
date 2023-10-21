@@ -210,22 +210,52 @@ class GanttDataPainter extends GanttPainter {
       maxWidth: config.grid.tooltipWidth,
     );
 
-    final startOffset = Offset(
+    var startOffset = Offset(
       config.tooltipOffset.dx - textPainter.width / 2,
       config.tooltipOffset.dy -
-          config.style.tooltipPadding.bottom -
+          config.style.tooltipPadding.vertical -
           textPainter.height,
     );
 
-    final endOffset =
-        startOffset + Offset(textPainter.width, textPainter.height);
+    final backgroundWidth =
+        textPainter.width + config.style.tooltipPadding.horizontal;
+    final backgroundHeight =
+        textPainter.height + config.style.tooltipPadding.vertical;
+
+    // Tooltip is rendered off the start edge of the screen
+    if (startOffset.dx < config.labelColumnWidth) {
+      startOffset = Offset(
+        config.labelColumnWidth,
+        startOffset.dy,
+      );
+    }
+
+    // Tooltip is rendered off the end edge of the screen
+    var limit = config.maxDx - config.containerSize.width - backgroundWidth;
+
+    if (startOffset.dx + backgroundWidth > limit) {
+      startOffset = Offset(
+        config.containerSize.width - backgroundWidth,
+        startOffset.dy,
+      );
+    }
+
+    // Tooltip is rendered off the top edge of the screen
+    if (startOffset.dy < config.timelineHeight) {
+      startOffset = Offset(
+        startOffset.dx,
+        config.timelineHeight,
+      );
+    }
+
+    final endOffset = startOffset + Offset(backgroundWidth, 0);
 
     var backgroundRect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         startOffset.dx,
         endOffset.dy,
-        textPainter.width + config.style.tooltipPadding.horizontal,
-        textPainter.height + config.style.tooltipPadding.vertical,
+        backgroundWidth,
+        backgroundHeight,
       ),
       topLeft: Radius.circular(config.style.tooltipRadius),
       bottomLeft: Radius.circular(config.style.tooltipRadius),
@@ -238,16 +268,17 @@ class GanttDataPainter extends GanttPainter {
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(
-      backgroundRect.shift(Offset(
-        -config.style.tooltipPadding.horizontal / 2,
-        -textPainter.height - config.style.tooltipPadding.bottom,
-      )),
+      backgroundRect,
       backgroundPaint,
     );
 
     textPainter.paint(
       canvas,
-      startOffset,
+      startOffset +
+          Offset(
+            config.style.tooltipPadding.left,
+            config.style.tooltipPadding.top,
+          ),
     );
   }
 }

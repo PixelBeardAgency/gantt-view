@@ -45,7 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
         label: item.title,
         startDate: item.start,
         endDate: item.end,
-        tooltip: item.title,
+        tooltip:
+            '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
       ),
       taskSort: (a, b) => a.startDate.compareTo(b.startDate),
       activityLabelBuilder: (item) => item.group,
@@ -77,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           columnWidth: 40,
           rowSpacing: 0,
           timelineAxisType: TimelineAxisType.daily,
-          tooltipType: TooltipType.hover,
+          tooltipType: TooltipType.tap,
         ),
         style: GanttStyle(
           taskBarColor: Colors.blue.shade400,
@@ -100,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltipColor: Colors.redAccent,
           tooltipPadding:
               const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-              weekendColor: Colors.grey.shade200,
+          weekendColor: Colors.grey.shade200,
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -110,4 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+extension on DateTime {
+  String get formattedDate => '$day/$month/$year';
 }
