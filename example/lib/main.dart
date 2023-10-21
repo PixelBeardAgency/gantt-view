@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
         grid: const GanttGrid(
           columnWidth: 40,
           rowSpacing: 0,
-          timelineAxisType: TimelineAxisType.weekly,
+          timelineAxisType: TimelineAxisType.daily,
           tooltipType: TooltipType.tap,
         ),
         style: GanttStyle(

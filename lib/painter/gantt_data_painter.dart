@@ -224,9 +224,9 @@ class GanttDataPainter extends GanttPainter {
         textPainter.height + config.style.tooltipPadding.vertical;
 
     // Tooltip is rendered off the start edge of the available space
-    if (startOffset.dx < config.labelColumnWidth) {
+    if (startOffset.dx - config.panOffset.dx < config.labelColumnWidth) {
       startOffset = Offset(
-        config.labelColumnWidth,
+        config.labelColumnWidth + config.panOffset.dx,
         startOffset.dy,
       );
     }
