@@ -55,7 +55,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -65,10 +65,11 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.length, equals(1));
-    expect(controller.activities.first.tasks.length, equals(expected.length));
+    expect(controller.activities.value.length, equals(1));
+    expect(controller.activities.value.first.tasks.length,
+        equals(expected.length));
     for (int i = 0; i < expected.length; i++) {
-      final actualTask = controller.activities.first.tasks[i];
+      final actualTask = controller.activities.value.first.tasks[i];
       expect(actualTask.label, equals(expected[i].label));
       expect(actualTask.startDate, equals(expected[i].startDate));
       expect(actualTask.endDate, equals(expected[i].endDate));
@@ -102,7 +103,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -113,11 +114,12 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.length, equals(1));
-    expect(controller.activities.first.tasks.length, equals(expected.length));
+    expect(controller.activities.value.length, equals(1));
+    expect(controller.activities.value.first.tasks.length,
+        equals(expected.length));
     for (int i = 0; i < expected.length; i++) {
       final actualTask =
-          controller.activities.first.tasks[expected.length - i - 1];
+          controller.activities.value.first.tasks[expected.length - i - 1];
       expect(actualTask.label, equals(expected[i].label));
       expect(actualTask.startDate, equals(expected[i].startDate));
       expect(actualTask.endDate, equals(expected[i].endDate));
@@ -153,7 +155,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -164,20 +166,20 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.length, equals(2));
+    expect(controller.activities.value.length, equals(2));
 
-    final actualActivityOdd = controller.activities[0];
+    final actualActivityOdd = controller.activities.value[0];
     expect(actualActivityOdd.label, equals('odd'));
     expect(actualActivityOdd.tasks.length, equals(expectedOdd.length));
     for (int i = 0; i < expectedOdd.length; i++) {
       final expectedTask = expectedOdd[i];
-      final actualTask = controller.activities.first.tasks[i];
+      final actualTask = controller.activities.value.first.tasks[i];
       expect(actualTask.label, equals(expectedTask.label));
       expect(actualTask.startDate, equals(expectedTask.startDate));
       expect(actualTask.endDate, equals(expectedTask.endDate));
     }
 
-    final actualActivityEven = controller.activities[1];
+    final actualActivityEven = controller.activities.value[1];
     expect(actualActivityEven.label, equals('even'));
     expect(actualActivityEven.tasks.length, equals(expectedEven.length));
     for (int i = 0; i < expectedEven.length; i++) {
@@ -218,7 +220,7 @@ void main() {
     ];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -230,20 +232,20 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.length, equals(2));
+    expect(controller.activities.value.length, equals(2));
 
-    final actualActivityOdd = controller.activities[0];
+    final actualActivityOdd = controller.activities.value[0];
     expect(actualActivityOdd.label, equals('odd'));
     expect(actualActivityOdd.tasks.length, equals(expectedOdd.length));
     for (int i = 0; i < expectedOdd.length; i++) {
       final expectedTask = expectedOdd[expectedOdd.length - i - 1];
-      final actualTask = controller.activities.first.tasks[i];
+      final actualTask = controller.activities.value.first.tasks[i];
       expect(actualTask.label, equals(expectedTask.label));
       expect(actualTask.startDate, equals(expectedTask.startDate));
       expect(actualTask.endDate, equals(expectedTask.endDate));
     }
 
-    final actualActivityEven = controller.activities[1];
+    final actualActivityEven = controller.activities.value[1];
     expect(actualActivityEven.label, equals('even'));
     expect(actualActivityEven.tasks.length, equals(expectedEven.length));
     for (int i = 0; i < expectedEven.length; i++) {
@@ -260,7 +262,7 @@ void main() {
     final items = [1, 2, 3, 4];
 
     // Act
-    final controller = GanttDataController<int>(
+    final controller = GanttChartController<int>(
       items: items,
       taskBuilder: (item) => GanttTask(
         label: '$item',
@@ -273,8 +275,8 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.length, equals(2));
-    expect(controller.activities[0].label, equals('even'));
-    expect(controller.activities[1].label, equals('odd'));
+    expect(controller.activities.value.length, equals(2));
+    expect(controller.activities.value[0].label, equals('even'));
+    expect(controller.activities.value[1].label, equals('odd'));
   });
 }

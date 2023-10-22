@@ -14,6 +14,8 @@ A customisable Gantt Chart view for Flutter.
 - Customisable weekend color
 - Custom highlighted dates
 - Customisable highlighted date color
+- Tooltip on hover, or tap, of task bar
+- Customisable tooltip style
 
 ## Usage
 
@@ -78,6 +80,7 @@ _controller = GanttDataController<ExampleTaskItem>(
 | showMonth        | `bool`             | Toggle for displaying the month on the top timeline axis | `true`  |
 | showDay          | `bool`             | Toggle for displaying the day on the top timeline axis   | `true`  |
 | timelineAxisType | `TimelineAxisType` | Enum to toggle chart between daily and weekly view       | `daily` |
+| tooltipType      | `TooltipType`      | Enum to choose when tooltips are displayed               | `none`  |
 
 ## Styling
 
@@ -99,13 +102,16 @@ _controller = GanttDataController<ExampleTaskItem>(
 | weekendColor         | `Color`      | Color of the weekend columns                               | `null`                                         |
 | highlightedDateColor | `Color`      | Color of the highlighted date columns                      | `Colors.grey.shade300`                         |
 | axisDividerColor     | `Color`      | Color of the dividing lines between the axis and the chart | `null`                                         |
+| tooltipColor         | `Color`      | Color of the tooltip background                            | `Colors.grey.shade500`                         |
+| tooltipStyle         | `TextStyle`  | TextStyle for the tooltip                                  | `TextStyle(color: Colors.white, fontSize: 16)` |
+| tooltipPadding       | `EdgeInsets` | Internal padding for the tooltip text                      | `EdgeInsets.all(4)`                            |
+| tooltipRadius        | `double`     | Corner radius for the tooltip background                   | `4.0`                                          |
 
 ## Additional information
 
 This is a WIP project and is not yet ready for production use. The API is subject to change. Any feedback is welcome, as are pull requests.
 
 ## TODO
-- [ ] Add tooltip to display task details
 - [ ] Add zooming functionality
 - [ ] Add ability to customise individual task bar colors
 - [ ] Add ability to define custom start and end times for the entire chart

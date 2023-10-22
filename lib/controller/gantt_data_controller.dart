@@ -1,12 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/model/gantt_task.dart';
 
-class GanttDataController<T> extends ChangeNotifier {
+class GanttChartController<T> {
   final List<T> _items = [];
 
-  final List<GanttActivity> _activities = [];
-  List<GanttActivity> get activities => List.unmodifiable(_activities);
+  final ValueNotifier<List<GanttActivity>> _activities =
+      ValueNotifier<List<GanttActivity>>([]);
+  ValueListenable<List<GanttActivity>> get activities => _activities;
 
   final GanttTask Function(T data) _taskBuilder;
   final int Function(GanttTask a, GanttTask b)? _taskSort;
@@ -17,7 +19,14 @@ class GanttDataController<T> extends ChangeNotifier {
   final List<DateTime> _highlightedDates;
   List<DateTime> get highlightedDates => List.unmodifiable(_highlightedDates);
 
-  GanttDataController({
+  final ValueNotifier<Offset> _panOffset = ValueNotifier<Offset>(Offset.zero);
+  ValueListenable<Offset> get panOffset => _panOffset;
+
+  final ValueNotifier<Offset> _tooltipOffset =
+      ValueNotifier<Offset>(Offset.zero);
+  ValueListenable<Offset> get tooltipOffset => _tooltipOffset;
+
+  GanttChartController({
     required List<T> items,
     required GanttTask Function(T data) taskBuilder,
     int Function(GanttTask a, GanttTask b)? taskSort,
@@ -50,11 +59,10 @@ class GanttDataController<T> extends ChangeNotifier {
   }
 
   void _sortItems() {
-    _activities.clear();
     List<T> items = List.from(_items);
 
     if (_activityLabelBuilder != null) {
-      List<GanttActivity> activities = [];
+      List<GanttActivity> newActivities = [];
       final activityLabels = items.map<String>(_activityLabelBuilder!).toSet();
       for (var label in activityLabels) {
         final tasks = items
@@ -65,39 +73,39 @@ class GanttDataController<T> extends ChangeNotifier {
           tasks.sort(_taskSort!);
         }
 
-        activities.add(GanttActivity(label: label, tasks: tasks));
+        newActivities.add(GanttActivity(label: label, tasks: tasks));
       }
 
       if (_activitySort != null) {
-        activities.sort(_activitySort!);
+        newActivities.sort(_activitySort!);
       }
 
-      _activities.addAll(activities);
+      _activities.value = newActivities;
     } else {
       final tasks = items.map<GanttTask>(_taskBuilder).toList();
 
       if (_taskSort != null) {
         tasks.sort(_taskSort!);
       }
-      _activities.add(GanttActivity(tasks: tasks));
+      _activities.value = [GanttActivity(tasks: tasks)];
     }
-
-    notifyListeners();
   }
 
   void setHighlightedDates(List<DateTime> dates) {
     _highlightedDates.clear();
     _highlightedDates.addAll(dates);
-    notifyListeners();
   }
 
-  void addHighlightedDates(List<DateTime> dates) {
-    _highlightedDates.addAll(dates);
-    notifyListeners();
-  }
+  void addHighlightedDates(List<DateTime> dates) =>
+      _highlightedDates.addAll(dates);
 
-  void removeHighlightedDate(DateTime date) {
-    _highlightedDates.remove(date);
-    notifyListeners();
+  void removeHighlightedDate(DateTime date) => _highlightedDates.remove(date);
+
+  void setTooltipOffset(Offset offset) => _tooltipOffset.value = offset;
+
+  void setPanOffset(Offset offset) {
+    final diff = (panOffset.value - offset);
+    _panOffset.value = offset;
+    _tooltipOffset.value -= diff;
   }
 }

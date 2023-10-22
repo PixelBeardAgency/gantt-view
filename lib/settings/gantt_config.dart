@@ -6,34 +6,28 @@ import 'package:gantt_view/model/gantt_activity.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
 import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
-import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttConfig {
-  final Iterable<GanttActivity> activities;
-
   final GanttGrid grid;
   final GanttStyle style;
 
   final String? title;
   final String? subtitle;
 
-  final Size containerSize;
-
-  Offset _panOffset = Offset.zero;
-  Offset get panOffset => _panOffset;
+  late Size renderAreaSize;
 
   late double labelColumnWidth;
   late double timelineHeight;
   late double maxDx;
   late double maxDy;
 
+  late int rows;
   late double rowHeight;
   late double dataHeight;
 
   late DateTime startDate;
   late DateTime endDate;
 
-  late int weekendOffset;
   late List<int> highlightedColumns;
 
   late int columns;
@@ -47,42 +41,66 @@ class GanttConfig {
   late Offset uiOffset;
 
   GanttConfig({
+    required Iterable<GanttActivity> activities,
     GanttGrid? grid,
     GanttStyle? style,
     this.title,
     this.subtitle,
-    required this.activities,
-    required this.containerSize,
+    required Size containerSize,
     List<DateTime>? highlightedDates,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
+    rows = activities.length + activities.allTasks.length;
     rowHeight = this.grid.barHeight +
         this.grid.rowSpacing +
         this.style.labelPadding.vertical;
 
-    startDate = activities.allTasks
+    var firstTaskStartDate = activities.allTasks
         .reduce((value, element) =>
             value.startDate.isBefore(element.startDate) ? value : element)
         .startDate;
-    endDate = activities.allTasks
+
+    startDate = DateTime(
+      firstTaskStartDate.year,
+      firstTaskStartDate.month,
+      firstTaskStartDate.day +
+          (this.grid.showFullWeeks
+              ? DateTime.monday - firstTaskStartDate.weekday
+              : 0),
+    );
+
+    var lastTaskEndDate = activities.allTasks
         .reduce((value, element) =>
             value.endDate.isAfter(element.endDate) ? value : element)
         .endDate;
 
-    weekendOffset = startDate.weekday - DateTime.sunday + 1;
+    endDate = DateTime(
+      lastTaskEndDate.year,
+      lastTaskEndDate.month,
+      lastTaskEndDate.day,
+    );
 
     highlightedColumns =
         highlightedDates?.map((e) => e.difference(startDate).inDays).toList() ??
             [];
 
     final diff = endDate.difference(startDate).inDays;
-    columns = diff + (widthDivisor - (diff % widthDivisor));
-
+    columns =
+        diff + 1 + (this.grid.showFullWeeks ? 7 - lastTaskEndDate.weekday : 0);
     cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
-    labelColumnWidth = _titleWidth;
+    labelColumnWidth = _titleWidth(activities);
     timelineHeight = _legendHeight;
+
+    renderAreaSize = Size(
+      min(containerSize.width, (columns * cellWidth) + labelColumnWidth),
+      min(
+          containerSize.height,
+          (activities.length + activities.allTasks.length) * rowHeight +
+              timelineHeight),
+    );
+
     maxDx = _horizontalScrollBoundary;
     maxDy = _verticalScrollBoundary;
 
@@ -94,30 +112,31 @@ class GanttConfig {
 
   double get _horizontalScrollBoundary {
     var dataWidth = columns * cellWidth;
-    var renderAreaWidth = containerSize.width - labelColumnWidth;
+    var renderAreaWidth = renderAreaSize.width - labelColumnWidth;
     return dataWidth < renderAreaWidth
         ? 0
-        : dataWidth - containerSize.width + labelColumnWidth;
+        : dataWidth - renderAreaSize.width + labelColumnWidth;
   }
 
   double get _verticalScrollBoundary =>
-      dataHeight < (containerSize.height - timelineHeight)
+      dataHeight < (renderAreaSize.height - timelineHeight)
           ? 0
-          : dataHeight - containerSize.height + timelineHeight;
+          : dataHeight - renderAreaSize.height + timelineHeight;
 
-  double get _titleWidth {
+  double _titleWidth(Iterable<GanttActivity> activities) {
     double width = 0;
     for (var activity in activities) {
       width = max(
         width,
-        headerPainter(activity.label ?? '', style.activityLabelStyle).width +
+        textPainter(activity.label ?? '', style.activityLabelStyle, maxLines: 1)
+                .width +
             style.labelPadding.horizontal,
       );
 
       for (var task in activity.tasks) {
         width = max(
           width,
-          headerPainter(task.label, style.taskLabelStyle).width +
+          textPainter(task.label, style.taskLabelStyle, maxLines: 1).width +
               style.labelPadding.horizontal,
         );
       }
@@ -137,20 +156,17 @@ class GanttConfig {
         titlePainter().height + style.titlePadding.vertical,
       );
 
-  void setPanOffset(Offset offset) {
-    _panOffset = offset;
-  }
-
   TextPainter titlePainter() {
     final textPainter = TextPainter(
       text: TextSpan(
         text: title,
         style: style.titleStyle,
         children: [
-          TextSpan(
-            text: '\n$subtitle',
-            style: style.subtitleStyle,
-          )
+          if (subtitle != null)
+            TextSpan(
+              text: '\n$subtitle',
+              style: style.subtitleStyle,
+            )
         ],
       ),
       textDirection: TextDirection.ltr,
@@ -181,9 +197,14 @@ class GanttConfig {
     return textPainter;
   }
 
-  TextPainter headerPainter(String label, TextStyle style) {
+  TextPainter textPainter(
+    String label,
+    TextStyle style, {
+    double maxWidth = double.infinity,
+    int? maxLines,
+  }) {
     final textPainter = TextPainter(
-      maxLines: 1,
+      maxLines: maxLines,
       text: TextSpan(
         text: label,
         style: style,
@@ -192,18 +213,8 @@ class GanttConfig {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: double.infinity,
+      maxWidth: maxWidth,
     );
     return textPainter;
   }
-
-  GanttVisibleData get gridData => GanttVisibleData(
-        containerSize,
-        activities.length + activities.allTasks.length,
-        uiOffset,
-        columns,
-        cellWidth,
-        panOffset,
-        rowHeight,
-      );
 }

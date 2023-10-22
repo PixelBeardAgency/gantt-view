@@ -25,6 +25,11 @@ class GanttStyle {
 
   final Color? axisDividerColor;
 
+  final Color tooltipColor;
+  final TextStyle tooltipStyle;
+  final EdgeInsets tooltipPadding;
+  final double tooltipRadius;
+
   GanttStyle({
     Color? taskBarColor,
     this.taskBarRadius = 8.0,
@@ -42,6 +47,10 @@ class GanttStyle {
     this.weekendColor,
     Color? highlightedDateColor,
     this.axisDividerColor,
+    Color? tooltipColor,
+    TextStyle? tooltipStyle,
+    this.tooltipPadding = const EdgeInsets.all(4),
+    this.tooltipRadius = 4.0,
   })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
         taskLabelStyle = taskLabelStyle ??
             const TextStyle(color: Colors.white, fontSize: 12),
@@ -56,5 +65,8 @@ class GanttStyle {
             titleStyle ?? const TextStyle(color: Colors.black, fontSize: 16),
         subtitleStyle =
             subtitleStyle ?? const TextStyle(color: Colors.black, fontSize: 14),
-        holidayColor = highlightedDateColor ?? Colors.grey.shade300;
+        holidayColor = highlightedDateColor ?? Colors.grey.shade300,
+        tooltipColor = tooltipColor ?? Colors.grey.shade500,
+        tooltipStyle =
+            tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16);
 }

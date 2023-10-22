@@ -34,17 +34,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late GanttDataController<ExampleEventItem> _controller;
+  late GanttChartController<ExampleEventItem> _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = GanttDataController<ExampleEventItem>(
+    _controller = GanttChartController<ExampleEventItem>(
       items: Data.dummyData,
       taskBuilder: (item) => GanttTask(
         label: item.title,
         startDate: item.start,
         endDate: item.end,
+        tooltip:
+            '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
       ),
       taskSort: (a, b) => a.startDate.compareTo(b.startDate),
       activityLabelBuilder: (item) => item.group,
@@ -59,12 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GanttChart(
@@ -72,20 +68,45 @@ class _MyHomePageState extends State<MyHomePage> {
         title: 'My Lovely Gantt',
         subtitle: 'This is a subtitle',
         grid: const GanttGrid(
-          columnWidth: 30,
+          columnWidth: 40,
           rowSpacing: 0,
           timelineAxisType: TimelineAxisType.daily,
+          tooltipType: TooltipType.tap,
         ),
         style: GanttStyle(
-          taskBarColor: Colors.blue.shade200,
+          taskBarColor: Colors.blue.shade400,
+          activityLabelColor: Colors.blue.shade100,
           taskLabelColor: Colors.blue.shade900,
-          activityLabelColor: Colors.blue.shade400,
           gridColor: Colors.grey.shade300,
-          labelPadding: const EdgeInsets.all(4),
-          taskBarRadius: 10,
-          timelineColor: Colors.grey.shade300,
+          taskBarRadius: 6,
+          activityLabelStyle: Theme.of(context).textTheme.labelLarge,
+          titleStyle: Theme.of(context).textTheme.titleLarge,
+          titlePadding: const EdgeInsets.only(
+            left: 8,
+            right: 8,
+            top: 16,
+            bottom: 8,
+          ),
+          subtitleStyle: Theme.of(context).textTheme.titleMedium,
+          timelineColor: Colors.grey.shade100,
+          labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          axisDividerColor: Colors.grey.shade500,
+          tooltipColor: Colors.redAccent,
+          tooltipPadding:
+              const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          weekendColor: Colors.grey.shade200,
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.redAccent,
+        onPressed: () => _controller.addItems(Data.dummyData),
+        // onPressed: () => _controller.setPanOffset(Offset.zero),
+        child: const Icon(Icons.restore, color: Colors.white),
       ),
     );
   }
+}
+
+extension on DateTime {
+  String get formattedDate => '$day/$month/$year';
 }
