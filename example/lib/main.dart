@@ -50,12 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       taskSort: (a, b) => a.startDate.compareTo(b.startDate),
       activityLabelBuilder: (item) => item.group,
-      activitySort: (a, b) => a.tasks
-          .map((e) => e.startDate)
-          .reduce((a, b) => a.isBefore(b) ? a : b)
-          .compareTo(b.tasks
-              .map((e) => e.startDate)
-              .reduce((a, b) => a.isBefore(b) ? a : b)),
+      activitySort: (a, b) =>
+          a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
       highlightedDates: [DateTime(2023, 9, 29)],
     );
   }
