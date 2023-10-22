@@ -44,8 +44,6 @@ class GanttChart<T> extends StatelessWidget {
               ? FutureBuilder(
                   future: _buildCells(activities, config),
                   builder: (context, snapshot) {
-                    debugPrint('snapshot.connectionState: '
-                        '${snapshot.connectionState}');
                     if (snapshot.hasData) {
                       return GanttChartContent(
                         config: config,
