@@ -33,46 +33,50 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.config.renderAreaSize.height,
-      width: widget.config.renderAreaSize.width,
-      child: ClipRect(
-        child: MouseRegion(
-          onExit: (event) {
-            if (widget.config.grid.tooltipType == TooltipType.hover) {
-              widget.controller.setTooltipOffset(Offset.zero);
-            }
-          },
-          onHover: (event) {
-            mouseX = event.localPosition.dx;
-            mouseY = event.localPosition.dy;
-            if (widget.config.grid.tooltipType == TooltipType.hover) {
-              widget.controller.setTooltipOffset(Offset(mouseX, mouseY));
-            }
-          },
-          child: Listener(
-            onPointerSignal: (event) {
-              if (event is PointerScrollEvent) {
-                _updateOffset(
-                  -event.scrollDelta,
-                  widget.config.maxDx,
-                  widget.config.maxDy,
-                );
-              }
-            },
-            child: GestureDetector(
-              onTap: () {
-                if (widget.config.grid.tooltipType == TooltipType.tap) {
+    return ValueListenableBuilder(
+      valueListenable: widget.controller.panOffset,
+      builder: (context, panOffset, child) => ValueListenableBuilder(
+        valueListenable: widget.controller.tooltipOffset,
+        builder: (context, tooltipOffset, child) => SizedBox(
+          height: widget.config.renderAreaSize.height,
+          width: widget.config.renderAreaSize.width,
+          child: ClipRect(
+            child: MouseRegion(
+              onExit: (event) {
+                if (widget.config.grid.tooltipType == TooltipType.hover) {
+                  widget.controller.setTooltipOffset(Offset.zero);
+                }
+              },
+              onHover: (event) {
+                mouseX = event.localPosition.dx;
+                mouseY = event.localPosition.dy;
+                if (widget.config.grid.tooltipType == TooltipType.hover) {
                   widget.controller.setTooltipOffset(Offset(mouseX, mouseY));
                 }
               },
-              onPanUpdate: (details) => _updateOffset(
-                  details.delta, widget.config.maxDx, widget.config.maxDy),
-              child: ValueListenableBuilder(
-                valueListenable: widget.controller.panOffset,
-                builder: (context, panOffset, child) => ValueListenableBuilder(
-                  valueListenable: widget.controller.tooltipOffset,
-                  builder: (context, tooltipOffset, child) => CustomPaint(
+              child: Listener(
+                onPointerSignal: (event) {
+                  if (event is PointerScrollEvent) {
+                    _updateOffset(
+                      panOffset + -event.scrollDelta,
+                      widget.config.maxDx,
+                      widget.config.maxDy,
+                    );
+                  }
+                },
+                child: GestureDetector(
+                  onTap: () {
+                    if (widget.config.grid.tooltipType == TooltipType.tap) {
+                      widget.controller
+                          .setTooltipOffset(Offset(mouseX, mouseY));
+                    }
+                  },
+                  onPanUpdate: (details) => _updateOffset(
+                    panOffset + details.delta,
+                    widget.config.maxDx,
+                    widget.config.maxDy,
+                  ),
+                  child: CustomPaint(
                     size: Size.infinite,
                     willChange: true,
                     foregroundPainter: GanttUiPainter(
@@ -96,9 +100,8 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
     );
   }
 
-  void _updateOffset(Offset delta, double maxDx, double maxDy) {
-    var panOffset = widget.controller.panOffset.value;
-    panOffset += delta;
+  void _updateOffset(Offset panOffset, double maxDx, double maxDy) {
+    panOffset;
     if (panOffset.dx > 0) {
       panOffset = Offset(0, panOffset.dy);
     }
