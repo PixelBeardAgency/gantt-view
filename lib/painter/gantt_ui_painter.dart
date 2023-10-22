@@ -88,6 +88,10 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintHeaders(int firstVisibleRow, int lastVisibleRow, Canvas canvas) {
+    final backgroundOffset = Offset(0, panOffset.dy);
+    final textYOffset =
+        (config.grid.barHeight / 2) + config.style.labelPadding.top;
+
     for (int index = firstVisibleRow; index < lastVisibleRow; index++) {
       final header = headers[index];
 
@@ -95,7 +99,7 @@ class GanttUiPainter extends GanttPainter {
         0,
         index * config.rowHeight + config.timelineHeight,
         config.labelColumnWidth,
-        config.rowHeight + 1,
+        config.rowHeight,
       );
 
       final titlePaint = Paint()
@@ -103,8 +107,6 @@ class GanttUiPainter extends GanttPainter {
             ? config.style.taskLabelColor
             : config.style.activityLabelColor
         ..style = PaintingStyle.fill;
-
-      final backgroundOffset = Offset(0, panOffset.dy);
 
       canvas.drawRect(
         backgroundRect.shift(backgroundOffset),
@@ -123,10 +125,7 @@ class GanttUiPainter extends GanttPainter {
         canvas,
         Offset(
               0 + config.style.labelPadding.left,
-              backgroundRect.top +
-                  (config.grid.barHeight / 2) -
-                  (textPainter.height / 2) +
-                  config.style.labelPadding.top,
+              backgroundRect.top - (textPainter.height / 2) + textYOffset,
             ) +
             backgroundOffset,
       );

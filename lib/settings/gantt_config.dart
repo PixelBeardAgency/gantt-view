@@ -89,16 +89,13 @@ class GanttConfig {
         diff + 1 + (this.grid.showFullWeeks ? 7 - lastTaskEndDate.weekday : 0);
     cellWidth = this.grid.columnWidth / widthDivisor;
 
-    dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
+    dataHeight = rows * rowHeight;
     labelColumnWidth = _titleWidth(activities);
     timelineHeight = _legendHeight;
 
     renderAreaSize = Size(
       min(containerSize.width, (columns * cellWidth) + labelColumnWidth),
-      min(
-          containerSize.height,
-          (activities.length + activities.allTasks.length) * rowHeight +
-              timelineHeight),
+      min(containerSize.height, rows * rowHeight + timelineHeight),
     );
 
     maxDx = _horizontalScrollBoundary;
