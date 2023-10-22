@@ -16,8 +16,6 @@ class GanttConfig {
 
   late Size renderAreaSize;
 
-  late double labelColumnWidth;
-  late double timelineHeight;
   late double maxDx;
   late double maxDy;
 
@@ -39,6 +37,9 @@ class GanttConfig {
       };
 
   late Offset uiOffset;
+
+  double get labelColumnWidth => uiOffset.dx;
+  double get timelineHeight => uiOffset.dy;
 
   GanttConfig({
     required Iterable<GanttActivity> activities,
@@ -90,8 +91,11 @@ class GanttConfig {
     cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = rows * rowHeight;
-    labelColumnWidth = _titleWidth(activities);
-    timelineHeight = _legendHeight;
+
+    uiOffset = Offset(
+      _titleWidth(activities),
+      _legendHeight(),
+    );
 
     renderAreaSize = Size(
       min(containerSize.width, (columns * cellWidth) + labelColumnWidth),
@@ -100,11 +104,6 @@ class GanttConfig {
 
     maxDx = _horizontalScrollBoundary;
     maxDy = _verticalScrollBoundary;
-
-    uiOffset = Offset(
-      labelColumnWidth,
-      timelineHeight,
-    );
   }
 
   double get _horizontalScrollBoundary {
@@ -141,7 +140,7 @@ class GanttConfig {
     return max(width, titlePainter().width + style.titlePadding.horizontal);
   }
 
-  double get _legendHeight => max(
+  double _legendHeight() => max(
         datePainter(
               [
                 if (grid.showYear) '2022',
