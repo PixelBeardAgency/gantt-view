@@ -105,13 +105,7 @@ class GanttChartController<T> {
 
   void setPanOffset(Offset offset) {
     final diff = (panOffset.value - offset);
-    final ttOffset = tooltipOffset.value;
-    if (diff.dx != 0) {
-      _tooltipOffset.value = Offset(ttOffset.dx - diff.dx, ttOffset.dy);
-    }
-    if (diff.dy != 0) {
-      _tooltipOffset.value = Offset(ttOffset.dx, ttOffset.dy - diff.dy);
-    }
     _panOffset.value = offset;
+    _tooltipOffset.value -= diff;
   }
 }

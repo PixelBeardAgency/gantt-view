@@ -32,6 +32,10 @@ class GanttUiPainter extends GanttPainter {
     }
   }
 
+  @override
+  bool shouldRepaint(covariant GanttUiPainter oldDelegate) =>
+      super.shouldRepaint(oldDelegate) || oldDelegate.headers != headers;
+
   void _paintLegend(
       int firstVisibleColumn, int lastVisibleColumn, Canvas canvas) {
     int previousYear = 0;

@@ -5,18 +5,17 @@ import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
-  final Map<int, Map<int, GridCell>> _cells;
+  final Map<int, Map<int, GridCell>> cells;
   final Offset tooltipOffset;
 
   final double _taskOffset;
 
   GanttDataPainter({
-    required Map<int, Map<int, GridCell>> cells,
+    required this.cells,
     required super.config,
     required super.panOffset,
     required this.tooltipOffset,
-  })  : _cells = cells,
-        _taskOffset =
+  }) : _taskOffset =
             (config.grid.rowSpacing + config.style.labelPadding.vertical) / 2;
 
   @override
@@ -33,8 +32,10 @@ class GanttDataPainter extends GanttPainter {
   }
 
   @override
-  bool shouldRepaint(covariant GanttPainter oldDelegate) =>
-      super.shouldRepaint(oldDelegate) || oldDelegate.panOffset != panOffset;
+  bool shouldRepaint(covariant GanttDataPainter oldDelegate) =>
+      super.shouldRepaint(oldDelegate) ||
+      oldDelegate.tooltipOffset != tooltipOffset ||
+      oldDelegate.cells != cells;
 
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
@@ -42,7 +43,7 @@ class GanttDataPainter extends GanttPainter {
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
-        final fill = _cells[y]?[x];
+        final fill = cells[y]?[x];
         var dx = x * config.cellWidth + config.uiOffset.dx;
         if (fill is HeaderGridCell) {
           _paintFill(dx, dy, canvas, config.style.activityLabelColor);
@@ -158,7 +159,7 @@ class GanttDataPainter extends GanttPainter {
     final row = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
         gridData.firstVisibleRow;
 
-    final data = _cells[row]?[column];
+    final data = cells[row]?[column];
     final isFilled = data is TaskGridCell;
 
     if (!isFilled || (data.tooltip?.isEmpty ?? true)) {
