@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
       activityLabelBuilder: (item) => item.group,
       activitySort: (a, b) =>
           a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
-      highlightedDates: [DateTime(2023, 9, 29)],
+      highlightedDates: [DateTime(2023, 10, 5)],
     );
   }
 
@@ -96,7 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.redAccent,
         onPressed: () => _controller.addItems(Data.dummyData),
-        // onPressed: () => _controller.setPanOffset(Offset.zero),
         child: const Icon(Icons.restore, color: Colors.white),
       ),
     );

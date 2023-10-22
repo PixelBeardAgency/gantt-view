@@ -15,12 +15,15 @@ class GanttChartContent<T> extends StatefulWidget {
   final Map<int, Map<int, GridCell>> gridCells;
   final List<HeaderCell> headerCells;
 
+  final bool isBuilding;
+
   const GanttChartContent({
     super.key,
     required this.config,
     required this.controller,
     required this.gridCells,
     required this.headerCells,
+    required this.isBuilding,
   });
 
   @override
@@ -40,60 +43,98 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
         builder: (context, tooltipOffset, child) => SizedBox(
           height: widget.config.renderAreaSize.height,
           width: widget.config.renderAreaSize.width,
-          child: ClipRect(
-            child: MouseRegion(
-              onExit: (event) {
-                if (widget.config.grid.tooltipType == TooltipType.hover) {
-                  widget.controller.setTooltipOffset(Offset.zero);
-                }
-              },
-              onHover: (event) {
-                mouseX = event.localPosition.dx;
-                mouseY = event.localPosition.dy;
-                if (widget.config.grid.tooltipType == TooltipType.hover) {
-                  widget.controller.setTooltipOffset(Offset(mouseX, mouseY));
-                }
-              },
-              child: Listener(
-                onPointerSignal: (event) {
-                  if (event is PointerScrollEvent) {
-                    _updateOffset(
-                      panOffset + -event.scrollDelta,
-                      widget.config.maxDx,
-                      widget.config.maxDy,
-                    );
-                  }
-                },
-                child: GestureDetector(
-                  onTap: () {
-                    if (widget.config.grid.tooltipType == TooltipType.tap) {
-                      widget.controller
-                          .setTooltipOffset(Offset(mouseX, mouseY));
-                    }
-                  },
-                  onPanUpdate: (details) => _updateOffset(
-                    panOffset + details.delta,
-                    widget.config.maxDx,
-                    widget.config.maxDy,
-                  ),
-                  child: CustomPaint(
-                    size: Size.infinite,
-                    willChange: true,
-                    foregroundPainter: GanttUiPainter(
-                      config: widget.config,
-                      panOffset: panOffset,
-                      headers: widget.headerCells,
-                    ),
-                    painter: GanttDataPainter(
-                      cells: widget.gridCells,
-                      config: widget.config,
-                      panOffset: panOffset,
-                      tooltipOffset: tooltipOffset,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ClipRect(
+                  child: MouseRegion(
+                    onExit: (event) {
+                      if (widget.config.grid.tooltipType == TooltipType.hover) {
+                        widget.controller.setTooltipOffset(Offset.zero);
+                      }
+                    },
+                    onHover: (event) {
+                      mouseX = event.localPosition.dx;
+                      mouseY = event.localPosition.dy;
+                      if (widget.config.grid.tooltipType == TooltipType.hover) {
+                        widget.controller
+                            .setTooltipOffset(Offset(mouseX, mouseY));
+                      }
+                    },
+                    child: Listener(
+                      onPointerSignal: (event) {
+                        if (event is PointerScrollEvent) {
+                          _updateOffset(
+                            panOffset + -event.scrollDelta,
+                            widget.config.maxDx,
+                            widget.config.maxDy,
+                          );
+                        }
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          if (widget.config.grid.tooltipType ==
+                              TooltipType.tap) {
+                            widget.controller
+                                .setTooltipOffset(Offset(mouseX, mouseY));
+                          }
+                        },
+                        onPanUpdate: (details) => _updateOffset(
+                          panOffset + details.delta,
+                          widget.config.maxDx,
+                          widget.config.maxDy,
+                        ),
+                        child: CustomPaint(
+                          size: Size.infinite,
+                          willChange: true,
+                          foregroundPainter: GanttUiPainter(
+                            config: widget.config,
+                            panOffset: panOffset,
+                            headers: widget.headerCells,
+                          ),
+                          painter: GanttDataPainter(
+                            cells: widget.gridCells,
+                            config: widget.config,
+                            panOffset: panOffset,
+                            tooltipOffset: tooltipOffset,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+              if (widget.isBuilding)
+                Padding(
+                  padding: const EdgeInsets.only(top: 100),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.fromBorderSide(
+                            BorderSide(
+                              color: widget.config.style.taskBarColor
+                                  .withOpacity(0.5),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(
+                              color: widget.config.style.taskBarColor,
+                              strokeWidth: 1.5,
+                            ),
+                          ),
+                        )),
+                  ),
+                )
+            ],
           ),
         ),
       ),

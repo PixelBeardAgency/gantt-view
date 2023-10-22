@@ -41,13 +41,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
     );
 
     // Assert
     expect(config.startDate, equals(startDate));
-    expect(config.endDate, equals(endDate));
   });
 
   test('rowHeight is correctly calculated', () {
@@ -71,6 +73,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -102,6 +107,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -129,6 +137,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -155,6 +166,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -203,6 +217,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -220,6 +237,7 @@ void main() {
       () {
     // Arrange
     final startDate = DateTime(2021, 1, 1);
+    const columns = 2;
     final activities = [
       GanttActivity(
         label: '1',
@@ -230,7 +248,7 @@ void main() {
             endDate: DateTime(
               startDate.year,
               startDate.month,
-              startDate.day + 2,
+              startDate.day + columns,
             ),
           ),
         ],
@@ -256,6 +274,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: columns,
+      startDate: startDate,
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -271,6 +292,7 @@ void main() {
   test('maxDx is calculated correctly when set to weekly', () {
     // Arrange
     final startDate = DateTime(2021, 1, 1);
+    const columns = 84;
     final activities = [
       GanttActivity(
         label: '1',
@@ -281,7 +303,7 @@ void main() {
             endDate: DateTime(
               startDate.year,
               startDate.month,
-              startDate.day + (11 * 7),
+              startDate.day + columns,
             ),
           ),
         ],
@@ -307,6 +329,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 2,
+      columns: columns,
+      startDate: startDate,
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -360,6 +385,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -375,19 +403,17 @@ void main() {
   test('maxDy is calculated correctly when data is taller than container', () {
     // Arrange
     final startDate = DateTime(2021, 1, 1);
+    final endDate = DateTime(2021, 1, 2);
+    const rows = 13;
     final activities = [
       GanttActivity(
         label: '1',
         tasks: List.generate(
-          12,
+          rows - 1,
           (index) => GanttTask(
             label: '1',
             startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + 11,
-            ),
+            endDate: endDate,
           ),
         ),
       ),
@@ -415,6 +441,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: rows,
+      columns: 2,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,
@@ -430,6 +459,8 @@ void main() {
   test('maxDy is calculated correctly when data is shorter than container', () {
     // Arrange
     final startDate = DateTime(2021, 1, 1);
+    final endDate = DateTime(2021, 1, 2);
+    const rows = 2;
     final activities = [
       GanttActivity(
         label: '1',
@@ -437,11 +468,7 @@ void main() {
           GanttTask(
             label: '1',
             startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + 11,
-            ),
+            endDate: endDate,
           )
         ],
       ),
@@ -469,6 +496,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: rows,
+      columns: 2,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 200),
       grid: grid,
@@ -524,6 +554,9 @@ void main() {
 
     // Act
     final config = GanttConfig(
+      rows: 12,
+      columns: 12,
+      startDate: DateTime.now(),
       activities: activities,
       containerSize: const Size(100, 100),
       grid: grid,

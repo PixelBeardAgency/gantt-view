@@ -65,11 +65,11 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.value.length, equals(1));
-    expect(controller.activities.value.first.tasks.length,
+    expect(controller.data.value!.activities.length, equals(1));
+    expect(controller.data.value!.activities.first.tasks.length,
         equals(expected.length));
     for (int i = 0; i < expected.length; i++) {
-      final actualTask = controller.activities.value.first.tasks[i];
+      final actualTask = controller.data.value!.activities.first.tasks[i];
       expect(actualTask.label, equals(expected[i].label));
       expect(actualTask.startDate, equals(expected[i].startDate));
       expect(actualTask.endDate, equals(expected[i].endDate));
@@ -114,12 +114,12 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.value.length, equals(1));
-    expect(controller.activities.value.first.tasks.length,
+    expect(controller.data.value!.activities.length, equals(1));
+    expect(controller.data.value!.activities.first.tasks.length,
         equals(expected.length));
     for (int i = 0; i < expected.length; i++) {
-      final actualTask =
-          controller.activities.value.first.tasks[expected.length - i - 1];
+      final actualTask = controller
+          .data.value!.activities.first.tasks[expected.length - i - 1];
       expect(actualTask.label, equals(expected[i].label));
       expect(actualTask.startDate, equals(expected[i].startDate));
       expect(actualTask.endDate, equals(expected[i].endDate));
@@ -166,20 +166,20 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.value.length, equals(2));
+    expect(controller.data.value!.activities.length, equals(2));
 
-    final actualActivityOdd = controller.activities.value[0];
+    final actualActivityOdd = controller.data.value!.activities[0];
     expect(actualActivityOdd.label, equals('odd'));
     expect(actualActivityOdd.tasks.length, equals(expectedOdd.length));
     for (int i = 0; i < expectedOdd.length; i++) {
       final expectedTask = expectedOdd[i];
-      final actualTask = controller.activities.value.first.tasks[i];
+      final actualTask = controller.data.value!.activities.first.tasks[i];
       expect(actualTask.label, equals(expectedTask.label));
       expect(actualTask.startDate, equals(expectedTask.startDate));
       expect(actualTask.endDate, equals(expectedTask.endDate));
     }
 
-    final actualActivityEven = controller.activities.value[1];
+    final actualActivityEven = controller.data.value!.activities[1];
     expect(actualActivityEven.label, equals('even'));
     expect(actualActivityEven.tasks.length, equals(expectedEven.length));
     for (int i = 0; i < expectedEven.length; i++) {
@@ -232,20 +232,20 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.value.length, equals(2));
+    expect(controller.data.value!.activities.length, equals(2));
 
-    final actualActivityOdd = controller.activities.value[0];
+    final actualActivityOdd = controller.data.value!.activities[0];
     expect(actualActivityOdd.label, equals('odd'));
     expect(actualActivityOdd.tasks.length, equals(expectedOdd.length));
     for (int i = 0; i < expectedOdd.length; i++) {
       final expectedTask = expectedOdd[expectedOdd.length - i - 1];
-      final actualTask = controller.activities.value.first.tasks[i];
+      final actualTask = controller.data.value!.activities.first.tasks[i];
       expect(actualTask.label, equals(expectedTask.label));
       expect(actualTask.startDate, equals(expectedTask.startDate));
       expect(actualTask.endDate, equals(expectedTask.endDate));
     }
 
-    final actualActivityEven = controller.activities.value[1];
+    final actualActivityEven = controller.data.value!.activities[1];
     expect(actualActivityEven.label, equals('even'));
     expect(actualActivityEven.tasks.length, equals(expectedEven.length));
     for (int i = 0; i < expectedEven.length; i++) {
@@ -275,8 +275,8 @@ void main() {
     );
 
     // Assert
-    expect(controller.activities.value.length, equals(2));
-    expect(controller.activities.value[0].label, equals('even'));
-    expect(controller.activities.value[1].label, equals('odd'));
+    expect(controller.data.value!.activities.length, equals(2));
+    expect(controller.data.value!.activities[0].label, equals('even'));
+    expect(controller.data.value!.activities[1].label, equals('odd'));
   });
 }

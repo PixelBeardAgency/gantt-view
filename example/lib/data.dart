@@ -2,7 +2,7 @@ import 'dart:math';
 
 abstract class Data {
   static List<ExampleEventItem> get dummyData =>
-      List.generate(400, (index) => ExampleEventItem.random());
+      List.generate(100, (index) => ExampleEventItem.random());
 }
 
 class ExampleEventItem {
