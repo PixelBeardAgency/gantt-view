@@ -5,32 +5,28 @@ abstract class ActivityBuilder {
   static List<GanttActivity> buildActivities<T>(ActivityBuildData<T> data) {
     List<GanttActivity> activities = [];
     if (data.activityLabelBuilder != null) {
-      List<GanttActivity> newActivities = [];
-      final activityLabels =
-          data.items.map<String>(data.activityLabelBuilder!).toSet();
+      Map<String, List<GanttTask>> labelTasks = {};
 
-      for (var label in activityLabels) {
-        final tasks = data.items
-            .where((item) => data.activityLabelBuilder!(item) == label)
-            .map<GanttTask>(data.taskBuilder)
-            .toList();
+      for (var item in data.items) {
+        final label = data.activityLabelBuilder!(item);
+        (labelTasks[label] ??= []).add(data.taskBuilder(item));
+      }
+
+      activities = labelTasks.entries.map((e) {
+        final tasks = e.value;
         if (data.taskSort != null) {
-          tasks.sort(data.taskSort!);
+          tasks.sort(data.taskSort);
         }
-
-        newActivities.add(GanttActivity(label: label, tasks: tasks));
-      }
-
+        return GanttActivity(label: e.key, tasks: tasks);
+      }).toList();
       if (data.activitySort != null) {
-        newActivities.sort(data.activitySort!);
+        activities.sort(data.activitySort);
       }
-
-      activities = newActivities;
     } else {
       final tasks = data.items.map<GanttTask>(data.taskBuilder).toList();
 
       if (data.taskSort != null) {
-        tasks.sort(data.taskSort!);
+        tasks.sort(data.taskSort);
       }
       activities = [GanttActivity(tasks: tasks)];
     }
@@ -54,7 +50,7 @@ class ActivityBuildData<T> {
     required this.taskBuilder,
     this.taskSort,
     this.activityLabelBuilder,
-     this.activitySort,
+    this.activitySort,
     this.highlightedDates = const [],
     this.showFullWeeks = false,
   });
