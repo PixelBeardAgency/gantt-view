@@ -1,7 +1,7 @@
 name: gantt_view
 description: A Gantt Chart view for Flutter.
 version: 0.0.1
-homepage: https://lpickford.dev/
+homepage: https://pixelbeard.co
 
 environment:
   sdk: '>=3.1.3 <4.0.0'
