@@ -1,4 +1,5 @@
 import 'package:gantt_view/model/timeline_axis_type.dart';
+import 'package:gantt_view/model/tooltip_type.dart';
 
 class GanttGrid {
   final double barHeight;
@@ -24,10 +25,4 @@ class GanttGrid {
     this.timelineAxisType = TimelineAxisType.daily,
     this.tooltipType = TooltipType.none,
   });
-}
-
-enum TooltipType {
-  none,
-  hover,
-  tap,
 }

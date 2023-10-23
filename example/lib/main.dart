@@ -4,6 +4,7 @@ import 'package:gantt_view/controller/gantt_data_controller.dart';
 import 'package:gantt_view/gantt_chart.dart';
 import 'package:gantt_view/model/gantt_task.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
+import 'package:gantt_view/model/tooltip_type.dart';
 import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
 
@@ -53,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
       activitySort: (a, b) =>
           a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
       highlightedDates: [DateTime(2023, 10, 5)],
+      showFullWeeks: false,
     );
   }
 

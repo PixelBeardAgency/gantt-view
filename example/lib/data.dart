@@ -19,7 +19,7 @@ class ExampleEventItem {
   });
 
   factory ExampleEventItem.random() {
-    final start = DateTime.now()
+    final start = DateTime.timestamp()
         .add(Duration(days: Random().nextInt(25) - Random().nextInt(25)));
     final end = start.add(Duration(days: Random().nextInt(50)));
     return ExampleEventItem(

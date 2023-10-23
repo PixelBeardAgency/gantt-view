@@ -53,7 +53,7 @@ abstract class CellBuilder {
               ? HolidayGridCell()
               : (isWeekend)
                   ? WeekendGridCell()
-                  : HeaderGridCell();
+                  : ActivityGridCell();
         }
         currentRow++;
       }
@@ -66,8 +66,8 @@ abstract class CellBuilder {
         final int from = start.difference(startDate).inDays;
         final int to = end.difference(startDate).inDays;
 
-        if (start.isAfter(end)) {
-          throw Exception('Start date must be before end date.');
+        if (start.isAtSameMomentAs(end) && start.isAfter(end)) {
+          throw Exception('Start date must be before or same as end date.');
         }
 
         for (int i = 0; i < columns; i++) {
@@ -105,12 +105,12 @@ abstract class CellBuilder {
 
 class BuildCellsData {
   final List<GanttActivity> activities;
-  final List<DateTime> highlightedDates;
-  final bool showFullWeeks;
+  List<DateTime> highlightedDates;
+  bool showFullWeeks;
 
   BuildCellsData({
     required this.activities,
-    required this.highlightedDates,
-    required this.showFullWeeks,
+    this.highlightedDates = const [],
+    this.showFullWeeks = false,
   });
 }

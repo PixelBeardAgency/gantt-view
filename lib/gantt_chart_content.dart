@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/controller/gantt_data_controller.dart';
 import 'package:gantt_view/model/cell/grid/grid_cell.dart';
 import 'package:gantt_view/model/cell/header/header_cell.dart';
+import 'package:gantt_view/model/tooltip_type.dart';
 import 'package:gantt_view/painter/gantt_data_painter.dart';
 import 'package:gantt_view/painter/gantt_ui_painter.dart';
 import 'package:gantt_view/settings/gantt_config.dart';
-import 'package:gantt_view/settings/gantt_grid.dart';
 
 class GanttChartContent<T> extends StatefulWidget {
   final GanttChartController<T> controller;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/model/cell/grid/grid_cell.dart';
+import 'package:gantt_view/model/tooltip_type.dart';
 import 'package:gantt_view/painter/gantt_painter.dart';
-import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
@@ -45,7 +45,7 @@ class GanttDataPainter extends GanttPainter {
           x++) {
         final fill = cells[y]?[x];
         var dx = x * config.cellWidth + config.uiOffset.dx;
-        if (fill is HeaderGridCell) {
+        if (fill is ActivityGridCell) {
           _paintFill(dx, dy, canvas, config.style.activityLabelColor);
         } else if (fill is TaskGridCell) {
           _paintTask(dx, dy, canvas, fill);

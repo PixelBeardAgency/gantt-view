@@ -1,69 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/model/gantt_activity.dart';
-import 'package:gantt_view/model/gantt_task.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
 import 'package:gantt_view/settings/gantt_config.dart';
 import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
 
 void main() {
-  test('start and end dates are correctly calculated', () {
-    // Arrange
-    final startDate = DateTime(2021, 1, 1);
-    final endDate = DateTime(2021, 12, 31);
-
-    final List<GanttTask> activity1tasks = [
-      GanttTask(
-        label: '1',
-        startDate: DateTime(2021, 3, 1),
-        endDate: DateTime(2021, 4, 31),
-      ),
-      GanttTask(
-          label: '2', startDate: startDate, endDate: DateTime(2021, 3, 31))
-    ];
-    final List<GanttTask> activity2tasks = [
-      GanttTask(
-        label: '1',
-        startDate: DateTime(2021, 4, 1),
-        endDate: endDate,
-      ),
-      GanttTask(
-          label: '2',
-          startDate: DateTime(2021, 4, 1),
-          endDate: DateTime(2021, 5, 31))
-    ];
-
-    final activities = [
-      GanttActivity(label: '1', tasks: activity1tasks),
-      GanttActivity(label: '2', tasks: activity2tasks),
-    ];
-
-    // Act
-    final config = GanttConfig(
-      rows: 12,
-      columns: 12,
-      startDate: DateTime.now(),
-      activities: activities,
-      containerSize: const Size(100, 100),
-    );
-
-    // Assert
-    expect(config.startDate, equals(startDate));
-  });
-
   test('rowHeight is correctly calculated', () {
     // Arrange
-    final activities = [
-      GanttActivity(label: '1', tasks: [
-        GanttTask(
-          label: '1',
-          startDate: DateTime(2021, 3, 1),
-          endDate: DateTime(2021, 4, 31),
-        ),
-      ]),
-    ];
-
     const GanttGrid grid = GanttGrid(
       barHeight: 20,
       rowSpacing: 5,
@@ -76,7 +20,7 @@ void main() {
       rows: 12,
       columns: 12,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -88,16 +32,6 @@ void main() {
 
   test('dataHeight is correctly calculated', () {
     // Arrange
-    final activities = [
-      GanttActivity(label: '1', tasks: [
-        GanttTask(
-          label: '1',
-          startDate: DateTime(2021, 3, 1),
-          endDate: DateTime(2021, 4, 31),
-        ),
-      ]),
-    ];
-
     const GanttGrid grid = GanttGrid(
       barHeight: 20,
       rowSpacing: 5,
@@ -107,10 +41,10 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: 12,
+      rows: 2,
+      columns: 1,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -122,16 +56,6 @@ void main() {
 
   test('columns is calculated correctly when set to daily', () {
     // Arrange
-    final activities = [
-      GanttActivity(label: '1', tasks: [
-        GanttTask(
-          label: '1',
-          startDate: DateTime(2021, 3, 1),
-          endDate: DateTime(2021, 3, 12),
-        ),
-      ]),
-    ];
-
     const GanttGrid grid = GanttGrid(timelineAxisType: TimelineAxisType.daily);
     const expectedColumns = 12;
 
@@ -140,36 +64,7 @@ void main() {
       rows: 12,
       columns: 12,
       startDate: DateTime.now(),
-      activities: activities,
-      containerSize: const Size(100, 100),
-      grid: grid,
-    );
-
-    // Assert
-    expect(config.columns, equals(expectedColumns));
-  });
-
-  test('columns is calculated correctly when set to weekly', () {
-    // Arrange
-    final activities = [
-      GanttActivity(label: '1', tasks: [
-        GanttTask(
-          label: '1',
-          startDate: DateTime(2021, 3, 1),
-          endDate: DateTime(2021, 3, 12),
-        ),
-      ]),
-    ];
-
-    const GanttGrid grid = GanttGrid(timelineAxisType: TimelineAxisType.weekly);
-    const expectedColumns = 14;
-
-    // Act
-    final config = GanttConfig(
-      rows: 12,
-      columns: 12,
-      startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
     );
@@ -180,24 +75,6 @@ void main() {
 
   test('maxDx is calculated correctly when set to daily', () {
     // Arrange
-    final startDate = DateTime(2021, 1, 1);
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: [
-          GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + 11,
-            ),
-          ),
-        ],
-      ),
-    ];
-
     const textStyle = TextStyle(fontSize: 12);
     const labelPadding = 5.0;
 
@@ -213,14 +90,17 @@ void main() {
       labelPadding: const EdgeInsets.all(labelPadding),
     );
 
-    const expectedDx = 162;
+    // 12 * 20  total width of all columns
+    // + 20     label width
+    // - 100    container width
+    const expectedDx = 160;
 
     // Act
     final config = GanttConfig(
       rows: 12,
       columns: 12,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -238,22 +118,6 @@ void main() {
     // Arrange
     final startDate = DateTime(2021, 1, 1);
     const columns = 2;
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: [
-          GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + columns,
-            ),
-          ),
-        ],
-      ),
-    ];
 
     const textStyle = TextStyle(fontSize: 12);
     const labelPadding = 5.0;
@@ -277,7 +141,7 @@ void main() {
       rows: 12,
       columns: columns,
       startDate: startDate,
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -293,22 +157,6 @@ void main() {
     // Arrange
     final startDate = DateTime(2021, 1, 1);
     const columns = 84;
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: [
-          GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + columns,
-            ),
-          ),
-        ],
-      ),
-    ];
 
     const textStyle = TextStyle(fontSize: 12);
     const labelPadding = 5.0;
@@ -325,14 +173,19 @@ void main() {
       labelPadding: const EdgeInsets.all(labelPadding),
     );
 
-    const expectedDx = 162;
+
+    // 84 * 20  full size width of all columns
+    // / 7      divided by the number of days in a week
+    // + 20     label width
+    // - 100    container width
+    const expectedDx = 160;
 
     // Act
     final config = GanttConfig(
       rows: 2,
       columns: columns,
       startDate: startDate,
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -348,24 +201,6 @@ void main() {
       'maxDx is calculated correctly when set to weekly and is narrower than container',
       () {
     // Arrange
-    final startDate = DateTime(2021, 1, 1);
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: [
-          GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + (2 * 7),
-            ),
-          ),
-        ],
-      ),
-    ];
-
     const textStyle = TextStyle(fontSize: 12);
     const labelPadding = 5.0;
 
@@ -388,7 +223,7 @@ void main() {
       rows: 12,
       columns: 12,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -402,22 +237,7 @@ void main() {
 
   test('maxDy is calculated correctly when data is taller than container', () {
     // Arrange
-    final startDate = DateTime(2021, 1, 1);
-    final endDate = DateTime(2021, 1, 2);
     const rows = 13;
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: List.generate(
-          rows - 1,
-          (index) => GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: endDate,
-          ),
-        ),
-      ),
-    ];
 
     const textStyle = TextStyle(fontSize: 12);
     const titlePadding = 5.0;
@@ -444,7 +264,7 @@ void main() {
       rows: rows,
       columns: 2,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
@@ -458,21 +278,7 @@ void main() {
 
   test('maxDy is calculated correctly when data is shorter than container', () {
     // Arrange
-    final startDate = DateTime(2021, 1, 1);
-    final endDate = DateTime(2021, 1, 2);
     const rows = 2;
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: [
-          GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: endDate,
-          )
-        ],
-      ),
-    ];
 
     const textStyle = TextStyle(fontSize: 12);
     const titlePadding = 5.0;
@@ -499,7 +305,7 @@ void main() {
       rows: rows,
       columns: 2,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 200),
       grid: grid,
       style: style,
@@ -513,24 +319,6 @@ void main() {
 
   test('uiOffset is calculated correctly', () {
     // Arrange
-    final startDate = DateTime(2021, 1, 1);
-    final activities = [
-      GanttActivity(
-        label: '1',
-        tasks: [
-          GanttTask(
-            label: '1',
-            startDate: startDate,
-            endDate: DateTime(
-              startDate.year,
-              startDate.month,
-              startDate.day + 11,
-            ),
-          )
-        ],
-      ),
-    ];
-
     const textStyle = TextStyle(fontSize: 12);
     const titlePadding = 5.0;
 
@@ -557,7 +345,7 @@ void main() {
       rows: 12,
       columns: 12,
       startDate: DateTime.now(),
-      activities: activities,
+      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,

@@ -52,11 +52,11 @@ class ActivityBuildData<T> {
   ActivityBuildData({
     required this.items,
     required this.taskBuilder,
-    required this.taskSort,
-    required this.activityLabelBuilder,
-    required this.activitySort,
-    required this.highlightedDates,
-    required this.showFullWeeks,
+    this.taskSort,
+    this.activityLabelBuilder,
+     this.activitySort,
+    this.highlightedDates = const [],
+    this.showFullWeeks = false,
   });
 
   ActivityBuildData<T> copyWith({

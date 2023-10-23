@@ -32,7 +32,7 @@ class GanttChart<T> extends StatelessWidget {
             if (data?.activities.isNotEmpty == true) {
               return GanttChartContent(
                 config: GanttConfig(
-                  activities: data!.activities,
+                  headers: data!.headerCells,
                   grid: grid,
                   style: style,
                   title: title,
