@@ -21,9 +21,9 @@ A customisable Gantt Chart view for Flutter.
 
 ![Gantt Example](/assets/example.png)
 
-All that is required is a `GanttDataController` and a `GanttView` widget. The `GanttDataController` is responsible for providing the data to the `GanttView` and the `GanttView` is responsible for displaying the data.
+All that is required is a `GanttDataController` and a `GanttChart` widget. The `GanttDataController` is responsible for providing the data to the `GanttChart` and the `GanttChart` is responsible for displaying the data.
 
-There are basic theming options available for customising the look and feel of the `GanttView`, such as changing how rows look, and if headers should be displayed.
+There are basic theming options available for customising the look and feel of the `GanttChart`, such as changing how rows look, and if headers should be displayed.
 
 ```dart
 GanttChart(
@@ -47,13 +47,13 @@ GanttChart(
 )
 ```
 
-To display tasks in the `GanttView`, a `GanttDataController` is required. The `GanttDataController` has 2 required fields, `items` and `taskBuilder`. The `items` field is a list of items that are used by the `GanttDataController` to build an internal data model for the `GanttView` to display. The `taskBuilder` is a function that takes an item from the `items` list and returns a `GanttTask` data object. The `GanttTask` data object provides the required data to display an task in the `GanttView`.
+To display tasks in the `GanttChart`, a `GanttDataController` is required. The `GanttDataController` has 2 required fields, `items` and `taskBuilder`. The `items` field is a list of items that are used by the `GanttDataController` to build an internal data model for the `GanttChart` to display. The `taskBuilder` is a function that takes an item from the `items` list and returns a `GanttTask` data object. The `GanttTask` data object provides the required data to display a task in the `GanttChart`.
 
-If an `activityLabelBuilder` is provided, the `GanttView` will display a header row above the tasks which for that activity. The `activityLabelBuilder` is a function that takes an item from the `items` list and returns a `String`. The header String is then used to group tasks together to be displayed as part of the same activity.
+If an `activityLabelBuilder` is provided, the `GanttChart` will display a header row above the tasks which for that activity. The `activityLabelBuilder` is a function that takes an item from the `items` list and returns a `String`. The header String is then used to group tasks together to be displayed as part of the same activity.
 
 To sort tasks internal to a single activity, a `taskSort` function can be provided. This is a comparator function that takes 2 `GanttTask` objects and returns an `int` value. The `GanttTask` objects are then sorted based on the returned value.
 
-To sort activities in the `GanttView`, a `activitySort` function can be provided. This is a comparator function that takes 2 `GanttActivity` objects and returns an `int` value. The `GanttActivity` objects are then sorted based on the returned value.
+To sort activities in the `GanttChart`, a `activitySort` function can be provided. This is a comparator function that takes 2 `GanttActivity` objects and returns an `int` value. The `GanttActivity` objects are then sorted based on the returned value.
 
 ```dart
 _controller = GanttDataController<ExampleTaskItem>(
@@ -65,7 +65,7 @@ _controller = GanttDataController<ExampleTaskItem>(
     ),
     taskSort: (a, b) => a.startDate.compareTo(b.startDate),
     activityLabelBuilder: (item) => item.group,
-    activitySort: (a, b) => a.tasks.startDate.compareTo(b.tasks.startDate),
+    activitySort: (a, b) => a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
     highlightedDates: [DateTime(2023, 9, 29)],
 );
 ```
@@ -115,7 +115,4 @@ This is a WIP project and is not yet ready for production use. The API is subjec
 - [ ] Add zooming functionality
 - [ ] Add ability to customise individual task bar colors
 - [ ] Add ability to define custom start and end times for the entire chart
-- [ ] Optimise the calculations for the header width, legend height, and precalculate them outside `GanttConfig`, so they aren't performed on every build, only when `activities` is updated in the `GanttController`.
-- [ ] Add a `loading` state to the `GanttView` to display a loading indicator while the `GanttController` is building the internal data model.
-- [ ] Build cells for the `GanttView` in a background isolate in the `GanttController` to improve performance.
 - [ ] Tests
