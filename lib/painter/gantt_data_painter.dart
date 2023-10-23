@@ -78,12 +78,12 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintTask(double x, double y, Canvas canvas, TaskGridCell fill) {
     var color = config.style.taskBarColor;
-    if (fill.isHoliday || fill.isWeekend) {
+    if (fill.isHighlighted || fill.isWeekend) {
       _paintFill(
           x,
           y,
           canvas,
-          fill.isHoliday
+          fill.isHighlighted
               ? config.style.holidayColor
               : config.style.weekendColor!);
       color = color.withOpacity(0.5);

@@ -4,7 +4,7 @@ class ActivityGridCell extends GridCell {}
 
 class TaskGridCell extends GridCell {
   final String? tooltip;
-  final bool isHoliday;
+  final bool isHighlighted;
   final bool isWeekend;
   final bool isFirst;
   final bool isLast;
@@ -13,7 +13,7 @@ class TaskGridCell extends GridCell {
     this.tooltip,
     this.isFirst,
     this.isLast, {
-    this.isHoliday = false,
+    this.isHighlighted = false,
     this.isWeekend = false,
   });
 }

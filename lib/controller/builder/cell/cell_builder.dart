@@ -49,7 +49,10 @@ abstract class CellBuilder {
         for (int i = 0; i < columns; i++) {
           final currentOffset = (weekendOffset + i) % 7;
           final isWeekend = currentOffset == 5 || currentOffset == 6;
-          (cells[currentRow] ??= {})[i] = highlightedColumns.contains(i)
+
+          final isHighlighted = highlightedColumns.contains(i);
+
+          (cells[currentRow] ??= {})[i] = isHighlighted
               ? HolidayGridCell()
               : (isWeekend)
                   ? WeekendGridCell()
@@ -72,19 +75,24 @@ abstract class CellBuilder {
 
         for (int i = 0; i < columns; i++) {
           final currentOffset = (weekendOffset + i) % 7;
-          if (highlightedColumns.contains(i)) {
-            (cells[currentRow] ??= {})[i] = (i >= from && i <= to)
-                ? TaskGridCell(task.tooltip, i == from, i == to,
-                    isHoliday: true)
-                : HolidayGridCell();
-          } else if ((currentOffset == 5 || currentOffset == 6)) {
-            (cells[currentRow] ??= {})[i] = (i >= from && i <= to)
-                ? TaskGridCell(task.tooltip, i == from, i == to,
-                    isWeekend: true)
-                : WeekendGridCell();
-          } else if (i >= from && i <= to) {
-            (cells[currentRow] ??= {})[i] =
-                TaskGridCell(task.tooltip, i == from, i == to);
+          final isWeekend = currentOffset == 5 || currentOffset == 6;
+
+          final isHighlighted = highlightedColumns.contains(i);
+
+          final isTask = i >= from && i <= to;
+
+          if (isTask) {
+            (cells[currentRow] ??= {})[i] = TaskGridCell(
+              task.tooltip,
+              i == from,
+              i == to,
+              isHighlighted: isHighlighted,
+              isWeekend: isWeekend,
+            );
+          } else if (isHighlighted) {
+            (cells[currentRow] ??= {})[i] = HolidayGridCell();
+          } else if (isWeekend) {
+            (cells[currentRow] ??= {})[i] = WeekendGridCell();
           }
         }
 
