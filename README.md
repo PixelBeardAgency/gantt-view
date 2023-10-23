@@ -116,3 +116,19 @@ This is a WIP project and is not yet ready for production use. The API is subjec
 - [ ] Add ability to customise individual task bar colors
 - [ ] Add ability to define custom start and end times for the entire chart
 - [ ] Tests
+- [ ] Add ability to define legend height, label column width, which overrides the autocalculated values
+- [ ] Add ability to hide the legend
+- [ ] Add ability to hide the title/labels
+- [ ] Add ability to set the first day of the week
+- [ ] Add ability to make highlighted days and weekend days a solid colour, so that the task bar is not visible
+- [ ] Add scrollbars
+
+## Current Known Issues
+- [ ] Sometimes when instantiated, the pan offset of the chart is not correctly updated when panning, resulting in a slower pan speed than expected.
+- [ ] Large lists of items can cause the chart to be slow to render, due to:
+  - Sorting a large amount of data into Activities and Tasks;
+  - Calculating the width of the label column based on the longest label;
+    - This is done currently by creating a `TextPainter` for each label and getting the width, then taking the max width of all the labels, which is not efficient.
+- [ ] When resizing, the chart can try to render further than it's bounds, instead of updating the pan offset to the new bounds.
+- [ ] Dates not in UTC time can cause issues when crossing into daylight savings time (DST), as the chart does not take into account DST.
+- [ ] Sometimes on web, scrolling horizontally with a horizontal mouse wheel doesn't work
