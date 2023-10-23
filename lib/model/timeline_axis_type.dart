@@ -1,0 +1,1 @@
+enum TimelineAxisType { weekly, daily }
