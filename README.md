@@ -115,4 +115,7 @@ This is a WIP project and is not yet ready for production use. The API is subjec
 - [ ] Add zooming functionality
 - [ ] Add ability to customise individual task bar colors
 - [ ] Add ability to define custom start and end times for the entire chart
+- [ ] Optimise the calculations for the header width, legend height, and precalculate them outside `GanttConfig`, so they aren't performed on every build, only when `activities` is updated in the `GanttController`.
+- [ ] Add a `loading` state to the `GanttView` to display a loading indicator while the `GanttController` is building the internal data model.
+- [ ] Build cells for the `GanttView` in a background isolate in the `GanttController` to improve performance.
 - [ ] Tests

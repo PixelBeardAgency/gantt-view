@@ -1,6 +1,6 @@
 abstract class GridCell {}
 
-class HeaderGridCell extends GridCell {}
+class ActivityGridCell extends GridCell {}
 
 class TaskGridCell extends GridCell {
   final String? tooltip;

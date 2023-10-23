@@ -1,8 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/extension/gantt_activity_iterable_extension.dart';
-import 'package:gantt_view/model/gantt_activity.dart';
+import 'package:gantt_view/model/cell/header/header_cell.dart';
 import 'package:gantt_view/model/timeline_axis_type.dart';
 import 'package:gantt_view/settings/gantt_grid.dart';
 import 'package:gantt_view/settings/gantt_style.dart';
@@ -14,24 +13,20 @@ class GanttConfig {
   final String? title;
   final String? subtitle;
 
+  final DateTime startDate;
+  final int columns;
+  final int rows;
+
   late Size renderAreaSize;
 
-  late double labelColumnWidth;
-  late double timelineHeight;
   late double maxDx;
   late double maxDy;
 
-  late int rows;
   late double rowHeight;
   late double dataHeight;
 
-  late DateTime startDate;
-  late DateTime endDate;
-
-  late List<int> highlightedColumns;
-
-  late int columns;
   late double cellWidth;
+  late double dataWidth;
 
   int get widthDivisor => switch (grid.timelineAxisType) {
         TimelineAxisType.daily => 1,
@@ -40,78 +35,44 @@ class GanttConfig {
 
   late Offset uiOffset;
 
+  double get labelColumnWidth => uiOffset.dx;
+  double get timelineHeight => uiOffset.dy;
+
   GanttConfig({
-    required Iterable<GanttActivity> activities,
+    required Iterable<HeaderCell> headers,
     GanttGrid? grid,
     GanttStyle? style,
     this.title,
     this.subtitle,
     required Size containerSize,
-    List<DateTime>? highlightedDates,
+    required this.startDate,
+    required this.columns,
+    required this.rows,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
-    rows = activities.length + activities.allTasks.length;
     rowHeight = this.grid.barHeight +
         this.grid.rowSpacing +
         this.style.labelPadding.vertical;
-
-    var firstTaskStartDate = activities.allTasks
-        .reduce((value, element) =>
-            value.startDate.isBefore(element.startDate) ? value : element)
-        .startDate;
-
-    startDate = DateTime(
-      firstTaskStartDate.year,
-      firstTaskStartDate.month,
-      firstTaskStartDate.day +
-          (this.grid.showFullWeeks
-              ? DateTime.monday - firstTaskStartDate.weekday
-              : 0),
-    );
-
-    var lastTaskEndDate = activities.allTasks
-        .reduce((value, element) =>
-            value.endDate.isAfter(element.endDate) ? value : element)
-        .endDate;
-
-    endDate = DateTime(
-      lastTaskEndDate.year,
-      lastTaskEndDate.month,
-      lastTaskEndDate.day,
-    );
-
-    highlightedColumns =
-        highlightedDates?.map((e) => e.difference(startDate).inDays).toList() ??
-            [];
-
-    final diff = endDate.difference(startDate).inDays;
-    columns =
-        diff + 1 + (this.grid.showFullWeeks ? 7 - lastTaskEndDate.weekday : 0);
     cellWidth = this.grid.columnWidth / widthDivisor;
 
-    dataHeight = (activities.length + activities.allTasks.length) * rowHeight;
-    labelColumnWidth = _titleWidth(activities);
-    timelineHeight = _legendHeight;
+    dataHeight = rows * rowHeight;
+    dataWidth = columns * cellWidth;
+
+    uiOffset = Offset(
+      _titleWidth(headers),
+      _legendHeight(),
+    );
 
     renderAreaSize = Size(
-      min(containerSize.width, (columns * cellWidth) + labelColumnWidth),
-      min(
-          containerSize.height,
-          (activities.length + activities.allTasks.length) * rowHeight +
-              timelineHeight),
+      min(containerSize.width, dataWidth + labelColumnWidth),
+      min(containerSize.height, rows * rowHeight + timelineHeight),
     );
 
     maxDx = _horizontalScrollBoundary;
     maxDy = _verticalScrollBoundary;
-
-    uiOffset = Offset(
-      labelColumnWidth,
-      timelineHeight,
-    );
   }
 
   double get _horizontalScrollBoundary {
-    var dataWidth = columns * cellWidth;
     var renderAreaWidth = renderAreaSize.width - labelColumnWidth;
     return dataWidth < renderAreaWidth
         ? 0
@@ -123,20 +84,20 @@ class GanttConfig {
           ? 0
           : dataHeight - renderAreaSize.height + timelineHeight;
 
-  double _titleWidth(Iterable<GanttActivity> activities) {
+  double _titleWidth(Iterable<HeaderCell> headers) {
     double width = 0;
-    for (var activity in activities) {
-      width = max(
-        width,
-        textPainter(activity.label ?? '', style.activityLabelStyle, maxLines: 1)
-                .width +
-            style.labelPadding.horizontal,
-      );
-
-      for (var task in activity.tasks) {
+    for (var header in headers) {
+      if (header is ActivityHeaderCell) {
         width = max(
           width,
-          textPainter(task.label, style.taskLabelStyle, maxLines: 1).width +
+          textPainter(header.label ?? '', style.activityLabelStyle, maxLines: 1)
+                  .width +
+              style.labelPadding.horizontal,
+        );
+      } else if (header is TaskHeaderCell) {
+        width = max(
+          width,
+          textPainter(header.label!, style.taskLabelStyle, maxLines: 1).width +
               style.labelPadding.horizontal,
         );
       }
@@ -144,7 +105,7 @@ class GanttConfig {
     return max(width, titlePainter().width + style.titlePadding.horizontal);
   }
 
-  double get _legendHeight => max(
+  double _legendHeight() => max(
         datePainter(
               [
                 if (grid.showYear) '2022',
