@@ -19,6 +19,12 @@ jobs:
           version=$(echo $tag | sed 's/^v//')
           sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+*/version: $version/g" pubspec.yaml
 
+      # This action adds a token needed for pub.dev
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
