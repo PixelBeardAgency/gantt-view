@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/settings/gantt_config.dart';
-import 'package:gantt_view/settings/gantt_visible_data.dart';
+import 'package:gantt_view/src/settings/gantt_config.dart';
+import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
 abstract class GanttPainter extends CustomPainter {
   final GanttConfig config;

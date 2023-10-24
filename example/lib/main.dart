@@ -1,12 +1,6 @@
 import 'package:example/data.dart';
 import 'package:flutter/material.dart';
-import 'package:gantt_view/controller/gantt_data_controller.dart';
-import 'package:gantt_view/gantt_chart.dart';
-import 'package:gantt_view/model/gantt_task.dart';
-import 'package:gantt_view/model/timeline_axis_type.dart';
-import 'package:gantt_view/model/tooltip_type.dart';
-import 'package:gantt_view/settings/gantt_grid.dart';
-import 'package:gantt_view/settings/gantt_style.dart';
+import 'package:gantt_view/gantt_view.dart';
 
 void main() {
   runApp(const MyApp());

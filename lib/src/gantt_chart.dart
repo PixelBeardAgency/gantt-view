@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/controller/gantt_data_controller.dart';
-import 'package:gantt_view/gantt_chart_content.dart';
-import 'package:gantt_view/settings/gantt_config.dart';
-import 'package:gantt_view/settings/gantt_grid.dart';
-import 'package:gantt_view/settings/gantt_style.dart';
+import 'package:gantt_view/src/controller/gantt_data_controller.dart';
+import 'package:gantt_view/src/gantt_chart_content.dart';
+import 'package:gantt_view/src/settings/gantt_config.dart';
+import 'package:gantt_view/src/settings/gantt_grid.dart';
+import 'package:gantt_view/src/settings/gantt_style.dart';
 
 class GanttChart<T> extends StatelessWidget {
   final GanttChartController<T> controller;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/cell/header/header_cell.dart';
-import 'package:gantt_view/painter/gantt_painter.dart';
+import 'package:gantt_view/src/model/cell/header/header_cell.dart';
+import 'package:gantt_view/src/painter/gantt_painter.dart';
 
 class GanttUiPainter extends GanttPainter {
   final List<HeaderCell> headers;

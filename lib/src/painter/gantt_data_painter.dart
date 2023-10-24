@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/cell/grid/grid_cell.dart';
-import 'package:gantt_view/model/tooltip_type.dart';
-import 'package:gantt_view/painter/gantt_painter.dart';
-import 'package:gantt_view/settings/gantt_visible_data.dart';
+import 'package:gantt_view/src/model/cell/grid/grid_cell.dart';
+import 'package:gantt_view/src/model/tooltip_type.dart';
+import 'package:gantt_view/src/painter/gantt_painter.dart';
+import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
   final Map<int, Map<int, GridCell>> cells;

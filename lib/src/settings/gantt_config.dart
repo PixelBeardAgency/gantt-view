@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/model/cell/header/header_cell.dart';
-import 'package:gantt_view/model/timeline_axis_type.dart';
-import 'package:gantt_view/settings/gantt_grid.dart';
-import 'package:gantt_view/settings/gantt_style.dart';
+import 'package:gantt_view/src/model/cell/header/header_cell.dart';
+import 'package:gantt_view/src/model/timeline_axis_type.dart';
+import 'package:gantt_view/src/settings/gantt_grid.dart';
+import 'package:gantt_view/src/settings/gantt_style.dart';
 
 class GanttConfig {
   final GanttGrid grid;

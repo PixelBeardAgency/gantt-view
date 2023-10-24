@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/model/timeline_axis_type.dart';
-import 'package:gantt_view/settings/gantt_config.dart';
-import 'package:gantt_view/settings/gantt_grid.dart';
-import 'package:gantt_view/settings/gantt_style.dart';
+import 'package:gantt_view/src/model/timeline_axis_type.dart';
+import 'package:gantt_view/src/settings/gantt_config.dart';
+import 'package:gantt_view/src/settings/gantt_grid.dart';
+import 'package:gantt_view/src/settings/gantt_style.dart';
 
 void main() {
   test('rowHeight is correctly calculated', () {

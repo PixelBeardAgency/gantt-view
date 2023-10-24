@@ -1,5 +1,5 @@
-import 'package:gantt_view/model/timeline_axis_type.dart';
-import 'package:gantt_view/model/tooltip_type.dart';
+import 'package:gantt_view/src/model/timeline_axis_type.dart';
+import 'package:gantt_view/src/model/tooltip_type.dart';
 
 class GanttGrid {
   final double barHeight;

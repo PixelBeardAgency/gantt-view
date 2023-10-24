@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/controller/builder/activity/activity_builder.dart';
-import 'package:gantt_view/model/gantt_task.dart';
+import 'package:gantt_view/src/controller/builder/activity/activity_builder.dart';
+import 'package:gantt_view/src/model/gantt_task.dart';
 
 void main() {
   test('TaskBuilder correctly creates list of GanttTasks', () {

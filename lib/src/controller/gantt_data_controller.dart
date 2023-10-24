@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gantt_view/controller/builder/activity/activity_builder.dart';
-import 'package:gantt_view/controller/builder/cell/cell_builder.dart';
-import 'package:gantt_view/model/gantt_activity.dart';
-import 'package:gantt_view/model/gantt_data.dart';
-import 'package:gantt_view/model/gantt_task.dart';
+import 'package:gantt_view/src/controller/builder/activity/activity_builder.dart';
+import 'package:gantt_view/src/controller/builder/cell/cell_builder.dart';
+import 'package:gantt_view/src/model/gantt_activity.dart';
+import 'package:gantt_view/src/model/gantt_data.dart';
+import 'package:gantt_view/src/model/gantt_task.dart';
 
 class GanttChartController<T> {
   late ActivityBuildData<T> _activityBuildData;
