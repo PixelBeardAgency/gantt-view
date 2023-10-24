@@ -15,10 +15,11 @@ jobs:
 
       - name: Replace version number in flutter/pubspec.yaml
         run: |
-          echo "ref: ${{ github.ref_name }}"
-          echo "RELEASE_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//'" >> $GITHUB_ENV
-          echo "RELEASE_VERSION=$RELEASE_VERSION"
-          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+*/version: $RELEASE_VERSION/g" pubspec.yaml
+          tag=${{ github.ref_name }}
+          version=$(echo $tag | sed 's/^v//')
+          echo "version=$version"
+          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+*/version: $version/g" pubspec.yaml
+          cat pubspec.yaml
 
       # - name: Setup Flutter
       #   uses: subosito/flutter-action@v2
