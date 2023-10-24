@@ -1,4 +1,4 @@
-import 'package:gantt_view/model/gantt_task.dart';
+import 'package:gantt_view/src/model/gantt_task.dart';
 
 class GanttActivity {
   final String? label;

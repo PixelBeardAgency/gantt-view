@@ -1,5 +1,5 @@
-import 'package:gantt_view/model/gantt_activity.dart';
-import 'package:gantt_view/model/gantt_task.dart';
+import 'package:gantt_view/src/model/gantt_activity.dart';
+import 'package:gantt_view/src/model/gantt_task.dart';
 
 abstract class ActivityBuilder {
   static List<GanttActivity> buildActivities<T>(ActivityBuildData<T> data) {

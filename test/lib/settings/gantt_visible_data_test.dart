@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/settings/gantt_visible_data.dart';
+import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
 void main() {
   test(

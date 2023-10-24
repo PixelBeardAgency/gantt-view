@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/controller/builder/cell/cell_builder.dart';
-import 'package:gantt_view/model/gantt_activity.dart';
+import 'package:gantt_view/src/controller/builder/cell/cell_builder.dart';
+import 'package:gantt_view/src/model/gantt_activity.dart';
 
 import '../../../util/data.dart';
 

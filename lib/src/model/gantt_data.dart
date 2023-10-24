@@ -1,6 +1,6 @@
-import 'package:gantt_view/model/cell/grid/grid_cell.dart';
-import 'package:gantt_view/model/cell/header/header_cell.dart';
-import 'package:gantt_view/model/gantt_activity.dart';
+import 'package:gantt_view/src/model/cell/grid/grid_cell.dart';
+import 'package:gantt_view/src/model/cell/header/header_cell.dart';
+import 'package:gantt_view/src/model/gantt_activity.dart';
 
 class GanttData {
   final List<GanttActivity> activities;
