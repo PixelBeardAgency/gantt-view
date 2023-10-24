@@ -43,7 +43,9 @@ abstract class CellBuilder {
     Map<int, Map<int, GridCell>> cells = {};
     int currentRow = 0;
 
-    for (final activity in data.activities) {
+    final int activityCount = data.activities.length;
+    for (int i = 0; i < activityCount; i++) {
+      var activity = data.activities[i];
       if (activity.label != null) {
         headers.add(ActivityHeaderCell(activity.label));
         for (int i = 0; i < columns; i++) {
@@ -60,7 +62,9 @@ abstract class CellBuilder {
         }
         currentRow++;
       }
-      for (var task in activity.tasks) {
+      int taskCount = activity.tasks.length;
+      for (int j = 0; j < taskCount; j++) {
+        final task = activity.tasks[j];
         headers.add(TaskHeaderCell(task.label));
 
         final start = task.startDate;
@@ -73,26 +77,26 @@ abstract class CellBuilder {
           throw Exception('Start date must be before or same as end date.');
         }
 
-        for (int i = 0; i < columns; i++) {
-          final currentOffset = (weekendOffset + i) % 7;
+        for (int k = 0; k < columns; k++) {
+          final currentOffset = (weekendOffset + k) % 7;
           final isWeekend = currentOffset == 5 || currentOffset == 6;
 
-          final isHighlighted = highlightedColumns.contains(i);
+          final isHighlighted = highlightedColumns.contains(k);
 
-          final isTask = i >= from && i <= to;
+          final isTask = k >= from && k <= to;
 
           if (isTask) {
-            (cells[currentRow] ??= {})[i] = TaskGridCell(
+            (cells[currentRow] ??= {})[k] = TaskGridCell(
               task.tooltip,
-              i == from,
-              i == to,
+              k == from,
+              k == to,
               isHighlighted: isHighlighted,
               isWeekend: isWeekend,
             );
           } else if (isHighlighted) {
-            (cells[currentRow] ??= {})[i] = HolidayGridCell();
+            (cells[currentRow] ??= {})[k] = HolidayGridCell();
           } else if (isWeekend) {
-            (cells[currentRow] ??= {})[i] = WeekendGridCell();
+            (cells[currentRow] ??= {})[k] = WeekendGridCell();
           }
         }
 

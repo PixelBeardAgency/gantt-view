@@ -18,6 +18,7 @@ class CellBuilderBenchmark extends BenchmarkBase {
 }
 
 final activities = TestData.buildActivities(
-  100000,
+  10000,
   startDate: DateTime(2021, 1, 1),
+  endDate: DateTime(2021, 1, 100),
 );
