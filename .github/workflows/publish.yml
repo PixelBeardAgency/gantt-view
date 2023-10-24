@@ -11,9 +11,7 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - name: Clone Repo
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -29,12 +27,13 @@ jobs:
           sed -i.bk -r "s/version: [0-9]+\.[0-9]+\.[0-9]+/version: ${{ env.RELEASE_VERSION }}/g" pubspec.yaml
           rm flutter/pubspec.yaml.bk
 
+      - name: Install dependencies
+        run: flutter pub get
+        
       - name: Run tests
         run: |
           flutter analyze
           flutter test
 
       - name: Publish to pub.dev
-        uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
-        with:
-          environment: pub.dev
+        run: flutter pub publish --force
