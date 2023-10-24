@@ -6,9 +6,42 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+*"
 
 jobs:
-  publish:
+  main:
     permissions:
       id-token: write
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
-    with:
-      environment: pub.dev
+    runs-on: ubuntu-latest
+    environment: pub.dev
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Replace version number in flutter/pubspec.yaml
+        run: |
+          tag=${{ github.ref_name }}
+          version=$(echo $tag | sed 's/^v//')
+          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+*/version: $version/g" pubspec.yaml
+
+      # This action adds a token needed for pub.dev
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+          architecture: x64
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Publish to pub.dev
+        run: flutter pub publish --force
