@@ -40,13 +40,14 @@ abstract class CellBuilder {
 
     final weekendOffset = startDate.weekday - DateTime.monday;
     List<HeaderCell> headers = [];
-    Map<int, Map<int, GridCell>> cells = {};
+    List<List<GridCell?>> cells = [];
     int currentRow = 0;
 
     final int activityCount = data.activities.length;
     for (int i = 0; i < activityCount; i++) {
       var activity = data.activities[i];
       if (activity.label != null) {
+        List<GridCell?> row = List.generate(columns, (index) => null);
         headers.add(ActivityHeaderCell(activity.label));
         for (int i = 0; i < columns; i++) {
           final currentOffset = (weekendOffset + i) % 7;
@@ -54,16 +55,18 @@ abstract class CellBuilder {
 
           final isHighlighted = highlightedColumns.contains(i);
 
-          (cells[currentRow] ??= {})[i] = isHighlighted
+          row[i] = isHighlighted
               ? HolidayGridCell()
               : (isWeekend)
                   ? WeekendGridCell()
                   : ActivityGridCell();
         }
+        cells.add(row);
         currentRow++;
       }
       int taskCount = activity.tasks.length;
       for (int j = 0; j < taskCount; j++) {
+        List<GridCell?> row = List.generate(columns, (index) => null);
         final task = activity.tasks[j];
         headers.add(TaskHeaderCell(task.label));
 
@@ -86,7 +89,7 @@ abstract class CellBuilder {
           final isTask = k >= from && k <= to;
 
           if (isTask) {
-            (cells[currentRow] ??= {})[k] = TaskGridCell(
+            row[k] = TaskGridCell(
               task.tooltip,
               k == from,
               k == to,
@@ -94,12 +97,12 @@ abstract class CellBuilder {
               isWeekend: isWeekend,
             );
           } else if (isHighlighted) {
-            (cells[currentRow] ??= {})[k] = HolidayGridCell();
+            row[k] = HolidayGridCell();
           } else if (isWeekend) {
-            (cells[currentRow] ??= {})[k] = WeekendGridCell();
+            row[k] = WeekendGridCell();
           }
         }
-
+        cells.add(row);
         currentRow++;
       }
     }

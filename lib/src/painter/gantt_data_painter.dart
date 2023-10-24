@@ -5,7 +5,7 @@ import 'package:gantt_view/src/painter/gantt_painter.dart';
 import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
-  final Map<int, Map<int, GridCell>> cells;
+  final List<List<GridCell?>> cells;
   final Offset tooltipOffset;
 
   final double _taskOffset;
@@ -43,7 +43,7 @@ class GanttDataPainter extends GanttPainter {
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
-        final fill = cells[y]?[x];
+        final fill = cells[y][x];
         var dx = x * config.cellWidth + config.uiOffset.dx;
         if (fill is ActivityGridCell) {
           _paintFill(dx, dy, canvas, config.style.activityLabelColor);
@@ -159,7 +159,11 @@ class GanttDataPainter extends GanttPainter {
     final row = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
         gridData.firstVisibleRow;
 
-    final data = cells[row]?[column];
+    if (row < 0 || column < 0) {
+      return;
+    }
+
+    final data = cells[row][column];
     final isFilled = data is TaskGridCell;
 
     if (!isFilled || (data.tooltip?.isEmpty ?? true)) {

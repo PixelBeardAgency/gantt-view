@@ -12,7 +12,7 @@ class GanttChartContent<T> extends StatefulWidget {
   final GanttChartController<T> controller;
   final GanttConfig config;
 
-  final Map<int, Map<int, GridCell>> gridCells;
+  final List<List<GridCell?>> gridCells;
   final List<HeaderCell> headerCells;
 
   final bool isBuilding;
