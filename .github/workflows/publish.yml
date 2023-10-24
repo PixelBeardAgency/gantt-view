@@ -24,8 +24,8 @@ jobs:
       - name: Replace version number in flutter/pubspec.yaml
         run: |
           echo "RELEASE_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//'" >> $GITHUB_ENV
-          echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}"
-          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+/version: ${{ env.RELEASE_VERSION }}/g" pubspec.yaml
+          echo "RELEASE_VERSION=$RELEASE_VERSION"
+          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+/version: $RELEASE_VERSION/g" pubspec.yaml
 
       - name: Install dependencies
         run: flutter pub get
