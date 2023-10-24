@@ -12,28 +12,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          cache: true
-          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
-          architecture: x64
 
       - name: Replace version number in flutter/pubspec.yaml
         run: |
+          echo "ref: ${{ github.ref_name }}"
           echo "RELEASE_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//'" >> $GITHUB_ENV
           echo "RELEASE_VERSION=$RELEASE_VERSION"
-          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+/version: $RELEASE_VERSION/g" pubspec.yaml
+          sed -i -r "s/version: [0-9]+\.[0-9]+\.[0-9]+*/version: $RELEASE_VERSION/g" pubspec.yaml
 
-      - name: Install dependencies
-        run: flutter pub get
+      # - name: Setup Flutter
+      #   uses: subosito/flutter-action@v2
+      #   with:
+      #     channel: "stable"
+      #     cache: true
+      #     cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+      #     cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
+      #     architecture: x64
 
-      - name: Run tests
-        run: |
-          flutter analyze
-          flutter test
+      # - name: Install dependencies
+      #   run: flutter pub get
 
-      - name: Publish to pub.dev
-        run: flutter pub publish --force
+      # - name: Run tests
+      #   run: |
+      #     flutter analyze
+      #     flutter test
+
+      # - name: Publish to pub.dev
+      #   run: flutter pub publish --force
