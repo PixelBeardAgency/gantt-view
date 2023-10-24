@@ -86,7 +86,9 @@ class GanttConfig {
 
   double _titleWidth(Iterable<HeaderCell> headers) {
     double width = 0;
-    for (var header in headers) {
+    final headersCount = headers.length;
+    for (int i = 0; i < headersCount; i++) {
+      final header = headers.elementAt(i);
       if (header is ActivityHeaderCell) {
         width = max(
           width,
