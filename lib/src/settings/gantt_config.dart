@@ -65,7 +65,7 @@ class GanttConfig {
 
     renderAreaSize = Size(
       min(containerSize.width, dataWidth + labelColumnWidth),
-      min(containerSize.height, rows * rowHeight + timelineHeight),
+      min(containerSize.height, dataHeight + timelineHeight),
     );
 
     maxDx = _horizontalScrollBoundary;
