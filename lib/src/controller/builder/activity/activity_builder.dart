@@ -7,9 +7,7 @@ abstract class ActivityBuilder {
     if (data.activityLabelBuilder != null) {
       Map<String, List<GanttTask>> labelTasks = {};
 
-      final itemsCount = data.items.length;
-      for (int i = 0; i < itemsCount; i++) {
-        final item = data.items[i];
+      for (var item in data.items) {
         final label = data.activityLabelBuilder!(item);
         (labelTasks[label] ??= []).add(data.taskBuilder(item));
       }
@@ -25,13 +23,7 @@ abstract class ActivityBuilder {
         activities.sort(data.activitySort);
       }
     } else {
-      List<GanttTask> tasks = [];
-
-      final itemsCount = data.items.length;
-      for (int i = 0; i < itemsCount; i++) {
-        final item = data.items[i];
-        tasks.add(data.taskBuilder(item));
-      }
+      final tasks = data.items.map<GanttTask>(data.taskBuilder).toList();
 
       if (data.taskSort != null) {
         tasks.sort(data.taskSort);
