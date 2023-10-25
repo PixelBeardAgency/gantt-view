@@ -40,11 +40,14 @@ abstract class CellBuilder {
 
     final weekendOffset = startDate.weekday - DateTime.monday;
     List<HeaderCell> headers = [];
-    Map<int, Map<int, GridCell>> cells = {};
+    List<List<GridCell?>> cells = [];
     int currentRow = 0;
 
-    for (final activity in data.activities) {
+    final int activityCount = data.activities.length;
+    for (int i = 0; i < activityCount; i++) {
+      var activity = data.activities[i];
       if (activity.label != null) {
+        List<GridCell?> row = List.generate(columns, (index) => null);
         headers.add(ActivityHeaderCell(activity.label));
         for (int i = 0; i < columns; i++) {
           final currentOffset = (weekendOffset + i) % 7;
@@ -52,15 +55,19 @@ abstract class CellBuilder {
 
           final isHighlighted = highlightedColumns.contains(i);
 
-          (cells[currentRow] ??= {})[i] = isHighlighted
+          row[i] = isHighlighted
               ? HolidayGridCell()
               : (isWeekend)
                   ? WeekendGridCell()
                   : ActivityGridCell();
         }
+        cells.add(row);
         currentRow++;
       }
-      for (var task in activity.tasks) {
+      int taskCount = activity.tasks.length;
+      for (int j = 0; j < taskCount; j++) {
+        List<GridCell?> row = List.generate(columns, (index) => null);
+        final task = activity.tasks[j];
         headers.add(TaskHeaderCell(task.label));
 
         final start = task.startDate;
@@ -73,29 +80,29 @@ abstract class CellBuilder {
           throw Exception('Start date must be before or same as end date.');
         }
 
-        for (int i = 0; i < columns; i++) {
-          final currentOffset = (weekendOffset + i) % 7;
+        for (int k = 0; k < columns; k++) {
+          final currentOffset = (weekendOffset + k) % 7;
           final isWeekend = currentOffset == 5 || currentOffset == 6;
 
-          final isHighlighted = highlightedColumns.contains(i);
+          final isHighlighted = highlightedColumns.contains(k);
 
-          final isTask = i >= from && i <= to;
+          final isTask = k >= from && k <= to;
 
           if (isTask) {
-            (cells[currentRow] ??= {})[i] = TaskGridCell(
+            row[k] = TaskGridCell(
               task.tooltip,
-              i == from,
-              i == to,
+              k == from,
+              k == to,
               isHighlighted: isHighlighted,
               isWeekend: isWeekend,
             );
           } else if (isHighlighted) {
-            (cells[currentRow] ??= {})[i] = HolidayGridCell();
+            row[k] = HolidayGridCell();
           } else if (isWeekend) {
-            (cells[currentRow] ??= {})[i] = WeekendGridCell();
+            row[k] = WeekendGridCell();
           }
         }
-
+        cells.add(row);
         currentRow++;
       }
     }

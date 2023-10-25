@@ -4,7 +4,7 @@ import 'package:gantt_view/src/model/gantt_activity.dart';
 
 class GanttData {
   final List<GanttActivity> activities;
-  final Map<int, Map<int, GridCell>> gridCells;
+  final List<List<GridCell?>> gridCells;
   final List<HeaderCell> headerCells;
   final DateTime startDate;
   final int columns;
