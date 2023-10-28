@@ -27,7 +27,7 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(
+    final data = DataBuilder.buildGridCells(
       BuildCellsData(
         activities: activities,
         showFullWeeks: false,
@@ -35,8 +35,8 @@ void main() {
     );
 
     // Assert
-    expect(data.rows, equals(expectedRows));
-    expect(data.columns, equals(expectedColumns));
+    expect(data.rows.length, equals(expectedRows));
+    expect(data.columnCount, equals(expectedColumns));
   });
 
   test('Correct number of columns calculated with showFullWeeks set to true',
@@ -53,7 +53,7 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(
+    final data = DataBuilder.buildGridCells(
       BuildCellsData(
         activities: activities,
         showFullWeeks: true,
@@ -61,7 +61,7 @@ void main() {
     );
 
     // Assert
-    expect(data.columns, equals(expectedColumns));
+    expect(data.columnCount, equals(expectedColumns));
   });
 
   test('start date is correctly calculated with showFullWeeks set to false',
@@ -75,7 +75,7 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(BuildCellsData(
+    final data = DataBuilder.buildGridCells(BuildCellsData(
       activities: activities,
       showFullWeeks: false,
     ));
@@ -95,7 +95,7 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(BuildCellsData(
+    final data = DataBuilder.buildGridCells(BuildCellsData(
       activities: activities,
       showFullWeeks: true,
     ));

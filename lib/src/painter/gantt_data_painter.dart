@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/model/cell/grid/grid_cell.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/tooltip_type.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
 class GanttDataPainter extends GanttPainter {
-  final List<List<GridCell?>> cells;
   final Offset tooltipOffset;
 
   final double _taskOffset;
 
   GanttDataPainter({
-    required this.cells,
+    required super.rows,
     required super.config,
     required super.panOffset,
     required this.tooltipOffset,
@@ -34,25 +33,61 @@ class GanttDataPainter extends GanttPainter {
   @override
   bool shouldRepaint(covariant GanttDataPainter oldDelegate) =>
       super.shouldRepaint(oldDelegate) ||
-      oldDelegate.tooltipOffset != tooltipOffset ||
-      oldDelegate.cells != cells;
+      oldDelegate.tooltipOffset != tooltipOffset;
 
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
       var dy = y * config.rowHeight + config.uiOffset.dy;
+      final row = rows[y];
+
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
-        final fill = cells[y][x];
         var dx = x * config.cellWidth + config.uiOffset.dx;
-        if (fill is ActivityGridCell) {
-          _paintFill(dx, dy, canvas, config.style.activityLabelColor);
-        } else if (fill is TaskGridCell) {
-          _paintTask(dx, dy, canvas, fill);
-        } else if (fill is WeekendGridCell) {
-          _paintFill(dx, dy, canvas, config.style.weekendColor!);
-        } else if (fill is HolidayGridCell) {
+
+        final currentOffset = (config.weekendOffset + x) % 7;
+        final isWeekend = currentOffset == 5 || currentOffset == 6;
+
+        final isHighlighted = config.highlightedColumns.contains(x);
+
+        if (row is TaskGridRow) {
+          final task = row.task;
+
+          final start = task.startDate;
+          final end = task.endDate;
+
+          final int from = start.difference(config.startDate).inDays;
+          final int to = end.difference(config.startDate).inDays;
+
+          if (start.isAtSameMomentAs(end) && start.isAfter(end)) {
+            throw Exception('Start date must be before or same as end date.');
+          }
+          final isFilled = x >= from && x <= to;
+
+          if (isFilled) {
+            _paintTask(
+              dx,
+              dy,
+              canvas,
+              _TaskGridCell(
+                task.tooltip,
+                x == from,
+                x == to,
+                isHighlighted: isHighlighted,
+                isWeekend: isWeekend,
+              ),
+            );
+          } else if (isHighlighted) {
+            _paintFill(dx, dy, canvas, config.style.holidayColor);
+          } else if (isWeekend) {
+            _paintFill(dx, dy, canvas, config.style.weekendColor!);
+          }
+        } else if (isHighlighted) {
           _paintFill(dx, dy, canvas, config.style.holidayColor);
+        } else if (isWeekend) {
+          _paintFill(dx, dy, canvas, config.style.weekendColor!);
+        } else if (row is ActivityGridRow) {
+          _paintFill(dx, dy, canvas, config.style.activityLabelColor);
         }
       }
     }
@@ -76,7 +111,7 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintTask(double x, double y, Canvas canvas, TaskGridCell fill) {
+  void _paintTask(double x, double y, Canvas canvas, _TaskGridCell fill) {
     var color = config.style.taskBarColor;
     if (fill.isHighlighted || fill.isWeekend) {
       _paintFill(
@@ -149,29 +184,34 @@ class GanttDataPainter extends GanttPainter {
     final firstColumnOffset = ((-panOffset.dx) % config.grid.columnWidth);
     final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
 
-    var column = (currentPosX + firstColumnOffset) ~/
+    var x = (currentPosX + firstColumnOffset) ~/
             (config.grid.columnWidth / config.widthDivisor) +
         gridData.firstVisibleColumn;
 
     final firstRowOffset = ((-panOffset.dy) % config.rowHeight);
     final currentPosY = tooltipOffset.dy - config.timelineHeight;
 
-    final row = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
+    final y = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
         gridData.firstVisibleRow;
 
-    if (row < 0 || column < 0) {
+    if (x < 0 || y < 0) {
       return;
     }
 
-    final data = cells[row][column];
-    final isFilled = data is TaskGridCell;
+    final row = rows[y];
+    if (row is! TaskGridRow) return;
 
-    if (!isFilled || (data.tooltip?.isEmpty ?? true)) {
+    final int from = row.task.startDate.difference(config.startDate).inDays;
+    final int to = row.task.startDate.difference(config.startDate).inDays;
+
+    final isTask = x >= from && x <= to;
+
+    if (!isTask || (row.task.tooltip?.isEmpty ?? true)) {
       return;
     }
 
     final textPainter = config.textPainter(
-      data.tooltip!,
+      row.task.tooltip!,
       config.style.tooltipStyle,
       maxWidth: config.grid.tooltipWidth,
     );
@@ -248,4 +288,20 @@ class GanttDataPainter extends GanttPainter {
           ),
     );
   }
+}
+
+class _TaskGridCell {
+  final String? tooltip;
+  final bool isHighlighted;
+  final bool isWeekend;
+  final bool isFirst;
+  final bool isLast;
+
+  _TaskGridCell(
+    this.tooltip,
+    this.isFirst,
+    this.isLast, {
+    this.isHighlighted = false,
+    this.isWeekend = false,
+  });
 }

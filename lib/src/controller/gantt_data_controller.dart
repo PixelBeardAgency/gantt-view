@@ -123,7 +123,7 @@ class GanttChartController<T> {
 
   Future<void> _buildGanttData(BuildCellsData data) async {
     _isBuilding.value = true;
-    return compute(CellBuilder.buildGridCells, data).then((data) {
+    return compute(DataBuilder.buildGridCells, data).then((data) {
       _setGanttData(data);
       _isBuilding.value = false;
     });

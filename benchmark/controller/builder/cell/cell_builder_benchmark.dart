@@ -12,7 +12,7 @@ class CellBuilderBenchmark extends BenchmarkBase {
 
   @override
   void run() {
-    CellBuilder.buildGridCells(
+    DataBuilder.buildGridCells(
         BuildCellsData(activities: activities, showFullWeeks: false));
   }
 }
