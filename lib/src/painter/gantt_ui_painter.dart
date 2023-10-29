@@ -97,7 +97,7 @@ class GanttUiPainter extends GanttPainter {
         0,
         index * config.rowHeight + config.timelineHeight,
         config.labelColumnWidth,
-        config.rowHeight,
+        config.rowHeight + 1,
       );
 
       final titlePaint = Paint()

@@ -1,5 +1,5 @@
-import 'controller/builder/cell/cell_builder_benchmark.dart';
+import 'model/gantt_data_benchmark.dart';
 
 void main() {
-  CellBuilderBenchmark.main();
+  GanttDataBuildBenchmark.main();
 }

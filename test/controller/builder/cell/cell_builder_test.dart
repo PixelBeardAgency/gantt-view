@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/src/controller/builder/cell/cell_builder.dart';
+import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/model/gantt_activity.dart';
+import 'package:gantt_view/src/model/gantt_data.dart';
 
 import '../../../util/data.dart';
 
@@ -27,8 +28,8 @@ void main() {
     );
 
     // Act
-    final data = DataBuilder.buildGridCells(
-      BuildCellsData(
+    final data = GanttData.build(
+      GanttDataInput(
         activities: activities,
         showFullWeeks: false,
       ),
@@ -53,8 +54,8 @@ void main() {
     );
 
     // Act
-    final data = DataBuilder.buildGridCells(
-      BuildCellsData(
+    final data = GanttData.build(
+      GanttDataInput(
         activities: activities,
         showFullWeeks: true,
       ),
@@ -75,7 +76,7 @@ void main() {
     );
 
     // Act
-    final data = DataBuilder.buildGridCells(BuildCellsData(
+    final data = GanttData.build(GanttDataInput(
       activities: activities,
       showFullWeeks: false,
     ));
@@ -95,7 +96,7 @@ void main() {
     );
 
     // Act
-    final data = DataBuilder.buildGridCells(BuildCellsData(
+    final data = GanttData.build(GanttDataInput(
       activities: activities,
       showFullWeeks: true,
     ));
