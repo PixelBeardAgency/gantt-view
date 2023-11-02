@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/controller/builder/activity/activity_builder.dart';
-import 'package:gantt_view/src/controller/builder/cell/cell_builder.dart';
 import 'package:gantt_view/src/model/gantt_activity.dart';
 import 'package:gantt_view/src/model/gantt_data.dart';
 import 'package:gantt_view/src/model/gantt_task.dart';
@@ -60,7 +59,7 @@ class GanttChartController<T> {
 
   void setHighlightedDates(List<DateTime> dates) {
     _activityBuildData = _activityBuildData.copyWith(highlightedDates: dates);
-    _buildGanttData(BuildCellsData(
+    _buildGanttData(GanttDataInput(
       activities: data.value!.activities,
       highlightedDates: _activityBuildData.highlightedDates,
       showFullWeeks: _activityBuildData.showFullWeeks,
@@ -70,7 +69,7 @@ class GanttChartController<T> {
   void addHighlightedDates(List<DateTime> dates) {
     _activityBuildData = _activityBuildData.copyWith(
         highlightedDates: [..._activityBuildData.highlightedDates, ...dates]);
-    _buildGanttData(BuildCellsData(
+    _buildGanttData(GanttDataInput(
       activities: data.value!.activities,
       highlightedDates: _activityBuildData.highlightedDates,
       showFullWeeks: _activityBuildData.showFullWeeks,
@@ -80,7 +79,7 @@ class GanttChartController<T> {
   void removeHighlightedDate(DateTime date) {
     _activityBuildData = _activityBuildData.copyWith(
         highlightedDates: _activityBuildData.highlightedDates..remove(date));
-    _buildGanttData(BuildCellsData(
+    _buildGanttData(GanttDataInput(
       activities: data.value!.activities,
       highlightedDates: _activityBuildData.highlightedDates,
       showFullWeeks: _activityBuildData.showFullWeeks,
@@ -98,7 +97,7 @@ class GanttChartController<T> {
   void setShowFullWeeks(bool showFullWeeks) {
     _activityBuildData =
         _activityBuildData.copyWith(showFullWeeks: showFullWeeks);
-    _buildGanttData(BuildCellsData(
+    _buildGanttData(GanttDataInput(
       activities: data.value!.activities,
       highlightedDates: _activityBuildData.highlightedDates,
       showFullWeeks: _activityBuildData.showFullWeeks,
@@ -113,7 +112,7 @@ class GanttChartController<T> {
         await compute(ActivityBuilder.buildActivities<T>, _activityBuildData);
 
     await _buildGanttData(
-      BuildCellsData(
+      GanttDataInput(
         activities: activities,
         highlightedDates: _activityBuildData.highlightedDates,
         showFullWeeks: _activityBuildData.showFullWeeks,
@@ -121,11 +120,23 @@ class GanttChartController<T> {
     );
   }
 
-  Future<void> _buildGanttData(BuildCellsData data) async {
+  Future<void> _buildGanttData(GanttDataInput data) async {
     _isBuilding.value = true;
-    return compute(CellBuilder.buildGridCells, data).then((data) {
+    return compute(GanttData.build, data).then((data) {
       _setGanttData(data);
       _isBuilding.value = false;
     });
   }
+}
+
+class GanttDataInput {
+  final List<GanttActivity> activities;
+  List<DateTime> highlightedDates;
+  bool showFullWeeks;
+
+  GanttDataInput({
+    required this.activities,
+    this.highlightedDates = const [],
+    this.showFullWeeks = false,
+  });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gantt_view/src/controller/builder/cell/cell_builder.dart';
+import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/model/gantt_activity.dart';
+import 'package:gantt_view/src/model/gantt_data.dart';
 
 import '../../../util/data.dart';
 
@@ -27,16 +28,16 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(
-      BuildCellsData(
+    final data = GanttData.build(
+      GanttDataInput(
         activities: activities,
         showFullWeeks: false,
       ),
     );
 
     // Assert
-    expect(data.rows, equals(expectedRows));
-    expect(data.columns, equals(expectedColumns));
+    expect(data.rows.length, equals(expectedRows));
+    expect(data.columnCount, equals(expectedColumns));
   });
 
   test('Correct number of columns calculated with showFullWeeks set to true',
@@ -53,15 +54,15 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(
-      BuildCellsData(
+    final data = GanttData.build(
+      GanttDataInput(
         activities: activities,
         showFullWeeks: true,
       ),
     );
 
     // Assert
-    expect(data.columns, equals(expectedColumns));
+    expect(data.columnCount, equals(expectedColumns));
   });
 
   test('start date is correctly calculated with showFullWeeks set to false',
@@ -75,7 +76,7 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(BuildCellsData(
+    final data = GanttData.build(GanttDataInput(
       activities: activities,
       showFullWeeks: false,
     ));
@@ -95,7 +96,7 @@ void main() {
     );
 
     // Act
-    final data = CellBuilder.buildGridCells(BuildCellsData(
+    final data = GanttData.build(GanttDataInput(
       activities: activities,
       showFullWeeks: true,
     ));

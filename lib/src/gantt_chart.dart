@@ -32,19 +32,18 @@ class GanttChart<T> extends StatelessWidget {
             if (data?.activities.isNotEmpty == true) {
               return GanttChartContent(
                 config: GanttConfig(
-                  headers: data!.headerCells,
                   grid: grid,
                   style: style,
                   title: title,
                   subtitle: subtitle,
                   containerSize: constraints.biggest,
-                  startDate: data.startDate,
-                  columns: data.columns,
+                  startDate: data!.startDate,
+                  columnCount: data.columnCount,
                   rows: data.rows,
+                  highlightedColumns: data.highlightedColumns,
                 ),
                 controller: controller,
-                gridCells: data.gridCells,
-                headerCells: data.headerCells,
+                rows: data.rows,
                 isBuilding: isBuilding,
               );
             }

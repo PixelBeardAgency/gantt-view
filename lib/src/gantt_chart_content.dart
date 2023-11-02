@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/controller/gantt_data_controller.dart';
-import 'package:gantt_view/src/model/cell/grid/grid_cell.dart';
-import 'package:gantt_view/src/model/cell/header/header_cell.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/tooltip_type.dart';
 import 'package:gantt_view/src/painter/gantt_data_painter.dart';
 import 'package:gantt_view/src/painter/gantt_ui_painter.dart';
@@ -12,8 +11,7 @@ class GanttChartContent<T> extends StatefulWidget {
   final GanttChartController<T> controller;
   final GanttConfig config;
 
-  final List<List<GridCell?>> gridCells;
-  final List<HeaderCell> headerCells;
+  final List<GridRow> rows;
 
   final bool isBuilding;
 
@@ -21,8 +19,7 @@ class GanttChartContent<T> extends StatefulWidget {
     super.key,
     required this.config,
     required this.controller,
-    required this.gridCells,
-    required this.headerCells,
+    required this.rows,
     required this.isBuilding,
   });
 
@@ -90,10 +87,10 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                           foregroundPainter: GanttUiPainter(
                             config: widget.config,
                             panOffset: panOffset,
-                            headers: widget.headerCells,
+                            rows: widget.rows,
                           ),
                           painter: GanttDataPainter(
-                            cells: widget.gridCells,
+                            rows: widget.rows,
                             config: widget.config,
                             panOffset: panOffset,
                             tooltipOffset: tooltipOffset,

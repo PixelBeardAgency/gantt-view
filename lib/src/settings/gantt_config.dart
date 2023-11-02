@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/model/cell/header/header_cell.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/timeline_axis_type.dart';
 import 'package:gantt_view/src/settings/gantt_grid.dart';
 import 'package:gantt_view/src/settings/gantt_style.dart';
@@ -14,8 +14,9 @@ class GanttConfig {
   final String? subtitle;
 
   final DateTime startDate;
-  final int columns;
-  final int rows;
+  final int columnCount;
+  final List<GridRow> rows;
+  final Iterable<int> highlightedColumns;
 
   late Size renderAreaSize;
 
@@ -28,6 +29,8 @@ class GanttConfig {
   late double cellWidth;
   late double dataWidth;
 
+  late int weekendOffset;
+
   int get widthDivisor => switch (grid.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
@@ -39,15 +42,15 @@ class GanttConfig {
   double get timelineHeight => uiOffset.dy;
 
   GanttConfig({
-    required Iterable<HeaderCell> headers,
     GanttGrid? grid,
     GanttStyle? style,
     this.title,
     this.subtitle,
     required Size containerSize,
     required this.startDate,
-    required this.columns,
+    required this.columnCount,
     required this.rows,
+    required this.highlightedColumns,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
     rowHeight = this.grid.barHeight +
@@ -55,11 +58,11 @@ class GanttConfig {
         this.style.labelPadding.vertical;
     cellWidth = this.grid.columnWidth / widthDivisor;
 
-    dataHeight = rows * rowHeight;
-    dataWidth = columns * cellWidth;
+    dataHeight = rows.length * rowHeight;
+    dataWidth = columnCount * cellWidth;
 
     uiOffset = Offset(
-      _titleWidth(headers),
+      _titleWidth(rows),
       _legendHeight(),
     );
 
@@ -70,6 +73,8 @@ class GanttConfig {
 
     maxDx = _horizontalScrollBoundary;
     maxDy = _verticalScrollBoundary;
+
+    weekendOffset = startDate.weekday - DateTime.monday;
   }
 
   double get _horizontalScrollBoundary {
@@ -84,19 +89,19 @@ class GanttConfig {
           ? 0
           : dataHeight - renderAreaSize.height + timelineHeight;
 
-  double _titleWidth(Iterable<HeaderCell> headers) {
+  double _titleWidth(Iterable<GridRow> headers) {
     double width = 0;
     final headersCount = headers.length;
     for (int i = 0; i < headersCount; i++) {
       final header = headers.elementAt(i);
-      if (header is ActivityHeaderCell) {
+      if (header is ActivityGridRow) {
         width = max(
           width,
           textPainter(header.label ?? '', style.activityLabelStyle, maxLines: 1)
                   .width +
               style.labelPadding.horizontal,
         );
-      } else if (header is TaskHeaderCell) {
+      } else if (header is TaskGridRow) {
         width = max(
           width,
           textPainter(header.label!, style.taskLabelStyle, maxLines: 1).width +

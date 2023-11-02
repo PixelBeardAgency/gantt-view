@@ -1,9 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/timeline_axis_type.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 import 'package:gantt_view/src/settings/gantt_grid.dart';
 import 'package:gantt_view/src/settings/gantt_style.dart';
+
+class _TestGridRow extends GridRow {
+  _TestGridRow() : super('');
+}
 
 void main() {
   test('rowHeight is correctly calculated', () {
@@ -17,13 +22,13 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: 12,
+      rows: List.generate(12, (index) => _TestGridRow()),
+      columnCount: 12,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
+      highlightedColumns: [],
     );
 
     // Assert
@@ -41,13 +46,13 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 2,
-      columns: 1,
+      rows: List.generate(2, (index) => _TestGridRow()),
+      columnCount: 1,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
+      highlightedColumns: [],
     );
 
     // Assert
@@ -61,16 +66,16 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: 12,
+      rows: List.generate(12, (index) => _TestGridRow()),
+      columnCount: 12,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
+      highlightedColumns: [],
     );
 
     // Assert
-    expect(config.columns, equals(expectedColumns));
+    expect(config.columnCount, equals(expectedColumns));
   });
 
   test('maxDx is calculated correctly when set to daily', () {
@@ -97,15 +102,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: 12,
+      rows: List.generate(12, (index) => _TestGridRow()),
+      columnCount: 12,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert
@@ -138,15 +143,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: columns,
+      rows: List.generate(12, (index) => _TestGridRow()),
+      columnCount: columns,
       startDate: startDate,
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert
@@ -173,7 +178,6 @@ void main() {
       labelPadding: const EdgeInsets.all(labelPadding),
     );
 
-
     // 84 * 20  full size width of all columns
     // / 7      divided by the number of days in a week
     // + 20     label width
@@ -182,15 +186,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 2,
-      columns: columns,
+      rows: List.generate(2, (index) => _TestGridRow()),
+      columnCount: columns,
       startDate: startDate,
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert
@@ -220,15 +224,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: 12,
+      rows: List.generate(12, (index) => _TestGridRow()),
+      columnCount: 12,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert
@@ -237,7 +241,6 @@ void main() {
 
   test('maxDy is calculated correctly when data is taller than container', () {
     // Arrange
-    const rows = 13;
 
     const textStyle = TextStyle(fontSize: 12);
     const titlePadding = 5.0;
@@ -261,15 +264,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: rows,
-      columns: 2,
+      rows: List.generate(13, (index) => _TestGridRow()),
+      columnCount: 2,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert
@@ -278,8 +281,6 @@ void main() {
 
   test('maxDy is calculated correctly when data is shorter than container', () {
     // Arrange
-    const rows = 2;
-
     const textStyle = TextStyle(fontSize: 12);
     const titlePadding = 5.0;
 
@@ -302,15 +303,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: rows,
-      columns: 2,
+      rows: List.generate(2, (index) => _TestGridRow()),
+      columnCount: 2,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 200),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert
@@ -342,15 +343,15 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: 12,
-      columns: 12,
+      rows: List.generate(12, (index) => _TestGridRow()),
+      columnCount: 12,
       startDate: DateTime.now(),
-      headers: [],
       containerSize: const Size(100, 100),
       grid: grid,
       style: style,
       title: '1',
       subtitle: '1',
+      highlightedColumns: [],
     );
 
     // Assert

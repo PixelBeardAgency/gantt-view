@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
       activityLabelBuilder: (item) => item.group,
       activitySort: (a, b) =>
           a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
-      highlightedDates: [DateTime(2023, 10, 5)],
+      highlightedDates: [DateTime.now().add(const Duration(days: 5))],
       showFullWeeks: false,
     );
   }

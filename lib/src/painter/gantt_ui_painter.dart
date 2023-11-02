@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/model/cell/header/header_cell.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 
 class GanttUiPainter extends GanttPainter {
-  final List<HeaderCell> headers;
-
   GanttUiPainter({
     required super.config,
     required super.panOffset,
-    required this.headers,
+    required super.rows,
   });
 
   @override
@@ -34,7 +32,7 @@ class GanttUiPainter extends GanttPainter {
 
   @override
   bool shouldRepaint(covariant GanttUiPainter oldDelegate) =>
-      super.shouldRepaint(oldDelegate) || oldDelegate.headers != headers;
+      super.shouldRepaint(oldDelegate);
 
   void _paintLegend(
       int firstVisibleColumn, int lastVisibleColumn, Canvas canvas) {
@@ -93,17 +91,17 @@ class GanttUiPainter extends GanttPainter {
         (config.grid.barHeight / 2) + config.style.labelPadding.top;
 
     for (int index = firstVisibleRow; index < lastVisibleRow; index++) {
-      final header = headers[index];
+      final header = rows[index];
 
       var backgroundRect = Rect.fromLTWH(
         0,
         index * config.rowHeight + config.timelineHeight,
         config.labelColumnWidth,
-        config.rowHeight,
+        config.rowHeight + 1,
       );
 
       final titlePaint = Paint()
-        ..color = header is TaskHeaderCell
+        ..color = header is TaskGridRow
             ? config.style.taskLabelColor
             : config.style.activityLabelColor
         ..style = PaintingStyle.fill;
@@ -115,7 +113,7 @@ class GanttUiPainter extends GanttPainter {
 
       final textPainter = config.textPainter(
         header.label ?? '',
-        header is TaskHeaderCell
+        header is TaskGridRow
             ? config.style.taskLabelStyle
             : config.style.activityLabelStyle,
         maxLines: 1,
