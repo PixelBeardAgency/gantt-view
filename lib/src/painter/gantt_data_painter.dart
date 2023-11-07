@@ -203,7 +203,7 @@ class GanttDataPainter extends GanttPainter {
     if (row is! TaskGridRow) return;
 
     final int from = row.task.startDate.difference(config.startDate).inDays;
-    final int to = row.task.startDate.difference(config.startDate).inDays;
+    final int to = row.task.endDate.difference(config.startDate).inDays;
 
     final isTask = x >= from && x <= to;
 
