@@ -79,12 +79,12 @@ class GanttDataPainter extends GanttPainter {
             );
           } else if (isHighlighted) {
             _paintFill(dx, dy, canvas, config.style.holidayColor);
-          } else if (isWeekend) {
+          } else if (isWeekend && config.style.weekendColor != null) {
             _paintFill(dx, dy, canvas, config.style.weekendColor!);
           }
         } else if (isHighlighted) {
           _paintFill(dx, dy, canvas, config.style.holidayColor);
-        } else if (isWeekend) {
+        } else if (isWeekend && config.style.weekendColor != null) {
           _paintFill(dx, dy, canvas, config.style.weekendColor!);
         } else if (row is ActivityGridRow) {
           _paintFill(dx, dy, canvas, config.style.activityLabelColor);
@@ -113,7 +113,8 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintTask(double x, double y, Canvas canvas, _TaskGridCell fill) {
     var color = config.style.taskBarColor;
-    if (fill.isHighlighted || fill.isWeekend) {
+    if (fill.isHighlighted ||
+        (fill.isWeekend && config.style.weekendColor != null)) {
       _paintFill(
           x,
           y,
