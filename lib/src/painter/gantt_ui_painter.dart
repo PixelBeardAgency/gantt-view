@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 
@@ -17,11 +18,7 @@ class GanttUiPainter extends GanttPainter {
       canvas,
     );
 
-    _paintLegend(
-      gridData.firstVisibleColumn,
-      gridData.lastVisibleColumn,
-      canvas,
-    );
+    _paintLegend(canvas);
 
     _paintTitle(canvas);
 
@@ -34,8 +31,11 @@ class GanttUiPainter extends GanttPainter {
   bool shouldRepaint(covariant GanttUiPainter oldDelegate) =>
       super.shouldRepaint(oldDelegate);
 
-  void _paintLegend(
-      int firstVisibleColumn, int lastVisibleColumn, Canvas canvas) {
+  void _paintLegend(Canvas canvas) {
+    int firstVisibleColumn = gridData.firstVisibleColumn ~/ config.widthDivisor;
+    int lastVisibleColumn =
+        (gridData.lastVisibleColumn / config.widthDivisor).ceil();
+
     int previousYear = 0;
     int previousMonth = 0;
     int previousDay = 0;
