@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 

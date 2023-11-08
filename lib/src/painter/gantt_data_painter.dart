@@ -182,7 +182,7 @@ class GanttDataPainter extends GanttPainter {
   }
 
   void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
-    final firstColumnOffset = ((-panOffset.dx) % config.grid.columnWidth);
+    final firstColumnOffset = ((-panOffset.dx) % config.cellWidth);
     final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
 
     var x = (currentPosX + firstColumnOffset) ~/
