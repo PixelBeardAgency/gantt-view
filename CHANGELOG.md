@@ -1,3 +1,11 @@
+## 0.0.6
+- A bug where tooltips would only appear for the first column has been fixed
+- A bug where sometimes the legend would scroll in the wrong direction has been fixes
+- A bug where the tooltip area would be misaligned has been fixed 
+
+## 0.0.5
+- A bug where `weekendColor` being null would cause an exception has been fixed
+
 ## 0.0.4
 - Cells are now built by the painters on the fly, instead of being built prior to painting
   - On large lists, this can be a significant performance boost (~35 seconds to ~20 seconds to render for 1 million rows and 100 columns)
