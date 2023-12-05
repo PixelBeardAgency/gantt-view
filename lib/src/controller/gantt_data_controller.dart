@@ -121,8 +121,12 @@ class GanttChartController<T> {
   }
 
   Future<void> _buildGanttData(GanttDataInput data) async {
+    if (data.activities.isEmpty) {
+      _isBuilding.value = false;
+      return;
+    }
     _isBuilding.value = true;
-    return compute(GanttData.build, data).then((data) {
+    await compute(GanttData.build, data).then((data) {
       _setGanttData(data);
       _isBuilding.value = false;
     });

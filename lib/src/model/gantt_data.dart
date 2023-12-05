@@ -19,7 +19,19 @@ class GanttData {
     required this.highlightedColumns,
   });
 
+  GanttData.empty()
+      : activities = [],
+        startDate = DateTime.now(),
+        columnCount = 0,
+        rows = [],
+        showFullWeeks = false,
+        highlightedColumns = [];
+
   factory GanttData.build(GanttDataInput input) {
+    if (input.activities.isEmpty) {
+      return GanttData.empty();
+    }
+
     final allTasks = input.activities.expand((a) => a.tasks);
     final firstTaskStartDate = allTasks
         .reduce((value, element) =>
