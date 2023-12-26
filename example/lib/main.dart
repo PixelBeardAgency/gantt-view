@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltipPadding:
               const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           weekendColor: Colors.grey.shade200,
+          showScrollbars: true,
         ),
       ),
       floatingActionButton: FloatingActionButton(

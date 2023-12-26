@@ -25,7 +25,10 @@ class GanttUiPainter extends GanttPainter {
       _paintDividers(canvas, size);
     }
 
-    _paintScrollbars(canvas, size);
+    if (config.dataWidth > size.width - config.labelColumnWidth ||
+        config.dataHeight > size.height - config.timelineHeight) {
+      _paintScrollbars(canvas, size);
+    }
   }
 
   @override
@@ -177,39 +180,28 @@ class GanttUiPainter extends GanttPainter {
   }
 
   void _paintScrollbars(Canvas canvas, Size size) {
-    const padding = 4.0;
-    const thickness = 10.0;
-    const radius = Radius.circular(thickness / 2);
-    const thumbSize = 30.0;
-
-    final backgroundPaint = Paint()
-      ..color = Colors.grey.shade300
-      ..strokeWidth = 1;
-
-    final thumbPaint = Paint()
-      ..color = Colors.grey.shade600
-      ..strokeWidth = 1;
-
-    _paintVerticalScrollbar(size, padding, thickness, radius, canvas,
-        backgroundPaint, thumbSize, thumbPaint);
-    _paintHorizontalScrollbar(size, padding, thickness, radius, canvas,
-        backgroundPaint, thumbSize, thumbPaint);
+    if (config.dataHeight > size.height - config.timelineHeight) {
+      _paintVerticalScrollbar(canvas, size);
+    }
+    if (config.dataWidth > size.width - config.labelColumnWidth) {
+      _paintHorizontalScrollbar(canvas, size);
+    }
   }
 
-  void _paintVerticalScrollbar(
-    Size size,
-    double padding,
-    double thickness,
-    Radius radius,
-    Canvas canvas,
-    Paint backgroundPaint,
-    double thumbSize,
-    Paint thumbPaint,
-  ) {
+  void _paintVerticalScrollbar(Canvas canvas, Size size) {
+    final padding = config.style.scrollbarPadding;
+    final thickness = config.style.scrollbarThickness;
+    final thumbSize = config.style.scrollbarThumbSize;
+    final radius = Radius.circular(thickness / 2);
+
     final scrollBarHeight =
         size.height - config.timelineHeight - padding * 2 - thickness;
     final scrollBarX = size.width - thickness;
     final scrollBarY = -config.timelineHeight;
+
+    final backgroundPaint = Paint()
+      ..color = config.style.scrollbarBackgroundColor;
+
     final scrollBarRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(
           scrollBarX - padding,
@@ -224,6 +216,8 @@ class GanttUiPainter extends GanttPainter {
         (scrollBarHeight * (panOffset.dy / config.maxDy)) -
         (panOffset.dy / config.maxDy * thumbSize);
 
+    final thumbPaint = Paint()..color = config.style.scrollbarThumbColor;
+
     final scrollBarThumbRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(
           scrollBarX - padding,
@@ -235,20 +229,20 @@ class GanttUiPainter extends GanttPainter {
     canvas.drawRRect(scrollBarThumbRect, thumbPaint);
   }
 
-  void _paintHorizontalScrollbar(
-    Size size,
-    double padding,
-    double thickness,
-    Radius radius,
-    Canvas canvas,
-    Paint backgroundPaint,
-    double thumbSize,
-    Paint thumbPaint,
-  ) {
+  void _paintHorizontalScrollbar(Canvas canvas, Size size) {
+    final padding = config.style.scrollbarPadding;
+    final thickness = config.style.scrollbarThickness;
+    final thumbSize = config.style.scrollbarThumbSize;
+    final radius = Radius.circular(thickness / 2);
+
     final scrollBarWidth =
         size.width - config.labelColumnWidth - padding * 2 - thickness;
     final scrollBarX = config.labelColumnWidth;
     final scrollBarY = size.height - thickness;
+
+    final backgroundPaint = Paint()
+      ..color = config.style.scrollbarBackgroundColor;
+
     final scrollBarRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(
           scrollBarX + padding,
@@ -262,6 +256,8 @@ class GanttUiPainter extends GanttPainter {
     final scrollBarThumbX = scrollBarX +
         (scrollBarWidth * (-panOffset.dx / config.maxDx)) -
         (-panOffset.dx / config.maxDx * thumbSize);
+
+    final thumbPaint = Paint()..color = config.style.scrollbarThumbColor;
 
     final scrollBarThumbRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(

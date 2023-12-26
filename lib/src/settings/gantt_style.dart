@@ -30,6 +30,13 @@ class GanttStyle {
   final EdgeInsets tooltipPadding;
   final double tooltipRadius;
 
+  final Color scrollbarBackgroundColor;
+  final Color scrollbarThumbColor;
+  final double scrollbarThickness;
+  final double scrollbarThumbSize;
+  final double scrollbarPadding;
+  final bool showScrollbars;
+
   GanttStyle({
     Color? taskBarColor,
     this.taskBarRadius = 8.0,
@@ -51,6 +58,12 @@ class GanttStyle {
     TextStyle? tooltipStyle,
     this.tooltipPadding = const EdgeInsets.all(4),
     this.tooltipRadius = 4.0,
+    Color? scrollbarBackgroundColor,
+    Color? scrollbarThumbColor,
+    this.scrollbarThickness = 10.0,
+    this.scrollbarThumbSize = 30.0,
+    this.scrollbarPadding = 4.0,
+    this.showScrollbars = false,
   })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
         taskLabelStyle = taskLabelStyle ??
             const TextStyle(color: Colors.white, fontSize: 12),
@@ -68,5 +81,8 @@ class GanttStyle {
         holidayColor = highlightedDateColor ?? Colors.grey.shade300,
         tooltipColor = tooltipColor ?? Colors.grey.shade500,
         tooltipStyle =
-            tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16);
+            tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16),
+        scrollbarBackgroundColor =
+            scrollbarBackgroundColor ?? Colors.grey.shade300,
+        scrollbarThumbColor = scrollbarThumbColor ?? Colors.grey.shade600;
 }
