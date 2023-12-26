@@ -24,6 +24,8 @@ class GanttUiPainter extends GanttPainter {
     if (config.style.axisDividerColor != null) {
       _paintDividers(canvas, size);
     }
+
+    _paintScrollbars(canvas, size);
   }
 
   @override
@@ -172,5 +174,103 @@ class GanttUiPainter extends GanttPainter {
       ..strokeWidth = 1;
     canvas.drawLine(Offset(0, py), Offset(size.width, py), paint);
     canvas.drawLine(Offset(px, 0), Offset(px, size.height), paint);
+  }
+
+  void _paintScrollbars(Canvas canvas, Size size) {
+    const padding = 4.0;
+    const thickness = 10.0;
+    const radius = Radius.circular(thickness / 2);
+    const thumbSize = 30.0;
+
+    final backgroundPaint = Paint()
+      ..color = Colors.grey.shade300
+      ..strokeWidth = 1;
+
+    final thumbPaint = Paint()
+      ..color = Colors.grey.shade600
+      ..strokeWidth = 1;
+
+    _paintVerticalScrollbar(size, padding, thickness, radius, canvas,
+        backgroundPaint, thumbSize, thumbPaint);
+    _paintHorizontalScrollbar(size, padding, thickness, radius, canvas,
+        backgroundPaint, thumbSize, thumbPaint);
+  }
+
+  void _paintVerticalScrollbar(
+    Size size,
+    double padding,
+    double thickness,
+    Radius radius,
+    Canvas canvas,
+    Paint backgroundPaint,
+    double thumbSize,
+    Paint thumbPaint,
+  ) {
+    final scrollBarHeight =
+        size.height - config.timelineHeight - padding * 2 - thickness;
+    final scrollBarX = size.width - thickness;
+    final scrollBarY = -config.timelineHeight;
+    final scrollBarRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          scrollBarX - padding,
+          -scrollBarY + padding,
+          thickness,
+          scrollBarHeight,
+        ),
+        radius);
+    canvas.drawRRect(scrollBarRect, backgroundPaint);
+
+    final scrollBarThumbY = scrollBarY +
+        (scrollBarHeight * (panOffset.dy / config.maxDy)) -
+        (panOffset.dy / config.maxDy * thumbSize);
+
+    final scrollBarThumbRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          scrollBarX - padding,
+          -scrollBarThumbY + padding,
+          thickness,
+          thumbSize,
+        ),
+        radius);
+    canvas.drawRRect(scrollBarThumbRect, thumbPaint);
+  }
+
+  void _paintHorizontalScrollbar(
+    Size size,
+    double padding,
+    double thickness,
+    Radius radius,
+    Canvas canvas,
+    Paint backgroundPaint,
+    double thumbSize,
+    Paint thumbPaint,
+  ) {
+    final scrollBarWidth =
+        size.width - config.labelColumnWidth - padding * 2 - thickness;
+    final scrollBarX = config.labelColumnWidth;
+    final scrollBarY = size.height - thickness;
+    final scrollBarRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          scrollBarX + padding,
+          scrollBarY - padding,
+          scrollBarWidth,
+          thickness,
+        ),
+        radius);
+    canvas.drawRRect(scrollBarRect, backgroundPaint);
+
+    final scrollBarThumbX = scrollBarX +
+        (scrollBarWidth * (-panOffset.dx / config.maxDx)) -
+        (-panOffset.dx / config.maxDx * thumbSize);
+
+    final scrollBarThumbRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          scrollBarThumbX + padding,
+          scrollBarY - padding,
+          thumbSize,
+          thickness,
+        ),
+        radius);
+    canvas.drawRRect(scrollBarThumbRect, thumbPaint);
   }
 }
