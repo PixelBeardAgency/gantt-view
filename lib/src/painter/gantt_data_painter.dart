@@ -37,13 +37,13 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
-      var dy = y * config.rowHeight + config.uiOffset.dy;
+      var dy = y * config.rowHeight;
       final row = rows[y];
 
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
-        var dx = x * config.cellWidth + config.uiOffset.dx;
+        var dx = x * config.cellWidth;
 
         final currentOffset = (config.weekendOffset + x) % 7;
         final isWeekend = currentOffset == 5 || currentOffset == 6;
@@ -153,12 +153,11 @@ class GanttDataPainter extends GanttPainter {
   }
 
   void _paintGridRows(Size size, Canvas canvas, int rows) {
-    final double rowVerticalOffset =
-        config.timelineHeight + (panOffset.dy % config.rowHeight);
+    final double rowVerticalOffset = panOffset.dy % config.rowHeight;
 
     for (int y = 0; y < rows; y++) {
       final py = y * config.rowHeight + rowVerticalOffset;
-      final p1 = Offset(config.labelColumnWidth, py);
+      final p1 = Offset(0, py);
       final p2 = Offset(size.width, py);
       final paint = Paint()
         ..color = config.style.gridColor!
@@ -169,10 +168,10 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset =
-        config.labelColumnWidth + (panOffset.dx % config.grid.columnWidth);
+        panOffset.dx % config.grid.columnWidth;
     for (int x = 0; x < columns; x++) {
       final px = x * config.grid.columnWidth + columnHorizontalOffset;
-      final p1 = Offset(px, config.timelineHeight);
+      final p1 = Offset(px, 0);
       final p2 = Offset(px, size.height);
       final paint = Paint()
         ..color = config.style.gridColor!
@@ -183,14 +182,14 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
     final firstColumnOffset = ((-panOffset.dx) % config.cellWidth);
-    final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
+    final currentPosX = tooltipOffset.dx;
 
     var x = (currentPosX + firstColumnOffset) ~/
             (config.grid.columnWidth / config.widthDivisor) +
         gridData.firstVisibleColumn;
 
     final firstRowOffset = ((-panOffset.dy) % config.rowHeight);
-    final currentPosY = tooltipOffset.dy - config.timelineHeight;
+    final currentPosY = tooltipOffset.dy;
 
     final y = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
         gridData.firstVisibleRow;
@@ -230,9 +229,9 @@ class GanttDataPainter extends GanttPainter {
         textPainter.height + config.style.tooltipPadding.vertical;
 
     // Tooltip is rendered off the start edge of the available space
-    if (startOffset.dx - panOffset.dx < config.labelColumnWidth) {
+    if (startOffset.dx - panOffset.dx < 0) {
       startOffset = Offset(
-        config.labelColumnWidth + panOffset.dx,
+        panOffset.dx,
         startOffset.dy,
       );
     }
@@ -249,10 +248,10 @@ class GanttDataPainter extends GanttPainter {
     }
 
     // Tooltip is rendered off the top edge of the available space
-    if (startOffset.dy - panOffset.dy < config.timelineHeight) {
+    if (startOffset.dy - panOffset.dy < 0) {
       startOffset = Offset(
         startOffset.dx,
-        config.timelineHeight + panOffset.dy,
+        panOffset.dy,
       );
     }
 

@@ -1,146 +1,111 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/controller/builder/activity/activity_builder.dart';
 import 'package:gantt_view/src/model/gantt_activity.dart';
-import 'package:gantt_view/src/model/gantt_data.dart';
 import 'package:gantt_view/src/model/gantt_task.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 
-class GanttChartController<T> {
-  late ActivityBuildData<T> _activityBuildData;
+class GanttChartController<T> extends ChangeNotifier {
+  Offset _panOffset = Offset.zero;
+  Offset get panOffset => _panOffset;
 
-  final ValueNotifier<Offset> _panOffset = ValueNotifier<Offset>(Offset.zero);
-  ValueListenable<Offset> get panOffset => _panOffset;
+  Offset _tooltipOffset = Offset.zero;
+  Offset get tooltipOffset => _tooltipOffset;
 
-  final ValueNotifier<Offset> _tooltipOffset =
-      ValueNotifier<Offset>(Offset.zero);
-  ValueListenable<Offset> get tooltipOffset => _tooltipOffset;
+  final List<T> _items = [];
+  final List<GanttActivity> _activities = [];
+  List<GanttActivity> get activities => _activities;
 
-  final ValueNotifier<GanttData?> _data = ValueNotifier<GanttData?>(null);
-  ValueListenable<GanttData?> get data => _data;
+  final List<DateTime> _highlightedDates = [];
+  List<int> get highlightedDates =>
+      _highlightedDates.map((d) => d.difference(startDate).inDays).toList();
 
-  final ValueNotifier<bool> _isBuilding = ValueNotifier<bool>(false);
-  ValueListenable<bool> get isBuilding => _isBuilding;
+  List<GanttActivity> Function(List<T> item) itemBuilder;
+  List<GridRow> get rows => activities
+      .map((a) {
+        if (a.tasks.isNotEmpty) {
+          List<GridRow> rows = [];
+          rows.add(ActivityGridRow(a.label ?? ''));
+          rows.addAll(a.tasks.map(
+            (t) => TaskGridRow(
+              GanttTask(
+                label: t.label,
+                startDate: t.startDate,
+                endDate: t.endDate,
+              ),
+            ),
+          ));
+          return rows;
+        }
+        return null;
+      })
+      .where((element) => element != null)
+      .expand((element) => element!)
+      .toList();
 
   GanttChartController({
     required List<T> items,
-    required GanttTask Function(T item) taskBuilder,
-    int Function(GanttTask a, GanttTask b)? taskSort,
-    String Function(T item)? activityLabelBuilder,
-    int Function(GanttActivity a, GanttActivity b)? activitySort,
+    required this.itemBuilder,
     List<DateTime> highlightedDates = const [],
     bool showFullWeeks = false,
-  }) : _activityBuildData = ActivityBuildData<T>(
-            items: items,
-            taskBuilder: taskBuilder,
-            taskSort: taskSort,
-            activityLabelBuilder: activityLabelBuilder,
-            activitySort: activitySort,
-            highlightedDates: highlightedDates,
-            showFullWeeks: showFullWeeks) {
-    _sortActivitiesAndBuildCells();
+  }) {
+    setItems(items);
   }
+
+  List<GanttTask> get tasks =>
+      activities.map((a) => a.tasks).expand((t) => t).toList();
+
+  DateTime get startDate => tasks.map((t) => t.startDate).fold(
+      tasks.first.startDate,
+      (previousValue, newValue) =>
+          previousValue.isBefore(newValue) ? previousValue : newValue);
+
+  DateTime get endDate => tasks.map((t) => t.endDate).fold(
+      tasks.first.endDate,
+      (previousValue, newValue) =>
+          previousValue.isAfter(newValue) ? previousValue : newValue);
+
+  int get columnCount => endDate.difference(startDate).inDays + 1;
 
   void setItems(List<T> items) {
-    _activityBuildData = _activityBuildData.copyWith(items: items);
-    _sortActivitiesAndBuildCells();
+    _items.clear();
+    _activities.clear();
+
+    _items.addAll(items);
+    _activities.addAll(itemBuilder(items));
+
+    notifyListeners();
   }
 
-  void addItems(List<T> items) {
-    _activityBuildData = _activityBuildData
-        .copyWith(items: [..._activityBuildData.items, ...items]);
-    _sortActivitiesAndBuildCells();
-  }
+  void addItems(List<T> items) => setItems([..._items, ...items]);
 
-  void removeItem(T item) {
-    _activityBuildData = _activityBuildData.copyWith(
-        items: _activityBuildData.items..remove(item));
-    _sortActivitiesAndBuildCells();
-  }
+  void removeItem(T item) => setItems(_items..remove(item));
 
   void setHighlightedDates(List<DateTime> dates) {
-    _activityBuildData = _activityBuildData.copyWith(highlightedDates: dates);
-    _buildGanttData(GanttDataInput(
-      activities: data.value!.activities,
-      highlightedDates: _activityBuildData.highlightedDates,
-      showFullWeeks: _activityBuildData.showFullWeeks,
-    ));
+    _highlightedDates.clear();
+    _highlightedDates.addAll(dates);
+    notifyListeners();
   }
 
   void addHighlightedDates(List<DateTime> dates) {
-    _activityBuildData = _activityBuildData.copyWith(
-        highlightedDates: [..._activityBuildData.highlightedDates, ...dates]);
-    _buildGanttData(GanttDataInput(
-      activities: data.value!.activities,
-      highlightedDates: _activityBuildData.highlightedDates,
-      showFullWeeks: _activityBuildData.showFullWeeks,
-    ));
+    _highlightedDates.addAll(dates);
+    notifyListeners();
   }
 
   void removeHighlightedDate(DateTime date) {
-    _activityBuildData = _activityBuildData.copyWith(
-        highlightedDates: _activityBuildData.highlightedDates..remove(date));
-    _buildGanttData(GanttDataInput(
-      activities: data.value!.activities,
-      highlightedDates: _activityBuildData.highlightedDates,
-      showFullWeeks: _activityBuildData.showFullWeeks,
-    ));
+    _highlightedDates.remove(date);
+    notifyListeners();
   }
 
-  void setTooltipOffset(Offset offset) => _tooltipOffset.value = offset;
+  void setTooltipOffset(Offset offset) {
+    _tooltipOffset = offset;
+    notifyListeners();
+  }
 
   void setPanOffset(Offset offset) {
-    final diff = (panOffset.value - offset);
-    _panOffset.value = offset;
-    _tooltipOffset.value -= diff;
+    final diff = (panOffset - offset);
+    _panOffset = offset;
+    _tooltipOffset -= diff;
+    notifyListeners();
   }
 
-  void setShowFullWeeks(bool showFullWeeks) {
-    _activityBuildData =
-        _activityBuildData.copyWith(showFullWeeks: showFullWeeks);
-    _buildGanttData(GanttDataInput(
-      activities: data.value!.activities,
-      highlightedDates: _activityBuildData.highlightedDates,
-      showFullWeeks: _activityBuildData.showFullWeeks,
-    ));
-  }
-
-  void _setGanttData(GanttData data) => _data.value = data;
-
-  Future<void> _sortActivitiesAndBuildCells() async {
-    _isBuilding.value = true;
-    final activities =
-        await compute(ActivityBuilder.buildActivities<T>, _activityBuildData);
-
-    await _buildGanttData(
-      GanttDataInput(
-        activities: activities,
-        highlightedDates: _activityBuildData.highlightedDates,
-        showFullWeeks: _activityBuildData.showFullWeeks,
-      ),
-    );
-  }
-
-  Future<void> _buildGanttData(GanttDataInput data) async {
-    if (data.activities.isEmpty) {
-      _isBuilding.value = false;
-      return;
-    }
-    _isBuilding.value = true;
-    await compute(GanttData.build, data).then((data) {
-      _setGanttData(data);
-      _isBuilding.value = false;
-    });
-  }
-}
-
-class GanttDataInput {
-  final List<GanttActivity> activities;
-  List<DateTime> highlightedDates;
-  bool showFullWeeks;
-
-  GanttDataInput({
-    required this.activities,
-    this.highlightedDates = const [],
-    this.showFullWeeks = false,
-  });
+  void setShowFullWeeks(bool showFullWeeks) {}
 }

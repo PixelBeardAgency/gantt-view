@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gantt_view/src/controller/gantt_data_controller.dart';
-import 'package:gantt_view/src/model/gantt_task.dart';
 
 void main() {
   test('tooltipOffset updates correctly', () async {
@@ -13,11 +12,7 @@ void main() {
 
     final controller = GanttChartController<int>(
       items: [1],
-      taskBuilder: (item) => GanttTask(
-        label: '$item',
-        startDate: DateTime.now(),
-        endDate: DateTime.now().add(const Duration(days: 1)),
-      ),
+      itemBuilder: (item) => [],
     );
 
     // Act
@@ -26,6 +21,6 @@ void main() {
     controller.setPanOffset(updatedPanOffset);
 
     // Assert
-    expect(controller.tooltipOffset.value, equals(expectedTooltipOffset));
+    expect(controller.tooltipOffset, equals(expectedTooltipOffset));
   });
 }

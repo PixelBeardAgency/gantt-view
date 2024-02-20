@@ -317,45 +317,4 @@ void main() {
     // Assert
     expect(config.maxDy, equals(expectedDy));
   });
-
-  test('uiOffset is calculated correctly', () {
-    // Arrange
-    const textStyle = TextStyle(fontSize: 12);
-    const titlePadding = 5.0;
-
-    const grid = GanttGrid(
-      timelineAxisType: TimelineAxisType.weekly,
-      barHeight: 20,
-      rowSpacing: 5,
-    );
-    final style = GanttStyle(
-      taskLabelStyle: textStyle,
-      activityLabelStyle: textStyle,
-      titleStyle: textStyle,
-      subtitleStyle: textStyle,
-      timelineStyle: textStyle,
-      labelPadding: const EdgeInsets.all(titlePadding),
-      titlePadding: const EdgeInsets.all(titlePadding),
-    );
-
-    const expectedDx = 22;
-    const expectedDy = 41;
-
-    // Act
-    final config = GanttConfig(
-      rows: List.generate(12, (index) => _TestGridRow()),
-      columnCount: 12,
-      startDate: DateTime.now(),
-      containerSize: const Size(100, 100),
-      grid: grid,
-      style: style,
-      title: '1',
-      subtitle: '1',
-      highlightedColumns: [],
-    );
-
-    // Assert
-    expect(config.uiOffset.dx, equals(expectedDx));
-    expect(config.uiOffset.dy, equals(expectedDy));
-  });
 }

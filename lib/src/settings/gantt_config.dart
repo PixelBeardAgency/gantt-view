@@ -67,8 +67,8 @@ class GanttConfig {
     );
 
     renderAreaSize = Size(
-      min(containerSize.width, dataWidth + labelColumnWidth),
-      min(containerSize.height, dataHeight + timelineHeight),
+      min(containerSize.width, dataWidth),
+      min(containerSize.height, dataHeight),
     );
 
     maxDx = _horizontalScrollBoundary;
@@ -78,16 +78,13 @@ class GanttConfig {
   }
 
   double get _horizontalScrollBoundary {
-    var renderAreaWidth = renderAreaSize.width - labelColumnWidth;
-    return dataWidth < renderAreaWidth
-        ? 0
-        : dataWidth - renderAreaSize.width + labelColumnWidth;
+    var renderAreaWidth = renderAreaSize.width;
+    return dataWidth < renderAreaWidth ? 0 : dataWidth - renderAreaSize.width;
   }
 
-  double get _verticalScrollBoundary =>
-      dataHeight < (renderAreaSize.height - timelineHeight)
-          ? 0
-          : dataHeight - renderAreaSize.height + timelineHeight;
+  double get _verticalScrollBoundary => dataHeight < (renderAreaSize.height)
+      ? 0
+      : dataHeight - renderAreaSize.height;
 
   double _titleWidth(Iterable<GridRow> headers) {
     double width = 0;
@@ -97,14 +94,14 @@ class GanttConfig {
       if (header is ActivityGridRow) {
         width = max(
           width,
-          textPainter(header.label ?? '', style.activityLabelStyle, maxLines: 1)
+          textPainter(header.label, style.activityLabelStyle, maxLines: 1)
                   .width +
               style.labelPadding.horizontal,
         );
       } else if (header is TaskGridRow) {
         width = max(
           width,
-          textPainter(header.label!, style.taskLabelStyle, maxLines: 1).width +
+          textPainter(header.label, style.taskLabelStyle, maxLines: 1).width +
               style.labelPadding.horizontal,
         );
       }

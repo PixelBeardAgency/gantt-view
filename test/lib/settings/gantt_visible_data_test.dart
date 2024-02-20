@@ -9,7 +9,6 @@ void main() {
       () {
     // Arrange
     const rowHeight = 20.0;
-    const verticalOffset = 5.0;
     const panOffset = -40.0;
     const size = Size(100, 100);
 
@@ -19,7 +18,6 @@ void main() {
     final visibleData = GanttVisibleData(
       size,
       10,
-      const Offset(verticalOffset, verticalOffset),
       10,
       10,
       const Offset(panOffset, panOffset),
@@ -35,7 +33,6 @@ void main() {
       () {
     // Arrange
     const rowHeight = 20.0;
-    const verticalOffset = 5.0;
     const panOffset = -40.0;
     const size = Size(100, 100);
 
@@ -45,7 +42,6 @@ void main() {
     final visibleData = GanttVisibleData(
       size,
       10,
-      const Offset(verticalOffset, verticalOffset),
       10,
       10,
       const Offset(panOffset, panOffset),
@@ -60,7 +56,6 @@ void main() {
       () {
     // Arrange
     const rowHeight = 20.0;
-    const verticalOffset = 5.0;
     const panOffset = -40.0;
     const size = Size(100, 100);
 
@@ -70,7 +65,6 @@ void main() {
     final visibleData = GanttVisibleData(
       size,
       10,
-      const Offset(verticalOffset, verticalOffset),
       10,
       10,
       const Offset(panOffset, panOffset),
@@ -86,7 +80,6 @@ void main() {
       () {
     // Arrange
     const columnWidth = 20.0;
-    const horizontalOffset = 5.0;
     const panOffset = -40.0;
     const size = Size(100, 100);
 
@@ -96,7 +89,6 @@ void main() {
     final visibleData = GanttVisibleData(
       size,
       10,
-      const Offset(horizontalOffset, horizontalOffset),
       10,
       columnWidth,
       const Offset(panOffset, panOffset),
@@ -112,7 +104,6 @@ void main() {
       () {
     // Arrange
     const columnWidth = 20.0;
-    const horizontalOffset = 5.0;
     const panOffset = -40.0;
     const size = Size(100, 100);
 
@@ -122,7 +113,6 @@ void main() {
     final visibleData = GanttVisibleData(
       size,
       10,
-      const Offset(horizontalOffset, horizontalOffset),
       10,
       columnWidth,
       const Offset(panOffset, panOffset),
@@ -137,7 +127,6 @@ void main() {
       () {
     // Arrange
     const columnWidth = 20.0;
-    const horizontalOffset = 5.0;
     const panOffset = -40.0;
     const size = Size(100, 100);
 
@@ -147,7 +136,6 @@ void main() {
     final visibleData = GanttVisibleData(
       size,
       10,
-      const Offset(horizontalOffset, horizontalOffset),
       10,
       columnWidth,
       const Offset(panOffset, panOffset),

@@ -24,35 +24,24 @@ class GanttChart<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => ValueListenableBuilder(
-        valueListenable: controller.data,
-        builder: (context, data, child) => ValueListenableBuilder(
-          valueListenable: controller.isBuilding,
-          builder: (context, isBuilding, child) {
-            if (data?.activities.isNotEmpty == true) {
-              return GanttChartContent(
+      builder: (context, constraints) => ListenableBuilder(
+        listenable: controller,
+        builder: (context, child) => (controller.activities.isNotEmpty == true)
+            ? GanttChartContent(
                 config: GanttConfig(
                   grid: grid,
                   style: style,
                   title: title,
                   subtitle: subtitle,
                   containerSize: constraints.biggest,
-                  startDate: data!.startDate,
-                  columnCount: data.columnCount,
-                  rows: data.rows,
-                  highlightedColumns: data.highlightedColumns,
+                  startDate: controller.startDate,
+                  columnCount: controller.columnCount,
+                  highlightedColumns: controller.highlightedDates,
+                  rows: controller.rows,
                 ),
                 controller: controller,
-                rows: data.rows,
-                isBuilding: isBuilding,
-              );
-            }
-
-            return isBuilding
-                ? const Center(child: CircularProgressIndicator())
-                : const Center(child: Text('No data'));
-          },
-        ),
+              )
+            : const Center(child: Text('No data')),
       ),
     );
   }

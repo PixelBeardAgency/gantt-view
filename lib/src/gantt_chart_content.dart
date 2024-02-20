@@ -1,26 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/controller/gantt_data_controller.dart';
-import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/tooltip_type.dart';
 import 'package:gantt_view/src/painter/gantt_data_painter.dart';
-import 'package:gantt_view/src/painter/gantt_ui_painter.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 
 class GanttChartContent<T> extends StatefulWidget {
   final GanttChartController<T> controller;
   final GanttConfig config;
 
-  final List<GridRow> rows;
-
-  final bool isBuilding;
-
   const GanttChartContent({
     super.key,
     required this.config,
     required this.controller,
-    required this.rows,
-    required this.isBuilding,
   });
 
   @override
@@ -33,13 +25,19 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: widget.controller.panOffset,
-      builder: (context, panOffset, child) => ValueListenableBuilder(
-        valueListenable: widget.controller.tooltipOffset,
-        builder: (context, tooltipOffset, child) => SizedBox(
-          height: widget.config.renderAreaSize.height,
-          width: widget.config.renderAreaSize.width,
+    return Row(
+      children: [
+        SizedBox(
+          width: widget.config.labelColumnWidth,
+          child: IntrinsicWidth(
+            child: ListView.builder(
+              itemCount: widget.controller.rows.length,
+              itemBuilder: (context, index) =>
+                  Text(widget.config.rows[index].label),
+            ),
+          ),
+        ),
+        Expanded(
           child: Stack(
             children: [
               Positioned.fill(
@@ -62,7 +60,7 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                       onPointerSignal: (event) {
                         if (event is PointerScrollEvent) {
                           _updateOffset(
-                            panOffset + -event.scrollDelta,
+                            widget.controller.panOffset + -event.scrollDelta,
                             widget.config.maxDx,
                             widget.config.maxDy,
                           );
@@ -77,23 +75,18 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                           }
                         },
                         onPanUpdate: (details) => _updateOffset(
-                          panOffset + details.delta,
+                          widget.controller.panOffset + details.delta,
                           widget.config.maxDx,
                           widget.config.maxDy,
                         ),
                         child: CustomPaint(
                           size: Size.infinite,
                           willChange: true,
-                          foregroundPainter: GanttUiPainter(
-                            config: widget.config,
-                            panOffset: panOffset,
-                            rows: widget.rows,
-                          ),
                           painter: GanttDataPainter(
-                            rows: widget.rows,
+                            rows: widget.controller.rows,
                             config: widget.config,
-                            panOffset: panOffset,
-                            tooltipOffset: tooltipOffset,
+                            panOffset: widget.controller.panOffset,
+                            tooltipOffset: widget.controller.tooltipOffset,
                           ),
                         ),
                       ),
@@ -101,40 +94,10 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                   ),
                 ),
               ),
-              if (widget.isBuilding)
-                Padding(
-                  padding: const EdgeInsets.only(top: 100),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.fromBorderSide(
-                            BorderSide(
-                              color: widget.config.style.taskBarColor
-                                  .withOpacity(0.5),
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(
-                              color: widget.config.style.taskBarColor,
-                              strokeWidth: 1.5,
-                            ),
-                          ),
-                        )),
-                  ),
-                )
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 

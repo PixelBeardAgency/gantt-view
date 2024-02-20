@@ -1,7 +1,7 @@
 import 'package:gantt_view/gantt_view.dart';
 
 abstract class GridRow {
-  String? label;
+  String label;
 
   GridRow(this.label);
 }
