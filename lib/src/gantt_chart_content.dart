@@ -93,17 +93,64 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                         scrollDirection: Axis.horizontal,
                         controller: _controllerGroup.addAndGet(),
                         itemCount: widget.controller.columnCount,
-                        itemBuilder: (context, k) => Container(
-                          color: k % 2 == 0
-                              ? j % 2 == 0
-                                  ? Colors.green
-                                  : Colors.yellow
-                              : j % 2 == 0
-                                  ? Colors.orange
-                                  : Colors.purple,
-                          width: widget.config.cellWidth,
-                          height: height,
-                        ),
+                        itemBuilder: (context, column) {
+                          final columnDate = DateTime(
+                            widget.controller.startDate.year,
+                            widget.controller.startDate.month,
+                            widget.controller.startDate.day + column,
+                          );
+
+                          final startDate = DateTime(
+                            row.task.startDate.year,
+                            row.task.startDate.month,
+                            row.task.startDate.day,
+                          );
+
+                          final endDate = DateTime(
+                            row.task.endDate.year,
+                            row.task.endDate.month,
+                            row.task.endDate.day,
+                          );
+
+                          return Row(
+                            children: [
+                              if (startDate == columnDate)
+                                Container(
+                                  width: widget.config.cellWidth,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: widget.config.style.taskBarColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(
+                                          widget.config.style.taskBarRadius),
+                                      bottomLeft: Radius.circular(
+                                          widget.config.style.taskBarRadius),
+                                    ),
+                                  ),
+                                ),
+                              if (endDate == columnDate)
+                                Container(
+                                    width: widget.config.cellWidth,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: widget.config.style.taskBarColor,
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(
+                                            widget.config.style.taskBarRadius),
+                                        bottomRight: Radius.circular(
+                                            widget.config.style.taskBarRadius),
+                                      ),
+                                    )),
+                              if (columnDate.isAfter(startDate) &&
+                                  columnDate.isBefore(endDate))
+                                Container(
+                                  width: widget.config.cellWidth,
+                                  height: 10,
+                                  color: widget.config.style.taskBarColor,
+                                ),
+                            ],
+                          );
+                        },
                       ),
                     );
                   } else {
