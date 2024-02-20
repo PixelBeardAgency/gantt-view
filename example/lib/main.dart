@@ -11,11 +11,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
+    return const MaterialApp(
+      home: MyHomePage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -72,8 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: GanttChart(
         controller: _controller,
-        title: 'My Lovely Gantt',
-        subtitle: 'This is a subtitle',
         grid: const GanttGrid(
           columnWidth: 40,
           rowSpacing: 0,
@@ -84,9 +79,24 @@ class _MyHomePageState extends State<MyHomePage> {
           taskBarColor: Colors.blue.shade400,
           activityLabelColor: Colors.blue.shade100,
           taskLabelColor: Colors.blue.shade900,
+          // taskLabelBuilder: (task) => Container(
+          //   padding: const EdgeInsets.all(8),
+          //   child: Text(task.label),
+          // ),
           gridColor: Colors.grey.shade300,
           taskBarRadius: 6,
           activityLabelStyle: Theme.of(context).textTheme.labelLarge,
+          // activityLabelBuilder: (activity) => Container(
+          //   padding: const EdgeInsets.all(8),
+          //   color: Colors.blue,
+          //   child: Text(
+          //     activity.label,
+          //     style: const TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // ),
           titleStyle: Theme.of(context).textTheme.titleLarge,
           titlePadding: const EdgeInsets.only(
             left: 8,
@@ -96,7 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           subtitleStyle: Theme.of(context).textTheme.titleMedium,
           timelineColor: Colors.grey.shade100,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           axisDividerColor: Colors.grey.shade500,
           tooltipColor: Colors.redAccent,
           tooltipPadding:

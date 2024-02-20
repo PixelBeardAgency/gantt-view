@@ -107,5 +107,15 @@ class GanttChartController<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPanY(double offset) {
+    _panOffset = Offset(panOffset.dx, -offset);
+    notifyListeners();
+  }
+
+  void setPanX(double offset) {
+    _panOffset = Offset(-offset, panOffset.dy);
+    notifyListeners();
+  }
+
   void setShowFullWeeks(bool showFullWeeks) {}
 }

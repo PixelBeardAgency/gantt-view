@@ -5,6 +5,7 @@ import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/timeline_axis_type.dart';
 import 'package:gantt_view/src/settings/gantt_grid.dart';
 import 'package:gantt_view/src/settings/gantt_style.dart';
+import 'package:gantt_view/src/util/measure_util.dart';
 
 class GanttConfig {
   final GanttGrid grid;
@@ -18,16 +19,7 @@ class GanttConfig {
   final List<GridRow> rows;
   final Iterable<int> highlightedColumns;
 
-  late Size renderAreaSize;
-
-  late double maxDx;
-  late double maxDy;
-
-  late double rowHeight;
-  late double dataHeight;
-
   late double cellWidth;
-  late double dataWidth;
 
   late int weekendOffset;
 
@@ -53,133 +45,62 @@ class GanttConfig {
     required this.highlightedColumns,
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? GanttStyle() {
-    rowHeight = this.grid.barHeight +
-        this.grid.rowSpacing +
-        this.style.labelPadding.vertical;
     cellWidth = this.grid.columnWidth / widthDivisor;
-
-    dataHeight = rows.length * rowHeight;
-    dataWidth = columnCount * cellWidth;
 
     uiOffset = Offset(
       _titleWidth(rows),
       _legendHeight(),
     );
 
-    renderAreaSize = Size(
-      min(containerSize.width, dataWidth),
-      min(containerSize.height, dataHeight),
-    );
-
-    maxDx = _horizontalScrollBoundary;
-    maxDy = _verticalScrollBoundary;
-
     weekendOffset = startDate.weekday - DateTime.monday;
   }
 
-  double get _horizontalScrollBoundary {
-    var renderAreaWidth = renderAreaSize.width;
-    return dataWidth < renderAreaWidth ? 0 : dataWidth - renderAreaSize.width;
-  }
-
-  double get _verticalScrollBoundary => dataHeight < (renderAreaSize.height)
-      ? 0
-      : dataHeight - renderAreaSize.height;
-
-  double _titleWidth(Iterable<GridRow> headers) {
+  double _titleWidth(Iterable<GridRow> labels) {
     double width = 0;
-    final headersCount = headers.length;
-    for (int i = 0; i < headersCount; i++) {
-      final header = headers.elementAt(i);
-      if (header is ActivityGridRow) {
+    var labelIterator = labels.iterator;
+
+    if (style.chartTitleBuilder != null) {
+      width = MeasureUtil.measureWidget(style.chartTitleBuilder!()).width;
+    }
+
+    //iterate over the list
+    while (labelIterator.moveNext()) {
+      final label = labelIterator.current;
+      if (label is ActivityGridRow) {
         width = max(
           width,
-          textPainter(header.label, style.activityLabelStyle, maxLines: 1)
-                  .width +
-              style.labelPadding.horizontal,
+          MeasureUtil.measureWidget(
+                  Material(child: style.activityLabelBuilder(label)))
+              .width,
         );
-      } else if (header is TaskGridRow) {
+      } else if (label is TaskGridRow) {
         width = max(
           width,
-          textPainter(header.label, style.taskLabelStyle, maxLines: 1).width +
-              style.labelPadding.horizontal,
+          MeasureUtil.measureWidget(
+                  Material(child: style.taskLabelBuilder(label)))
+              .width,
         );
       }
     }
-    return max(width, titlePainter().width + style.titlePadding.horizontal);
+    return width;
   }
 
-  double _legendHeight() => max(
-        datePainter(
-              [
-                if (grid.showYear) '2022',
-                if (grid.showMonth) '12',
-                if (grid.showDay) '31',
-              ],
-            ).height +
-            style.titlePadding.bottom,
-        titlePainter().height + style.titlePadding.vertical,
-      );
-
-  TextPainter titlePainter() {
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: title,
-        style: style.titleStyle,
-        children: [
-          if (subtitle != null)
-            TextSpan(
-              text: '\n$subtitle',
-              style: style.subtitleStyle,
-            )
-        ],
+  double _legendHeight() {
+    var dateHeight = MeasureUtil.measureWidget(
+      Material(
+        child: SizedBox(
+          width: cellWidth,
+          child: style.dateLabelBuilder(DateTime(2222, 12, 22)),
+        ),
       ),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: double.infinity,
-    );
-    return textPainter;
-  }
-
-  TextPainter datePainter(Iterable<String> dates) {
-    final textPainter = TextPainter(
-      maxLines: 3,
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        text: dates.join('\n'),
-        style: style.timelineStyle,
-      ),
-      textDirection: TextDirection.ltr,
-    );
-
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: grid.columnWidth,
-    );
-
-    return textPainter;
-  }
-
-  TextPainter textPainter(
-    String label,
-    TextStyle style, {
-    double maxWidth = double.infinity,
-    int? maxLines,
-  }) {
-    final textPainter = TextPainter(
-      maxLines: maxLines,
-      text: TextSpan(
-        text: label,
-        style: style,
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: maxWidth,
-    );
-    return textPainter;
+    ).height;
+    debugPrint('dateHeight: $dateHeight');
+    return max(
+        style.chartTitleBuilder != null
+            ? MeasureUtil.measureWidget(
+                    Material(child: style.chartTitleBuilder!()))
+                .width
+            : 0,
+        dateHeight);
   }
 }

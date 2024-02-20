@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gantt_view/src/model/grid_row.dart';
 
 class GanttStyle {
   final Color taskBarColor;
   final double taskBarRadius;
 
-  final TextStyle taskLabelStyle;
-  final Color taskLabelColor;
-  final EdgeInsets labelPadding;
-
-  final TextStyle activityLabelStyle;
-  final Color activityLabelColor;
+  final Widget Function()? chartTitleBuilder;
+  final Widget Function(TaskGridRow task) taskLabelBuilder;
+  final Widget Function(ActivityGridRow activity) activityLabelBuilder;
+  final Widget Function(DateTime dateTime) dateLabelBuilder;
 
   final Color timelineColor;
   final TextStyle timelineStyle;
@@ -35,7 +34,6 @@ class GanttStyle {
     this.taskBarRadius = 8.0,
     TextStyle? taskLabelStyle,
     Color? taskLabelColor,
-    this.labelPadding = const EdgeInsets.all(4),
     TextStyle? activityLabelStyle,
     Color? activityLabelColor,
     Color? timelineColor,
@@ -51,13 +49,11 @@ class GanttStyle {
     TextStyle? tooltipStyle,
     this.tooltipPadding = const EdgeInsets.all(4),
     this.tooltipRadius = 4.0,
+    this.activityLabelBuilder = _defaultActivityLabelBuilder,
+    this.taskLabelBuilder = _defaultTaskLabelBuilder,
+    this.dateLabelBuilder = _defaultDateLabelBuilder,
+    this.chartTitleBuilder,
   })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
-        taskLabelStyle = taskLabelStyle ??
-            const TextStyle(color: Colors.white, fontSize: 12),
-        taskLabelColor = taskLabelColor ?? Colors.blue.shade900,
-        activityLabelStyle = activityLabelStyle ??
-            const TextStyle(color: Colors.white, fontSize: 12),
-        activityLabelColor = activityLabelColor ?? Colors.blue.shade400,
         timelineColor = timelineColor ?? Colors.grey.shade300,
         timelineStyle =
             timelineStyle ?? const TextStyle(color: Colors.black, fontSize: 10),
@@ -69,4 +65,19 @@ class GanttStyle {
         tooltipColor = tooltipColor ?? Colors.grey.shade500,
         tooltipStyle =
             tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16);
+
+  static Widget _defaultActivityLabelBuilder(ActivityGridRow activity) =>
+      Text(activity.label);
+
+  static Widget _defaultTaskLabelBuilder(TaskGridRow task) => Text(task.label);
+  static Widget _defaultDateLabelBuilder(DateTime dateTime) => Column(
+        children: [
+          Text(
+            '${dateTime.year}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text('${dateTime.month}'),
+          Text('${dateTime.day}'),
+        ],
+      );
 }
