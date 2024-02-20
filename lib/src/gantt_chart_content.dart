@@ -41,9 +41,11 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
             labelColumnWidth: widget.config.labelColumnWidth,
             title: widget.config.style.chartTitleBuilder?.call(),
             timelineHeight: widget.config.timelineHeight,
-            itemBuilder: (context, index) => widget.config.style
-                .dateLabelBuilder(
-                    widget.controller.startDate.add(Duration(days: index))),
+            itemBuilder: (context, index) => SizedBox(
+              width: widget.config.cellWidth,
+              child: widget.config.style.dateLabelBuilder(
+                  widget.controller.startDate.add(Duration(days: index))),
+            ),
             dateScrollController: _dateScrollController,
             columnCount: widget.controller.columnCount,
           ),
