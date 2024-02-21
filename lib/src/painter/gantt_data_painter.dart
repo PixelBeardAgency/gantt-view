@@ -6,14 +6,11 @@ import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 class GanttDataPainter extends GanttPainter {
   final Offset tooltipOffset;
 
-  final double _taskOffset;
-
   GanttDataPainter({
     required super.config,
     required super.panOffset,
     required this.tooltipOffset,
-  }) : _taskOffset =
-            (config.grid.rowSpacing + config.style.labelPadding.vertical) / 2;
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -137,7 +134,7 @@ class GanttDataPainter extends GanttPainter {
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,
-        y + _taskOffset,
+        y + (height - config.grid.barHeight) / 2,
         config.cellWidth + 1,
         config.grid.barHeight,
       ),

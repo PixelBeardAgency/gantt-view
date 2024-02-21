@@ -3,7 +3,6 @@ import 'package:gantt_view/src/model/tooltip_type.dart';
 
 class GanttGrid {
   final double barHeight;
-  final double rowSpacing;
   final double columnWidth;
   final double tooltipWidth;
 
@@ -16,7 +15,6 @@ class GanttGrid {
 
   const GanttGrid({
     this.barHeight = 12.0,
-    this.rowSpacing = 0.0,
     this.columnWidth = 30.0,
     this.tooltipWidth = 200,
     this.showYear = true,

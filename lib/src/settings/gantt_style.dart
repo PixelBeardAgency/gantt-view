@@ -7,7 +7,6 @@ class GanttStyle {
 
   final TextStyle taskLabelStyle;
   final Color taskLabelColor;
-  final EdgeInsets labelPadding;
 
   final TextStyle activityLabelStyle;
   final Color activityLabelColor;
@@ -41,7 +40,6 @@ class GanttStyle {
     this.taskBarRadius = 8.0,
     TextStyle? taskLabelStyle,
     Color? taskLabelColor,
-    this.labelPadding = const EdgeInsets.all(4),
     TextStyle? activityLabelStyle,
     Color? activityLabelColor,
     Color? timelineColor,

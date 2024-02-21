@@ -74,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
         controller: _controller,
         grid: const GanttGrid(
           columnWidth: 100,
-          rowSpacing: 0,
           timelineAxisType: TimelineAxisType.daily,
           tooltipType: TooltipType.tap,
         ),
