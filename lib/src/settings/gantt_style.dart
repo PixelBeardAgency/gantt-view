@@ -5,6 +5,13 @@ class GanttStyle {
   final Color taskBarColor;
   final double taskBarRadius;
 
+  final TextStyle taskLabelStyle;
+  final Color taskLabelColor;
+  final EdgeInsets labelPadding;
+
+  final TextStyle activityLabelStyle;
+  final Color activityLabelColor;
+
   final Widget Function()? chartTitleBuilder;
   final Widget Function(TaskGridRow task) taskLabelBuilder;
   final Widget Function(ActivityGridRow activity) activityLabelBuilder;
@@ -29,11 +36,12 @@ class GanttStyle {
   final EdgeInsets tooltipPadding;
   final double tooltipRadius;
 
-  GanttStyle({
+  const GanttStyle({
     Color? taskBarColor,
     this.taskBarRadius = 8.0,
     TextStyle? taskLabelStyle,
     Color? taskLabelColor,
+    this.labelPadding = const EdgeInsets.all(4),
     TextStyle? activityLabelStyle,
     Color? activityLabelColor,
     Color? timelineColor,
@@ -53,16 +61,24 @@ class GanttStyle {
     this.taskLabelBuilder = _defaultTaskLabelBuilder,
     this.dateLabelBuilder = _defaultDateLabelBuilder,
     this.chartTitleBuilder,
-  })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
-        timelineColor = timelineColor ?? Colors.grey.shade300,
+  })  : taskBarColor = taskBarColor ?? const Color.fromRGBO(144, 202, 249, 1),
+        taskLabelStyle = taskLabelStyle ??
+            const TextStyle(color: Colors.white, fontSize: 12),
+        taskLabelColor = taskLabelColor ?? const Color.fromRGBO(13, 71, 161, 1),
+        activityLabelStyle = activityLabelStyle ??
+            const TextStyle(color: Colors.white, fontSize: 12),
+        activityLabelColor =
+            activityLabelColor ?? const Color.fromRGBO(66, 165, 245, 1),
+        timelineColor = timelineColor ?? const Color.fromRGBO(224, 224, 224, 1),
         timelineStyle =
             timelineStyle ?? const TextStyle(color: Colors.black, fontSize: 10),
         titleStyle =
             titleStyle ?? const TextStyle(color: Colors.black, fontSize: 16),
         subtitleStyle =
             subtitleStyle ?? const TextStyle(color: Colors.black, fontSize: 14),
-        holidayColor = highlightedDateColor ?? Colors.grey.shade300,
-        tooltipColor = tooltipColor ?? Colors.grey.shade500,
+        holidayColor =
+            highlightedDateColor ?? const Color.fromRGBO(224, 224, 224, 1),
+        tooltipColor = tooltipColor ?? const Color.fromRGBO(158, 158, 158, 1),
         tooltipStyle =
             tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16);
 

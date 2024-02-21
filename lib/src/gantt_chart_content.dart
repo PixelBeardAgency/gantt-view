@@ -1,9 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/controller/gantt_data_controller.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
+import 'package:gantt_view/src/model/tooltip_type.dart';
+import 'package:gantt_view/src/painter/gantt_data_painter.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
-import 'package:gantt_view/src/util/measure_util.dart';
-import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 class GanttChartContent<T> extends StatefulWidget {
   final GanttChartController<T> controller;
@@ -23,18 +24,13 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
   double mouseX = 0;
   double mouseY = 0;
 
-  final _controllerGroup = LinkedScrollControllerGroup();
-  late ScrollController _dateScrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _dateScrollController = _controllerGroup.addAndGet();
-  }
+  final ScrollController _dateScrollController = ScrollController();
+  final ScrollController _labelScrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
+      controller: _labelScrollController,
       slivers: [
         SliverPersistentHeader(
           delegate: MyHeaderDelegate(
@@ -70,99 +66,84 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
             ),
             SliverCrossAxisExpanded(
               flex: 1,
-              sliver: SliverList.builder(
-                itemCount: widget.controller.rows.length,
-                itemBuilder: (context, j) {
-                  final row = widget.controller.rows[j];
-                  if (row is ActivityGridRow) {
-                    return Container(
-                      color: Colors.blue,
-                      height: MeasureUtil.measureWidget(
-                                  widget.config.style.activityLabelBuilder(row))
-                              .height +
-                          1,
-                    );
-                  } else if (row is TaskGridRow) {
-                    final height = MeasureUtil.measureWidget(
-                                widget.config.style.taskLabelBuilder(row))
-                            .height +
-                        1;
-                    return SizedBox(
-                      height: height,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        controller: _controllerGroup.addAndGet(),
-                        itemCount: widget.controller.columnCount,
-                        itemBuilder: (context, column) {
-                          final columnDate = DateTime(
-                            widget.controller.startDate.year,
-                            widget.controller.startDate.month,
-                            widget.controller.startDate.day + column,
+              sliver: SliverToBoxAdapter(
+                child: ClipRect(
+                  child: MouseRegion(
+                    onExit: (event) {
+                      if (widget.config.grid.tooltipType == TooltipType.hover) {
+                        widget.controller.setTooltipOffset(Offset.zero);
+                      }
+                    },
+                    onHover: (event) {
+                      mouseX = event.localPosition.dx;
+                      mouseY = event.localPosition.dy;
+                      if (widget.config.grid.tooltipType == TooltipType.hover) {
+                        widget.controller
+                            .setTooltipOffset(Offset(mouseX, mouseY));
+                      }
+                    },
+                    child: Listener(
+                      onPointerSignal: (event) {
+                        if (event is PointerScrollEvent) {
+                          _updateOffset(
+                            widget.controller.panOffset + -event.scrollDelta,
+                            widget.config.maxDx,
+                            widget.config.maxDy,
                           );
-
-                          final startDate = DateTime(
-                            row.task.startDate.year,
-                            row.task.startDate.month,
-                            row.task.startDate.day,
-                          );
-
-                          final endDate = DateTime(
-                            row.task.endDate.year,
-                            row.task.endDate.month,
-                            row.task.endDate.day,
-                          );
-
-                          return Row(
-                            children: [
-                              if (startDate == columnDate)
-                                Container(
-                                  width: widget.config.cellWidth,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: widget.config.style.taskBarColor,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(
-                                          widget.config.style.taskBarRadius),
-                                      bottomLeft: Radius.circular(
-                                          widget.config.style.taskBarRadius),
-                                    ),
-                                  ),
-                                ),
-                              if (endDate == columnDate)
-                                Container(
-                                    width: widget.config.cellWidth,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      color: widget.config.style.taskBarColor,
-                                      borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(
-                                            widget.config.style.taskBarRadius),
-                                        bottomRight: Radius.circular(
-                                            widget.config.style.taskBarRadius),
-                                      ),
-                                    )),
-                              if (columnDate.isAfter(startDate) &&
-                                  columnDate.isBefore(endDate))
-                                Container(
-                                  width: widget.config.cellWidth,
-                                  height: 10,
-                                  color: widget.config.style.taskBarColor,
-                                ),
-                            ],
-                          );
+                        }
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          if (widget.config.grid.tooltipType ==
+                              TooltipType.tap) {
+                            widget.controller
+                                .setTooltipOffset(Offset(mouseX, mouseY));
+                          }
                         },
+                        onPanUpdate: (details) => _updateOffset(
+                          widget.controller.panOffset + details.delta,
+                          widget.config.maxDx,
+                          widget.config.maxDy,
+                        ),
+                        child: CustomPaint(
+                          size: Size.infinite,
+                          willChange: true,
+                          painter: GanttDataPainter(
+                            config: widget.config,
+                            panOffset: widget.controller.panOffset,
+                            tooltipOffset: widget.controller.tooltipOffset,
+                          ),
+                        ),
                       ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
         )
       ],
     );
+  }
+
+  void _updateOffset(Offset panOffset, double maxDx, double maxDy) {
+    panOffset;
+    if (panOffset.dx > 0) {
+      panOffset = Offset(0, panOffset.dy);
+    }
+    if (panOffset.dx < -maxDx) {
+      panOffset = Offset(-maxDx, panOffset.dy);
+    }
+    if (panOffset.dy > 0) {
+      panOffset = Offset(panOffset.dx, 0);
+    }
+    if (panOffset.dy < -maxDy) {
+      panOffset = Offset(panOffset.dx, -maxDy);
+    }
+
+    widget.controller.setPanOffset(panOffset);
+    _dateScrollController.jumpTo(-panOffset.dx);
+    _labelScrollController.jumpTo(-panOffset.dy);
   }
 }
 

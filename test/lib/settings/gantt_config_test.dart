@@ -17,7 +17,7 @@ void main() {
 
     // Act
     final config = GanttConfig(
-      rows: List.generate(12, (index) => _TestGridRow()),
+      rows: List.generate(12, (index) => (_TestGridRow(), const Size(0, 0))),
       columnCount: 12,
       startDate: DateTime.now(),
       containerSize: const Size(100, 100),

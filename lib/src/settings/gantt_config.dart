@@ -16,10 +16,18 @@ class GanttConfig {
 
   final DateTime startDate;
   final int columnCount;
-  final List<GridRow> rows;
+  final List<(GridRow, Size)> rows;
   final Iterable<int> highlightedColumns;
 
+  late Size renderAreaSize;
+
+  late double maxDx;
+  late double maxDy;
+
+  late double dataHeight;
+
   late double cellWidth;
+  late double dataWidth;
 
   late int weekendOffset;
 
@@ -44,44 +52,51 @@ class GanttConfig {
     required this.rows,
     required this.highlightedColumns,
   })  : grid = grid ?? const GanttGrid(),
-        style = style ?? GanttStyle() {
+        style = style ?? const GanttStyle() {
     cellWidth = this.grid.columnWidth / widthDivisor;
+
+    dataHeight = rows.fold(
+        0, (previousValue, element) => previousValue + element.$2.height);
+    dataWidth = columnCount * cellWidth;
 
     uiOffset = Offset(
       _titleWidth(rows),
       _legendHeight(),
     );
 
+    renderAreaSize = Size(
+      min(containerSize.width, dataWidth),
+      min(containerSize.height, dataHeight),
+    );
+
+    maxDx = _horizontalScrollBoundary;
+    maxDy = _verticalScrollBoundary;
+
     weekendOffset = startDate.weekday - DateTime.monday;
   }
 
-  double _titleWidth(Iterable<GridRow> labels) {
+  double get _horizontalScrollBoundary {
+    var renderAreaWidth = renderAreaSize.width;
+    return dataWidth < renderAreaWidth ? 0 : dataWidth - renderAreaSize.width;
+  }
+
+  double get _verticalScrollBoundary => dataHeight < (renderAreaSize.height)
+      ? 0
+      : dataHeight - renderAreaSize.height;
+
+  double _titleWidth(Iterable<(GridRow, Size)> rows) {
     double width = 0;
-    var labelIterator = labels.iterator;
 
     if (style.chartTitleBuilder != null) {
       width = MeasureUtil.measureWidget(style.chartTitleBuilder!()).width;
     }
 
-    //iterate over the list
-    while (labelIterator.moveNext()) {
-      final label = labelIterator.current;
-      if (label is ActivityGridRow) {
-        width = max(
-          width,
-          MeasureUtil.measureWidget(
-                  Material(child: style.activityLabelBuilder(label)))
-              .width,
-        );
-      } else if (label is TaskGridRow) {
-        width = max(
-          width,
-          MeasureUtil.measureWidget(
-                  Material(child: style.taskLabelBuilder(label)))
-              .width,
-        );
-      }
-    }
+    width = max(
+        width,
+        rows
+            .map((e) => e.$2.width)
+            .reduce((value, element) => value > element ? value : element));
+
     return width;
   }
 
@@ -94,7 +109,6 @@ class GanttConfig {
         ),
       ),
     ).height;
-    debugPrint('dateHeight: $dateHeight');
     return max(
         style.chartTitleBuilder != null
             ? MeasureUtil.measureWidget(
