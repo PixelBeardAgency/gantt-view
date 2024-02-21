@@ -78,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltipType: TooltipType.tap,
         ),
         style: GanttStyle(
+          chartTitleBuilder: () => const Text('Gantt Chart'),
           taskBarColor: Colors.blue.shade400,
           activityLabelColor: Colors.blue.shade100,
           taskLabelColor: Colors.blue.shade900,

@@ -29,99 +29,115 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      controller: _labelScrollController,
-      slivers: [
-        SliverPersistentHeader(
-          delegate: MyHeaderDelegate(
-            labelColumnWidth: widget.config.labelColumnWidth,
-            title: widget.config.style.chartTitleBuilder?.call(),
-            timelineHeight: widget.config.timelineHeight,
-            itemBuilder: (context, index) => SizedBox(
-              width: widget.config.cellWidth,
-              child: widget.config.style.dateLabelBuilder(
-                  widget.controller.startDate.add(Duration(days: index))),
-            ),
-            dateScrollController: _dateScrollController,
-            columnCount: widget.controller.columnCount,
+    return Column(
+      children: [
+        _GanttChartHeaderRow(
+          labelColumnWidth: widget.config.labelColumnWidth,
+          title: widget.config.style.chartTitleBuilder?.call(),
+          timelineHeight: widget.config.timelineHeight,
+          itemBuilder: (context, index) => SizedBox(
+            width: widget.config.cellWidth,
+            child: widget.config.style.dateLabelBuilder(
+                widget.controller.startDate.add(Duration(days: index))),
           ),
+          dateScrollController: _dateScrollController,
+          columnCount: widget.controller.columnCount,
+          onScroll: (double position) => widget.controller.setPanX(position),
         ),
-        SliverCrossAxisGroup(
-          slivers: [
-            SliverConstrainedCrossAxis(
-              maxExtent: widget.config.labelColumnWidth,
-              sliver: SliverList.builder(
-                itemCount: widget.controller.rows.length,
-                itemBuilder: (context, index) {
-                  final row = widget.controller.rows[index];
-                  if (row is ActivityGridRow) {
-                    return widget.config.style.activityLabelBuilder(row);
-                  } else if (row is TaskGridRow) {
-                    return widget.config.style.taskLabelBuilder(row);
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
-            ),
-            SliverCrossAxisExpanded(
-              flex: 1,
-              sliver: SliverToBoxAdapter(
-                child: ClipRect(
-                  child: MouseRegion(
-                    onExit: (event) {
-                      if (widget.config.grid.tooltipType == TooltipType.hover) {
-                        widget.controller.setTooltipOffset(Offset.zero);
-                      }
-                    },
-                    onHover: (event) {
-                      mouseX = event.localPosition.dx;
-                      mouseY = event.localPosition.dy;
-                      if (widget.config.grid.tooltipType == TooltipType.hover) {
-                        widget.controller
-                            .setTooltipOffset(Offset(mouseX, mouseY));
-                      }
-                    },
-                    child: Listener(
-                      onPointerSignal: (event) {
-                        if (event is PointerScrollEvent) {
-                          _updateOffset(
-                            widget.controller.panOffset + -event.scrollDelta,
-                            widget.config.maxDx,
-                            widget.config.maxDy,
-                          );
-                        }
-                      },
-                      child: GestureDetector(
-                        onTap: () {
-                          if (widget.config.grid.tooltipType ==
-                              TooltipType.tap) {
-                            widget.controller
-                                .setTooltipOffset(Offset(mouseX, mouseY));
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollNotification) {
+              widget.controller.setPanY(scrollNotification.metrics.pixels);
+              return true;
+            },
+            child: CustomScrollView(
+              controller: _labelScrollController,
+              slivers: [
+                SliverCrossAxisGroup(
+                  slivers: [
+                    SliverConstrainedCrossAxis(
+                      maxExtent: widget.config.labelColumnWidth,
+                      sliver: SliverList.builder(
+                        itemCount: widget.controller.rows.length,
+                        itemBuilder: (context, index) {
+                          final row = widget.controller.rows[index];
+                          if (row is ActivityGridRow) {
+                            return widget.config.style
+                                .activityLabelBuilder(row);
+                          } else if (row is TaskGridRow) {
+                            return widget.config.style.taskLabelBuilder(row);
+                          } else {
+                            return const SizedBox.shrink();
                           }
                         },
-                        onPanUpdate: (details) => _updateOffset(
-                          widget.controller.panOffset + details.delta,
-                          widget.config.maxDx,
-                          widget.config.maxDy,
-                        ),
-                        child: CustomPaint(
-                          size: Size.infinite,
-                          willChange: true,
-                          painter: GanttDataPainter(
-                            config: widget.config,
-                            panOffset: widget.controller.panOffset,
-                            tooltipOffset: widget.controller.tooltipOffset,
+                      ),
+                    ),
+                    SliverCrossAxisExpanded(
+                      flex: 1,
+                      sliver: SliverToBoxAdapter(
+                        child: ClipRect(
+                          child: MouseRegion(
+                            onExit: (event) {
+                              if (widget.config.grid.tooltipType ==
+                                  TooltipType.hover) {
+                                widget.controller.setTooltipOffset(Offset.zero);
+                              }
+                            },
+                            onHover: (event) {
+                              mouseX = event.localPosition.dx;
+                              mouseY = event.localPosition.dy;
+                              if (widget.config.grid.tooltipType ==
+                                  TooltipType.hover) {
+                                widget.controller
+                                    .setTooltipOffset(Offset(mouseX, mouseY));
+                              }
+                            },
+                            child: Listener(
+                              onPointerSignal: (event) {
+                                if (event is PointerScrollEvent) {
+                                  _updateOffset(
+                                    widget.controller.panOffset +
+                                        -event.scrollDelta,
+                                    widget.config.maxDx,
+                                    widget.config.maxDy,
+                                  );
+                                }
+                              },
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (widget.config.grid.tooltipType ==
+                                      TooltipType.tap) {
+                                    widget.controller.setTooltipOffset(
+                                        Offset(mouseX, mouseY));
+                                  }
+                                },
+                                onPanUpdate: (details) => _updateOffset(
+                                  widget.controller.panOffset + details.delta,
+                                  widget.config.maxDx,
+                                  widget.config.maxDy,
+                                ),
+                                child: CustomPaint(
+                                  size: Size.infinite,
+                                  willChange: true,
+                                  painter: GanttDataPainter(
+                                    config: widget.config,
+                                    panOffset: widget.controller.panOffset,
+                                    tooltipOffset:
+                                        widget.controller.tooltipOffset,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
+                  ],
+                )
+              ],
             ),
-          ],
-        )
+          ),
+        ),
       ],
     );
   }
@@ -147,26 +163,27 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
   }
 }
 
-class MyHeaderDelegate extends SliverPersistentHeaderDelegate {
+class _GanttChartHeaderRow extends StatelessWidget {
   final double labelColumnWidth;
   final double timelineHeight;
   final Widget? title;
   final Widget Function(BuildContext context, int index) itemBuilder;
   final ScrollController dateScrollController;
   final int columnCount;
+  final Function(double position) onScroll;
 
-  MyHeaderDelegate({
+  const _GanttChartHeaderRow({
     required this.labelColumnWidth,
     required this.timelineHeight,
     required this.title,
     required this.itemBuilder,
     required this.dateScrollController,
     required this.columnCount,
+    required this.onScroll,
   });
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context) {
     return Row(
       children: [
         SizedBox(
@@ -176,25 +193,21 @@ class MyHeaderDelegate extends SliverPersistentHeaderDelegate {
         Expanded(
           child: SizedBox(
             height: timelineHeight,
-            child: ListView.builder(
-              itemBuilder: itemBuilder,
-              itemCount: columnCount,
-              scrollDirection: Axis.horizontal,
-              controller: dateScrollController,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                onScroll(scrollNotification.metrics.pixels);
+                return true;
+              },
+              child: ListView.builder(
+                itemBuilder: itemBuilder,
+                itemCount: columnCount,
+                scrollDirection: Axis.horizontal,
+                controller: dateScrollController,
+              ),
             ),
           ),
         ),
       ],
     );
   }
-
-  @override
-  double get maxExtent => timelineHeight;
-
-  @override
-  double get minExtent => timelineHeight;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
 }
