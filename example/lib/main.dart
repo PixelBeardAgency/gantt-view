@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
         grid: const GanttGrid(
           columnWidth: 100,
           timelineAxisType: TimelineAxisType.daily,
-          tooltipType: TooltipType.tap,
+          tooltipType: TooltipType.hover,
         ),
         style: GanttStyle(
           chartTitleBuilder: () => const Text('Gantt Chart'),
@@ -92,12 +92,23 @@ class _MyHomePageState extends State<MyHomePage> {
           activityLabelBuilder: (activity) => Container(
             padding: const EdgeInsets.all(8),
             color: Colors.blue,
-            child: Text(
-              activity.label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            child: Column(
+              children: [
+                Text(
+                  activity.label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const Text(
+                  'A subtitle',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
           titleStyle: Theme.of(context).textTheme.titleLarge,

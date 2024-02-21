@@ -12,6 +12,7 @@ abstract class GanttPainter extends CustomPainter {
     required this.config,
     required this.panOffset,
   }) : gridData = GanttVisibleData(
+          config.rows,
           config.renderAreaSize,
           config.columnCount,
           config.cellWidth,

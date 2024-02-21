@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 import 'package:gantt_view/src/settings/gantt_visible_data.dart';
@@ -17,14 +18,14 @@ class GanttDataPainter extends GanttPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (config.style.gridColor != null) {
-      _paintGrid(canvas, size, gridData);
+      _paintGridColumns(size, canvas, gridData.visibleColumns);
     }
 
     _paintCells(canvas, size, gridData);
 
-    // if (config.grid.tooltipType != TooltipType.none) {
-    //   _paintTooltip(canvas, gridData);
-    // }
+    if (config.grid.tooltipType != TooltipType.none) {
+      _paintTooltip(canvas, gridData);
+    }
   }
 
   @override
@@ -33,10 +34,14 @@ class GanttDataPainter extends GanttPainter {
       oldDelegate.tooltipOffset != tooltipOffset;
 
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
-    double dy = 0;
-    for (int y = 0; y < config.rows.length; y++) {
+    for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
       final row = config.rows[y].$1;
       var rowHeight = config.rows[y].$2.height;
+      var dy = gridData.rowOffsets[y];
+
+      if (config.style.gridColor != null) {
+        _paintGridRow(dy, size, canvas);
+      }
 
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
@@ -90,6 +95,7 @@ class GanttDataPainter extends GanttPainter {
               dx, dy, rowHeight, canvas, config.style.activityLabelColor);
         }
       }
+
       dy += rowHeight;
     }
   }
@@ -151,24 +157,14 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintGrid(Canvas canvas, Size size, GanttVisibleData gridData) {
-    // _paintGridRows(size, canvas, gridData.visibleRows);
-    _paintGridColumns(size, canvas, gridData.visibleColumns);
+  void _paintGridRow(double dy, Size size, Canvas canvas) {
+    final p1 = Offset(0, dy + panOffset.dy);
+    final p2 = Offset(size.width, dy + panOffset.dy);
+    final paint = Paint()
+      ..color = config.style.gridColor!
+      ..strokeWidth = 1;
+    canvas.drawLine(p1, p2, paint);
   }
-
-  // void _paintGridRows(Size size, Canvas canvas, int rows) {
-  //   final double rowVerticalOffset = panOffset.dy % config.rowHeight;
-
-  //   for (int y = 0; y < rows; y++) {
-  //     final py = y * config.rowHeight + rowVerticalOffset;
-  //     final p1 = Offset(0, py);
-  //     final p2 = Offset(size.width, py);
-  //     final paint = Paint()
-  //       ..color = config.style.gridColor!
-  //       ..strokeWidth = 1;
-  //     canvas.drawLine(p1, p2, paint);
-  //   }
-  // }
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset =
@@ -184,118 +180,119 @@ class GanttDataPainter extends GanttPainter {
     }
   }
 
-  // void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
-  //   final firstColumnOffset = ((-panOffset.dx) % config.cellWidth);
-  //   final currentPosX = tooltipOffset.dx;
+  void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
+    final firstColumnOffset = ((-panOffset.dx) % config.cellWidth);
+    final currentPosX = tooltipOffset.dx;
 
-  //   var x = (currentPosX + firstColumnOffset) ~/
-  //           (config.grid.columnWidth / config.widthDivisor) +
-  //       gridData.firstVisibleColumn;
+    var x = (currentPosX + firstColumnOffset) ~/
+            (config.grid.columnWidth / config.widthDivisor) +
+        gridData.firstVisibleColumn;
 
-  //   final firstRowOffset = ((-panOffset.dy) % config.rowHeight);
-  //   final currentPosY = tooltipOffset.dy;
+    final firstRowOffset = (gridData.rowOffsets[gridData.firstVisibleRow]);
+    final currentPosY = tooltipOffset.dy;
 
-  //   final y = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
-  //       gridData.firstVisibleRow;
+    final y = gridData.rowOffsets
+            .indexWhere((offset) => currentPosY < offset + firstRowOffset) -
+        1;
 
-  //   if (x < 0 || y < 0) {
-  //     return;
-  //   }
+    if (x < 0 || y < 0) {
+      return;
+    }
 
-  //   final row = rows[y];
-  //   if (row is! TaskGridRow) return;
+    final row = config.rows[y].$1;
+    if (row is! TaskGridRow) return;
 
-  //   final int from = row.task.startDate.difference(config.startDate).inDays;
-  //   final int to = row.task.endDate.difference(config.startDate).inDays;
+    final int from = row.task.startDate.difference(config.startDate).inDays;
+    final int to = row.task.endDate.difference(config.startDate).inDays;
 
-  //   final isTask = x >= from && x <= to;
+    final isTask = x >= from && x <= to;
 
-  //   if (!isTask || (row.task.tooltip?.isEmpty ?? true)) {
-  //     return;
-  //   }
+    if (!isTask || (row.task.tooltip?.isEmpty ?? true)) {
+      return;
+    }
 
-  //   final painter = TextPainter(
-  //     text: TextSpan(
-  //       text: row.task.tooltip!,
-  //       style: config.style.tooltipStyle,
-  //     ),
-  //     textDirection: TextDirection.ltr,
-  //   );
-  //   painter.layout(
-  //     minWidth: 0,
-  //     maxWidth: config.grid.tooltipWidth,
-  //   );
+    final painter = TextPainter(
+      text: TextSpan(
+        text: row.task.tooltip!,
+        style: config.style.tooltipStyle,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    painter.layout(
+      minWidth: 0,
+      maxWidth: config.grid.tooltipWidth,
+    );
 
-  //   var startOffset = Offset(
-  //     tooltipOffset.dx - painter.width / 2,
-  //     tooltipOffset.dy - config.style.tooltipPadding.vertical - painter.height,
-  //   );
+    var startOffset = Offset(
+      tooltipOffset.dx - painter.width / 2,
+      tooltipOffset.dy - config.style.tooltipPadding.vertical - painter.height,
+    );
 
-  //   final backgroundWidth =
-  //       painter.width + config.style.tooltipPadding.horizontal;
-  //   final backgroundHeight =
-  //       painter.height + config.style.tooltipPadding.vertical;
+    final backgroundWidth =
+        painter.width + config.style.tooltipPadding.horizontal;
+    final backgroundHeight =
+        painter.height + config.style.tooltipPadding.vertical;
 
-  //   // Tooltip is rendered off the start edge of the available space
-  //   if (startOffset.dx - panOffset.dx < 0) {
-  //     startOffset = Offset(
-  //       panOffset.dx,
-  //       startOffset.dy,
-  //     );
-  //   }
+    // Tooltip is rendered off the start edge of the available space
+    if (startOffset.dx - panOffset.dx < 0) {
+      startOffset = Offset(
+        panOffset.dx,
+        startOffset.dy,
+      );
+    }
 
-  //   // Tooltip is rendered off the end edge of the available space
-  //   var limit = config.maxDx + config.renderAreaSize.width;
-  //   var currentStartOffset = startOffset.dx + backgroundWidth + -panOffset.dx;
+    // Tooltip is rendered off the end edge of the available space
+    var limit = config.maxDx + config.renderAreaSize.width;
+    var currentStartOffset = startOffset.dx + backgroundWidth + -panOffset.dx;
 
-  //   if (currentStartOffset > limit) {
-  //     startOffset = Offset(
-  //       limit - backgroundWidth + panOffset.dx,
-  //       startOffset.dy,
-  //     );
-  //   }
+    if (currentStartOffset > limit) {
+      startOffset = Offset(
+        limit - backgroundWidth + panOffset.dx,
+        startOffset.dy,
+      );
+    }
 
-  //   // Tooltip is rendered off the top edge of the available space
-  //   if (startOffset.dy - panOffset.dy < 0) {
-  //     startOffset = Offset(
-  //       startOffset.dx,
-  //       panOffset.dy,
-  //     );
-  //   }
+    // Tooltip is rendered off the top edge of the available space
+    if (startOffset.dy - panOffset.dy < 0) {
+      startOffset = Offset(
+        startOffset.dx,
+        panOffset.dy,
+      );
+    }
 
-  //   final endOffset = startOffset + Offset(backgroundWidth, 0);
+    final endOffset = startOffset + Offset(backgroundWidth, 0);
 
-  //   var backgroundRect = RRect.fromRectAndCorners(
-  //     Rect.fromLTWH(
-  //       startOffset.dx,
-  //       endOffset.dy,
-  //       backgroundWidth,
-  //       backgroundHeight,
-  //     ),
-  //     topLeft: Radius.circular(config.style.tooltipRadius),
-  //     bottomLeft: Radius.circular(config.style.tooltipRadius),
-  //     topRight: Radius.circular(config.style.tooltipRadius),
-  //     bottomRight: Radius.circular(config.style.tooltipRadius),
-  //   );
+    var backgroundRect = RRect.fromRectAndCorners(
+      Rect.fromLTWH(
+        startOffset.dx,
+        endOffset.dy,
+        backgroundWidth,
+        backgroundHeight,
+      ),
+      topLeft: Radius.circular(config.style.tooltipRadius),
+      bottomLeft: Radius.circular(config.style.tooltipRadius),
+      topRight: Radius.circular(config.style.tooltipRadius),
+      bottomRight: Radius.circular(config.style.tooltipRadius),
+    );
 
-  //   final backgroundPaint = Paint()
-  //     ..color = config.style.tooltipColor
-  //     ..style = PaintingStyle.fill;
+    final backgroundPaint = Paint()
+      ..color = config.style.tooltipColor
+      ..style = PaintingStyle.fill;
 
-  //   canvas.drawRRect(
-  //     backgroundRect,
-  //     backgroundPaint,
-  //   );
+    canvas.drawRRect(
+      backgroundRect,
+      backgroundPaint,
+    );
 
-  //   painter.paint(
-  //     canvas,
-  //     startOffset +
-  //         Offset(
-  //           config.style.tooltipPadding.left,
-  //           config.style.tooltipPadding.top,
-  //         ),
-  //   );
-  // }
+    painter.paint(
+      canvas,
+      startOffset +
+          Offset(
+            config.style.tooltipPadding.left,
+            config.style.tooltipPadding.top,
+          ),
+    );
+  }
 }
 
 class _TaskGridCell {

@@ -30,6 +30,7 @@ class GanttChartController<T> extends ChangeNotifier {
                 label: t.label,
                 startDate: t.startDate,
                 endDate: t.endDate,
+                tooltip: t.tooltip,
               ),
             ),
           ));
