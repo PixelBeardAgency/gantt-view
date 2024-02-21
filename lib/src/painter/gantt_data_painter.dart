@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
@@ -134,7 +136,7 @@ class GanttDataPainter extends GanttPainter {
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,
-        y + (height - config.grid.barHeight) / 2,
+        y + (height - min(height, config.grid.barHeight)) / 2,
         config.cellWidth + 1,
         config.grid.barHeight,
       ),
