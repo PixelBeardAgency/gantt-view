@@ -45,97 +45,85 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
           onScroll: (double position) => widget.controller.setPanX(position),
         ),
         Expanded(
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (scrollNotification) {
-              widget.controller.setPanY(scrollNotification.metrics.pixels);
-              return true;
-            },
-            child: CustomScrollView(
-              controller: _labelScrollController,
-              slivers: [
-                SliverCrossAxisGroup(
-                  slivers: [
-                    SliverConstrainedCrossAxis(
-                      maxExtent: widget.config.labelColumnWidth,
-                      sliver: SliverList.builder(
-                        itemCount: widget.controller.rows.length,
-                        itemBuilder: (context, index) {
-                          final row = widget.controller.rows[index];
-                          if (row is ActivityGridRow) {
-                            return widget.config.style
-                                .activityLabelBuilder(row);
-                          } else if (row is TaskGridRow) {
-                            return widget.config.style.taskLabelBuilder(row);
-                          } else {
-                            return const SizedBox.shrink();
+          child: Row(
+            children: [
+              NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  widget.controller.setPanY(scrollNotification.metrics.pixels);
+                  return true;
+                },
+                child: SizedBox(
+                  width: widget.config.labelColumnWidth,
+                  child: ListView.builder(
+                    controller: _labelScrollController,
+                    itemCount: widget.controller.rows.length,
+                    itemBuilder: (context, index) {
+                      final row = widget.controller.rows[index];
+                      if (row is ActivityGridRow) {
+                        return widget.config.style.activityLabelBuilder(row);
+                      } else if (row is TaskGridRow) {
+                        return widget.config.style.taskLabelBuilder(row);
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ClipRect(
+                  child: MouseRegion(
+                    onExit: (event) {
+                      if (widget.config.grid.tooltipType == TooltipType.hover) {
+                        widget.controller.setTooltipOffset(Offset.zero);
+                      }
+                    },
+                    onHover: (event) {
+                      mouseX = event.localPosition.dx;
+                      mouseY = event.localPosition.dy;
+                      if (widget.config.grid.tooltipType == TooltipType.hover) {
+                        widget.controller
+                            .setTooltipOffset(Offset(mouseX, mouseY));
+                      }
+                    },
+                    child: Listener(
+                      onPointerSignal: (event) {
+                        if (event is PointerScrollEvent) {
+                          _updateOffset(
+                            widget.controller.panOffset + -event.scrollDelta,
+                            widget.config.maxDx,
+                            widget.config.maxDy,
+                          );
+                        }
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          if (widget.config.grid.tooltipType ==
+                              TooltipType.tap) {
+                            widget.controller
+                                .setTooltipOffset(Offset(mouseX, mouseY));
                           }
                         },
-                      ),
-                    ),
-                    SliverCrossAxisExpanded(
-                      flex: 1,
-                      sliver: SliverToBoxAdapter(
-                        child: ClipRect(
-                          child: MouseRegion(
-                            onExit: (event) {
-                              if (widget.config.grid.tooltipType ==
-                                  TooltipType.hover) {
-                                widget.controller.setTooltipOffset(Offset.zero);
-                              }
-                            },
-                            onHover: (event) {
-                              mouseX = event.localPosition.dx;
-                              mouseY = event.localPosition.dy;
-                              if (widget.config.grid.tooltipType ==
-                                  TooltipType.hover) {
-                                widget.controller
-                                    .setTooltipOffset(Offset(mouseX, mouseY));
-                              }
-                            },
-                            child: Listener(
-                              onPointerSignal: (event) {
-                                if (event is PointerScrollEvent) {
-                                  _updateOffset(
-                                    widget.controller.panOffset +
-                                        -event.scrollDelta,
-                                    widget.config.maxDx,
-                                    widget.config.maxDy,
-                                  );
-                                }
-                              },
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (widget.config.grid.tooltipType ==
-                                      TooltipType.tap) {
-                                    widget.controller.setTooltipOffset(
-                                        Offset(mouseX, mouseY));
-                                  }
-                                },
-                                onPanUpdate: (details) => _updateOffset(
-                                  widget.controller.panOffset + details.delta,
-                                  widget.config.maxDx,
-                                  widget.config.maxDy,
-                                ),
-                                child: CustomPaint(
-                                  size: Size.infinite,
-                                  willChange: true,
-                                  painter: GanttDataPainter(
-                                    config: widget.config,
-                                    panOffset: widget.controller.panOffset,
-                                    tooltipOffset:
-                                        widget.controller.tooltipOffset,
-                                  ),
-                                ),
-                              ),
-                            ),
+                        onPanUpdate: (details) => _updateOffset(
+                          widget.controller.panOffset + details.delta,
+                          widget.config.maxDx,
+                          widget.config.maxDy,
+                        ),
+                        child: CustomPaint(
+                          size: Size.infinite,
+                          willChange: true,
+                          painter: GanttDataPainter(
+                            config: widget.config,
+                            panOffset: widget.controller.panOffset,
+                            tooltipOffset: widget.controller.tooltipOffset,
                           ),
                         ),
                       ),
                     ),
-                  ],
-                )
-              ],
-            ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ],
