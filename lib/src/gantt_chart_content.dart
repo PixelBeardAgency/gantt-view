@@ -7,7 +7,7 @@ import 'package:gantt_view/src/painter/gantt_data_painter.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 
 class GanttChartContent<T> extends StatefulWidget {
-  final GanttConfig config;
+  final GanttConfig<T> config;
 
   const GanttChartContent({
     super.key,
@@ -46,14 +46,10 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
         Expanded(
           child: Row(
             children: [
-              _ChartLabels(
-                rows: widget.config.rows,
+              _ChartLabels<T>(
+                config: widget.config,
                 scrollController: _labelScrollController,
                 onScroll: (position) => controller.setPanY(position),
-                width: widget.config.labelColumnWidth,
-                activityLabelBuilder: widget.config.style.activityLabelBuilder,
-                taskLabelBuilder: widget.config.style.taskLabelBuilder,
-                gridColor: widget.config.style.gridColor,
               ),
               Expanded(
                 child: ClipRect(
@@ -137,23 +133,15 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
   }
 }
 
-class _ChartLabels extends StatelessWidget {
-  final List<(GridRow, Size)> rows;
+class _ChartLabels<T> extends StatelessWidget {
+  final GanttConfig<T> config;
   final ScrollController scrollController;
   final Function(double position) onScroll;
-  final double width;
-  final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
-  final Widget Function(TaskGridRow task) taskLabelBuilder;
-  final Color? gridColor;
 
   const _ChartLabels({
-    required this.rows,
+    required this.config,
     required this.scrollController,
     required this.onScroll,
-    required this.width,
-    this.activityLabelBuilder,
-    required this.taskLabelBuilder,
-    required this.gridColor,
   });
 
   @override
@@ -164,22 +152,29 @@ class _ChartLabels extends StatelessWidget {
         return true;
       },
       child: SizedBox(
-        width: width,
+        width: config.labelColumnWidth,
         child: ListView.separated(
             controller: scrollController,
-            itemCount: rows.length,
+            itemCount: config.rows.length,
             itemBuilder: (context, index) {
-              final row = rows[index].$1;
-              if (row is ActivityGridRow && activityLabelBuilder != null) {
-                return activityLabelBuilder?.call(row);
-              } else if (row is TaskGridRow) {
-                return taskLabelBuilder.call(row);
+              final row = config.rows[index].$1;
+              if (row is ActivityGridRow &&
+                  config.style.activityLabelBuilder != null) {
+                return Container(
+                  color: config.style.activityLabelColor,
+                  child: config.style.activityLabelBuilder!.call(row),
+                );
+              } else if (row is TaskGridRow<T>) {
+                return Container(
+                  color: config.style.taskLabelColor,
+                  child: config.style.taskLabelBuilder.call(row),
+                );
               }
               return const SizedBox.shrink();
             },
-            separatorBuilder: (context, index) => gridColor != null
+            separatorBuilder: (context, index) => config.style.gridColor != null
                 ? Divider(
-                    color: gridColor,
+                    color: config.style.gridColor,
                     height: 1,
                     thickness: 1,
                   )

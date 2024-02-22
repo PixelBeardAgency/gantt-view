@@ -8,7 +8,7 @@ class GanttChart<T> extends StatelessWidget {
   final List<GridRow> rows;
   final List<DateTime> highlightedDates;
   final GanttGrid grid;
-  final GanttStyle style;
+  final GanttStyle<T> style;
 
   const GanttChart({
     super.key,

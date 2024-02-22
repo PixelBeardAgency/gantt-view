@@ -42,20 +42,24 @@ class _MyHomePageState extends State<MyHomePage> {
           timelineAxisType: TimelineAxisType.daily,
           tooltipType: TooltipType.hover,
         ),
-        style: GanttStyle<ExampleEventItem>(
+        style: GanttStyle(
           taskBarColor: Colors.blue.shade400,
           activityLabelColor: Colors.blue.shade100,
           taskLabelColor: Colors.blue.shade900,
           taskLabelBuilder: (task) => Container(
             padding: const EdgeInsets.all(8),
-            child: Text(task.data.title),
+            child: Text(
+              task.data.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
           gridColor: Colors.grey.shade300,
           taskBarRadius: 6,
-          activityLabelStyle: Theme.of(context).textTheme.labelLarge,
           activityLabelBuilder: (activity) => Container(
             padding: const EdgeInsets.all(8),
-            color: Colors.blue,
             child: Column(
               children: [
                 Text(
@@ -75,15 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          titleStyle: Theme.of(context).textTheme.titleLarge,
-          titlePadding: const EdgeInsets.only(
-            left: 8,
-            right: 8,
-            top: 16,
-            bottom: 8,
-          ),
-          subtitleStyle: Theme.of(context).textTheme.titleMedium,
-          timelineColor: Colors.grey.shade100,
           axisDividerColor: Colors.grey.shade500,
           tooltipColor: Colors.redAccent,
           tooltipPadding:
