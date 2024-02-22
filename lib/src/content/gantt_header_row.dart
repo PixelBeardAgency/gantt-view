@@ -46,7 +46,7 @@ class GanttHeaderRow extends StatelessWidget {
               },
               child: Column(
                 children: [
-                  if (config.grid.showYear)
+                  if (config.style.showYear)
                     Expanded(
                       child: CustomScrollView(
                         controller: yearScrollController,
@@ -61,7 +61,7 @@ class GanttHeaderRow extends StatelessWidget {
                         ],
                       ),
                     ),
-                  if (config.grid.showMonth)
+                  if (config.style.showMonth)
                     Expanded(
                       child: CustomScrollView(
                         controller: monthScrollController,
@@ -76,7 +76,7 @@ class GanttHeaderRow extends StatelessWidget {
                         ],
                       ),
                     ),
-                  if (config.grid.showDay)
+                  if (config.style.showDay)
                     Expanded(
                       child: ListView.builder(
                         controller: dayScrollController,
@@ -120,8 +120,8 @@ class _MonthHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   double get maxExtent =>
       config.cellWidth *
-      (min(date.daysRemainingInMonth, config.endDate.difference(date).inDays +
-          1));
+      (min(date.daysRemainingInMonth,
+          config.endDate.difference(date).inDays + 1));
 
   @override
   double get minExtent => config.cellWidth;
@@ -149,8 +149,8 @@ class _YearHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   double get maxExtent =>
       config.cellWidth *
-      (min(date.daysRemainingInYear, config.endDate.difference(date).inDays +
-          1));
+      (min(date.daysRemainingInYear,
+          config.endDate.difference(date).inDays + 1));
 
   @override
   double get minExtent => config.cellWidth;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/model/grid_row.dart';
-import 'package:gantt_view/src/model/month.dart';
+import 'package:gantt_view/gantt_view.dart';
 
 class GanttStyle<T> {
   final Color taskBarColor;
@@ -29,6 +28,17 @@ class GanttStyle<T> {
   final EdgeInsets tooltipPadding;
   final double tooltipRadius;
 
+  final double barHeight;
+  final double columnWidth;
+  final double tooltipWidth;
+
+  final bool showYear;
+  final bool showMonth;
+  final bool showDay;
+
+  final TimelineAxisType timelineAxisType;
+  final TooltipType tooltipType;
+
   const GanttStyle({
     Color? taskBarColor,
     this.taskBarRadius = 8.0,
@@ -48,6 +58,14 @@ class GanttStyle<T> {
     this.monthLabelBuilder = _defaultMonthLabelBuilder,
     this.dayLabelBuilder = _defaultDayLabelBuilder,
     this.chartTitleBuilder,
+    this.barHeight = 12.0,
+    this.columnWidth = 30.0,
+    this.tooltipWidth = 200,
+    this.showYear = true,
+    this.showMonth = true,
+    this.showDay = true,
+    this.timelineAxisType = TimelineAxisType.daily,
+    this.tooltipType = TooltipType.none,
   })  : taskBarColor = taskBarColor ?? const Color.fromRGBO(144, 202, 249, 1),
         taskLabelColor = taskLabelColor ?? const Color.fromRGBO(13, 71, 161, 1),
         activityLabelColor =

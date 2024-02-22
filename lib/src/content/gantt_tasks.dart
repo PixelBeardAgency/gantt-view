@@ -29,14 +29,14 @@ class _GanttTasksState extends State<GanttTasks> {
     return ClipRect(
       child: MouseRegion(
         onExit: (event) {
-          if (widget.config.grid.tooltipType == TooltipType.hover) {
+          if (widget.config.style.tooltipType == TooltipType.hover) {
             widget.controller.setTooltipOffset(Offset.zero);
           }
         },
         onHover: (event) {
           mouseX = event.localPosition.dx;
           mouseY = event.localPosition.dy;
-          if (widget.config.grid.tooltipType == TooltipType.hover) {
+          if (widget.config.style.tooltipType == TooltipType.hover) {
             widget.controller.setTooltipOffset(Offset(mouseX, mouseY));
           }
         },
@@ -48,7 +48,7 @@ class _GanttTasksState extends State<GanttTasks> {
           },
           child: GestureDetector(
             onTap: () {
-              if (widget.config.grid.tooltipType == TooltipType.tap) {
+              if (widget.config.style.tooltipType == TooltipType.tap) {
                 widget.controller.setTooltipOffset(Offset(mouseX, mouseY));
               }
             },
@@ -57,8 +57,7 @@ class _GanttTasksState extends State<GanttTasks> {
             child: ListenableBuilder(
               listenable: widget.controller,
               builder: (context, child) => CustomPaint(
-                size: Size.infinite,
-                willChange: true,
+                size: widget.config.renderAreaSize,
                 painter: GanttDataPainter(
                   config: widget.config,
                   panOffset: widget.controller.panOffset,

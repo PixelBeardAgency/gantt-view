@@ -22,7 +22,7 @@ class GanttDataPainter<T> extends GanttPainter {
 
     _paintCells(canvas, size, gridData);
 
-    if (config.grid.tooltipType != TooltipType.none) {
+    if (config.style.tooltipType != TooltipType.none) {
       _paintTooltip(canvas, gridData);
     }
   }
@@ -141,9 +141,9 @@ class GanttDataPainter<T> extends GanttPainter {
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,
-        y + (height - min(height, config.grid.barHeight)) / 2,
+        y + (height - min(height, config.style.barHeight)) / 2,
         config.cellWidth + 1,
-        min(height, config.grid.barHeight),
+        min(height, config.style.barHeight),
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
       bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -167,9 +167,9 @@ class GanttDataPainter<T> extends GanttPainter {
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset =
-        panOffset.dx % config.grid.columnWidth;
+        panOffset.dx % config.style.columnWidth;
     for (int x = 0; x < columns; x++) {
-      final px = x * config.grid.columnWidth + columnHorizontalOffset;
+      final px = x * config.style.columnWidth + columnHorizontalOffset;
       final p1 = Offset(px, 0);
       final p2 = Offset(px, size.height);
       final paint = Paint()
@@ -184,7 +184,7 @@ class GanttDataPainter<T> extends GanttPainter {
     final currentPosX = tooltipOffset.dx;
 
     var x = (currentPosX + firstColumnOffset) ~/
-            (config.grid.columnWidth / config.widthDivisor) +
+            (config.style.columnWidth / config.widthDivisor) +
         gridData.firstVisibleColumn;
 
     final firstRowOffset = (gridData.rowOffsets[gridData.firstVisibleRow]);
@@ -219,7 +219,7 @@ class GanttDataPainter<T> extends GanttPainter {
     );
     painter.layout(
       minWidth: 0,
-      maxWidth: config.grid.tooltipWidth,
+      maxWidth: config.style.tooltipWidth,
     );
 
     var startOffset = Offset(

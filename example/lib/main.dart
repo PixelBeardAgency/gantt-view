@@ -36,18 +36,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: GanttChart<ExampleEventItem>(
         rows: _items.toRows(),
-        grid: const GanttGrid(
+        style: GanttStyle(
           columnWidth: 100,
-          barHeight: 100,
+          barHeight: 16,
           timelineAxisType: TimelineAxisType.daily,
           tooltipType: TooltipType.hover,
-        ),
-        style: GanttStyle(
           taskBarColor: Colors.blue.shade400,
-          activityLabelColor: Colors.blue.shade100,
+          activityLabelColor: Colors.blue.shade500,
           taskLabelColor: Colors.blue.shade900,
           taskLabelBuilder: (task) => Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             child: Text(
               task.data.title,
               style: const TextStyle(
@@ -57,9 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           gridColor: Colors.grey.shade300,
-          taskBarRadius: 6,
+          taskBarRadius: 8,
           activityLabelBuilder: (activity) => Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -7,14 +7,12 @@ import 'package:gantt_view/src/util/measure_util.dart';
 class GanttChart<T> extends StatelessWidget {
   final List<GridRow> rows;
   final List<DateTime> highlightedDates;
-  final GanttGrid grid;
   final GanttStyle<T> style;
 
   const GanttChart({
     super.key,
     required this.rows,
     this.highlightedDates = const [],
-    this.grid = const GanttGrid(),
     this.style = const GanttStyle(),
   });
 
@@ -24,7 +22,6 @@ class GanttChart<T> extends StatelessWidget {
       builder: (context, constraints) => (rows.isNotEmpty == true)
           ? GanttContent(
               config: GanttConfig(
-                grid: grid,
                 style: style,
                 containerSize: constraints.biggest,
                 highlightedDates: highlightedDates,

@@ -26,58 +26,74 @@ class GanttContentState<T> extends State<GanttContent<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        GanttHeaderRow(
-          config: widget.config,
-          yearScrollController: _yearScrollController,
-          monthScrollController: _monthScrollController,
-          dayScrollController: _dayScrollController,
-          onScroll: (double position) => controller.setPanX(position),
-        ),
-        if (widget.config.style.axisDividerColor != null)
-          Divider(
-            color: widget.config.style.axisDividerColor,
-            height: 1,
-            thickness: 1,
-          ),
-        Expanded(
-          child: Row(
+        Positioned.fill(
+          child: Column(
             children: [
-              GanttLabels<T>(
+              GanttHeaderRow(
                 config: widget.config,
-                scrollController: _labelScrollController,
-                onScroll: (position) => controller.setPanY(position),
+                yearScrollController: _yearScrollController,
+                monthScrollController: _monthScrollController,
+                dayScrollController: _dayScrollController,
+                onScroll: (double position) => controller.setPanX(position),
               ),
               if (widget.config.style.axisDividerColor != null)
-                VerticalDivider(
+                Divider(
                   color: widget.config.style.axisDividerColor,
-                  width: 1,
+                  height: 1,
                   thickness: 1,
                 ),
               Expanded(
-                child: GanttTasks(
-                  controller: controller,
-                  config: widget.config,
-                  onPanned: (position) {
-                    controller.setPanOffset(position);
-                    if (widget.config.grid.showYear) {
-                      _yearScrollController.jumpTo(-position.dx);
-                    }
+                child: Row(
+                  children: [
+                    GanttLabels<T>(
+                      config: widget.config,
+                      scrollController: _labelScrollController,
+                      onScroll: (position) => controller.setPanY(position),
+                    ),
+                    if (widget.config.style.axisDividerColor != null)
+                      VerticalDivider(
+                        color: widget.config.style.axisDividerColor,
+                        width: 1,
+                        thickness: 1,
+                      ),
+                    Expanded(
+                      child: GanttTasks(
+                        controller: controller,
+                        config: widget.config,
+                        onPanned: (position) {
+                          controller.setPanOffset(position);
+                          if (widget.config.style.showYear) {
+                            _yearScrollController.jumpTo(-position.dx);
+                          }
 
-                    if (widget.config.grid.showMonth) {
-                      _monthScrollController.jumpTo(-position.dx);
-                    }
+                          if (widget.config.style.showMonth) {
+                            _monthScrollController.jumpTo(-position.dx);
+                          }
 
-                    if (widget.config.grid.showDay) {
-                      _dayScrollController.jumpTo(-position.dx);
-                    }
+                          if (widget.config.style.showDay) {
+                            _dayScrollController.jumpTo(-position.dx);
+                          }
 
-                    _labelScrollController.jumpTo(-position.dy);
-                  },
+                          _labelScrollController.jumpTo(-position.dy);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+            width: 10,
+            child: Scrollbar(
+              controller: _labelScrollController,
+              child: SizedBox(height: widget.config.dataHeight, width: 10),
+            ),
           ),
         ),
       ],

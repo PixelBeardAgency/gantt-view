@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/model/month.dart';
 import 'package:gantt_view/src/model/timeline_axis_type.dart';
-import 'package:gantt_view/src/settings/gantt_grid.dart';
 import 'package:gantt_view/src/settings/gantt_style.dart';
 import 'package:gantt_view/src/util/datetime_extension.dart';
 import 'package:gantt_view/src/util/measure_util.dart';
 
 class GanttConfig<T> {
-  final GanttGrid grid;
   final GanttStyle<T> style;
 
   final String? title;
@@ -32,7 +30,7 @@ class GanttConfig<T> {
 
   late int weekendOffset;
 
-  int get widthDivisor => switch (grid.timelineAxisType) {
+  int get widthDivisor => switch (style.timelineAxisType) {
         TimelineAxisType.daily => 1,
         TimelineAxisType.weekly => 7,
       };
@@ -66,19 +64,17 @@ class GanttConfig<T> {
   int get columnCount => endDate.difference(startDate).inDays + 1;
 
   GanttConfig({
-    GanttGrid? grid,
     GanttStyle<T>? style,
     this.title,
     this.subtitle,
     required Size containerSize,
     required this.rows,
     this.highlightedDates = const [],
-  })  : grid = grid ?? const GanttGrid(),
-        style = style ?? const GanttStyle() {
+  }) : style = style ?? const GanttStyle() {
     monthsBetween = startDate.monthsBetween(endDate);
     yearsBetween = startDate.yearsBetween(endDate);
 
-    cellWidth = this.grid.columnWidth / widthDivisor;
+    cellWidth = this.style.columnWidth / widthDivisor;
 
     dataHeight = rows.fold(0.0,
             (previousValue, element) => previousValue + element.$2.height) +
@@ -134,9 +130,9 @@ class GanttConfig<T> {
           width: cellWidth,
           child: Column(
             children: [
-              if (grid.showYear) style.yearLabelBuilder(2222),
-              if (grid.showMonth) style.monthLabelBuilder(Month.jan),
-              if (grid.showDay) style.dayLabelBuilder(31),
+              if (style.showYear) style.yearLabelBuilder(2222),
+              if (style.showMonth) style.monthLabelBuilder(Month.jan),
+              if (style.showDay) style.dayLabelBuilder(31),
             ],
           ),
         ),
