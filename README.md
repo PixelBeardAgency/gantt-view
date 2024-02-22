@@ -30,86 +30,59 @@ ActivityGridRow and TaskGridRow are the two types of rows that can be displayed 
 Other customisation options include the ability to change the color of the grid lines, the color of the weekend columns, and the color of the highlighted dates. The `GanttChart` also has the ability to display a tooltip when a task is hovered over, or tapped on.
 
 ```dart
-GanttChart(
-    controller: _controller,
-    title: 'My Lovely Gantt',
-    subtitle: 'This is a subtitle',
-    grid: const GanttGrid(
-        columnWidth: 30,
-        rowSpacing: 0,
-        timelineAxisType: TimelineAxisType.daily,
-    ),
+GanttChart<ExampleEventItem>(
+    rows: _items.toRows(),
     style: GanttStyle(
-        taskBarColor: Colors.blue.shade200,
+        columnWidth: 100,
+        barHeight: 16,
+        timelineAxisType: TimelineAxisType.daily,
+        tooltipType: TooltipType.hover,
+        taskBarColor: Colors.blue.shade400,
+        activityLabelColor: Colors.blue.shade500,
         taskLabelColor: Colors.blue.shade900,
-        activityLabelColor: Colors.blue.shade400,
+        taskLabelBuilder: (task) => TaskLabel(task),
         gridColor: Colors.grey.shade300,
-        labelPadding: const EdgeInsets.all(4),
-        taskBarRadius: 10,
-        timelineColor: Colors.grey.shade300,
+        taskBarRadius: 8,
+        activityLabelBuilder: (activity) => ActivityLabel(activity),
+        axisDividerColor: Colors.grey.shade500,
+        tooltipColor: Colors.redAccent,
+        tooltipPadding:
+            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        weekendColor: Colors.grey.shade200,
     ),
-)
+    )
 ```
-
-To display tasks in the `GanttChart`, a `GanttDataController` is required. The `GanttDataController` has 2 required fields, `items` and `taskBuilder`. The `items` field is a list of items that are used by the `GanttDataController` to build an internal data model for the `GanttChart` to display. The `taskBuilder` is a function that takes an item from the `items` list and returns a `GanttTask` data object. The `GanttTask` data object provides the required data to display a task in the `GanttChart`.
-
-If an `activityLabelBuilder` is provided, the `GanttChart` will display a header row above the tasks which for that activity. The `activityLabelBuilder` is a function that takes an item from the `items` list and returns a `String`. The header String is then used to group tasks together to be displayed as part of the same activity.
-
-To sort tasks internal to a single activity, a `taskSort` function can be provided. This is a comparator function that takes 2 `GanttTask` objects and returns an `int` value. The `GanttTask` objects are then sorted based on the returned value.
-
-To sort activities in the `GanttChart`, a `activitySort` function can be provided. This is a comparator function that takes 2 `GanttActivity` objects and returns an `int` value. The `GanttActivity` objects are then sorted based on the returned value.
-
-```dart
-_controller = GanttDataController<ExampleTaskItem>(
-    items: Data.dummyData,
-    taskBuilder: (item) => GanttTask(
-        label: item.title,
-        startDate: item.start,
-        endDate: item.end,
-    ),
-    taskSort: (a, b) => a.startDate.compareTo(b.startDate),
-    activityLabelBuilder: (item) => item.group,
-    activitySort: (a, b) => a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
-    highlightedDates: [DateTime(2023, 9, 29)],
-);
-```
-## Grid Scheme
-
-| Property         | Type               | Description                                              | Default |
-| ---------------- | ------------------ | -------------------------------------------------------- | ------- |
-| barHeight        | `double`           | Height of the task bar internal to the row               | `12.0`  |
-| rowSpacing       | `double`           | Vertical spacing between rows                            | `0.0`   |
-| columnWidth      | `double`           | Horizontal width of each column                          | `30.0`  |
-| showYear         | `bool`             | Toggle for displaying the year on the top timeline axis  | `true`  |
-| showMonth        | `bool`             | Toggle for displaying the month on the top timeline axis | `true`  |
-| showDay          | `bool`             | Toggle for displaying the day on the top timeline axis   | `true`  |
-| timelineAxisType | `TimelineAxisType` | Enum to toggle chart between daily and weekly view       | `daily` |
-| tooltipType      | `TooltipType`      | Enum to choose when tooltips are displayed               | `none`  |
 
 ## Styling
 
-| Property             | Type         | Description                                                | Default                                        |
-| -------------------- | ------------ | ---------------------------------------------------------- | ---------------------------------------------- |
-| taskBarColor         | `Color`      | Color of the task bar on the chart                         | `Colors.blue.shade200`                         |
-| taskBarRadius        | `double`     | Corner radius of the task bar                              | `0.0`                                          |
-| taskLabelStyle       | `TextStyle`  | TextStyle for the task title for the row                   | `TextStyle(color: Colors.white, fontSize: 12)` |
-| taskLabelColor       | `Color`      | Color for the task title for the row                       | `Colors.blue.shade900`                         |
-| labelPadding         | `EdgeInsets` | Padding for task and activity row titles                   | `EdgeInsets.all(4)`                            |
-| activityLabelStyle   | `TextStyle`  | TextStyle for the activity title                           | `TextStyle(color: Colors.white, fontSize: 12)` |
-| activityLabelColor   | `Color`      | Color for the activity title                               | `Colors.blue.shade400`                         |
-| timelineColor        | `Color`      | Background color for the top timeline axis                 | `Colors.grey.shade300`                         |
-| timelineStyle        | `TextStyle`  | TextStyle for the dates in the top timeline axis           | `TextStyle(color: Colors.black, fontSize: 10)` |
-| titleStyle           | `TextStyle`  | TextStyle for the title on the top left of the chart       | `TextStyle(color: Colors.black, fontSize: 16)` |
-| subtitleStyle        | `TextStyle`  | TextStyle for the subtitle on the top left of the chart    | `TextStyle(color: Colors.black, fontSize: 14)` |
-| titlePadding         | `EdgeInsets` | Overall padding around the Title and Subtitle              | `EdgeInsets.all(4)`                            |
-| gridColor            | `Color`      | Color of the grid lines on the chart                       | `null`                                         |
-| weekendColor         | `Color`      | Color of the weekend columns                               | `null`                                         |
-| highlightedDateColor | `Color`      | Color of the highlighted date columns                      | `Colors.grey.shade300`                         |
-| axisDividerColor     | `Color`      | Color of the dividing lines between the axis and the chart | `null`                                         |
-| tooltipColor         | `Color`      | Color of the tooltip background                            | `Colors.grey.shade500`                         |
-| tooltipStyle         | `TextStyle`  | TextStyle for the tooltip                                  | `TextStyle(color: Colors.white, fontSize: 16)` |
-| tooltipPadding       | `EdgeInsets` | Internal padding for the tooltip text                      | `EdgeInsets.all(4)`                            |
-| tooltipRadius        | `double`     | Corner radius for the tooltip background                   | `4.0`                                          |
+| Property             | Type                                       |
+| -------------------- | ------------------------------------------ |
+| taskBarColor         | Color                                      |
+| taskBarRadius        | double                                     |
+| taskLabelColor       | Color                                      |
+| activityLabelColor   | Color                                      |
+| chartTitleBuilder    | Widget Function()?                         |
+| taskLabelBuilder     | Widget Function(TaskGridRow<T> task)       |
+| activityLabelBuilder | Widget Function(ActivityGridRow activity)? |
+| yearLabelBuilder     | Widget Function(int year)                  |
+| monthLabelBuilder    | Widget Function(Month month)               |
+| dayLabelBuilder      | Widget Function(int day)                   |
+| gridColor            | Color?                                     |
+| weekendColor         | Color?                                     |
+| holidayColor         | Color                                      |
+| axisDividerColor     | Color?                                     |
+| tooltipColor         | Color                                      |
+| tooltipStyle         | TextStyle                                  |
+| tooltipPadding       | EdgeInsets                                 |
+| tooltipRadius        | double                                     |
+| barHeight            | double                                     |
+| columnWidth          | double                                     |
+| tooltipWidth         | double                                     |
+| showYear             | bool                                       |
+| showMonth            | bool                                       |
+| showDay              | bool                                       |
+| timelineAxisType     | TimelineAxisType                           |
+| tooltipType          | TooltipType                                |
 
 ## Additional information
 
