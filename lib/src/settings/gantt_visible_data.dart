@@ -18,6 +18,7 @@ class GanttVisibleData {
     int columnCount,
     double columnWidth,
     Offset panOffset,
+    bool gridShown,
   ) {
     final rowIterator = rows.iterator;
     firstVisibleRow = 0;
@@ -27,7 +28,7 @@ class GanttVisibleData {
     rowOffsets.add(0);
     while (rowIterator.moveNext()) {
       final row = rowIterator.current;
-      if (currentY + row.$2.height < -panOffset.dy) {
+      if (currentY + row.$2.height - (gridShown ? 1 : 0) < -panOffset.dy) {
         firstVisibleRow++;
       }
       if (currentY < -panOffset.dy + size.height) {
@@ -35,7 +36,7 @@ class GanttVisibleData {
       } else {
         break;
       }
-      currentY += row.$2.height;
+      currentY += row.$2.height+ (gridShown ? 1 : 0);
       rowOffsets.add(currentY);
     }
 

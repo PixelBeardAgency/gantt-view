@@ -17,6 +17,7 @@ abstract class GanttPainter extends CustomPainter {
           config.columnCount,
           config.cellWidth,
           panOffset,
+          config.style.gridColor != null,
         );
 
   @override

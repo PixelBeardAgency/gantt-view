@@ -46,29 +46,14 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
         Expanded(
           child: Row(
             children: [
-              NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  controller.setPanY(scrollNotification.metrics.pixels);
-                  return true;
-                },
-                child: SizedBox(
-                  width: widget.config.labelColumnWidth,
-                  child: ListView.builder(
-                    controller: _labelScrollController,
-                    itemCount: widget.config.rows.length,
-                    itemBuilder: (context, index) {
-                      final row = widget.config.rows[index].$1;
-                      if (row is ActivityGridRow &&
-                          widget.config.style.activityLabelBuilder != null) {
-                        return widget.config.style.activityLabelBuilder
-                            ?.call(row);
-                      } else if (row is TaskGridRow) {
-                        return widget.config.style.taskLabelBuilder.call(row);
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ),
+              _ChartLabels(
+                rows: widget.config.rows,
+                scrollController: _labelScrollController,
+                onScroll: (position) => controller.setPanY(position),
+                width: widget.config.labelColumnWidth,
+                activityLabelBuilder: widget.config.style.activityLabelBuilder,
+                taskLabelBuilder: widget.config.style.taskLabelBuilder,
+                gridColor: widget.config.style.gridColor,
               ),
               Expanded(
                 child: ClipRect(
@@ -149,6 +134,58 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
     controller.setPanOffset(panOffset);
     _dateScrollController.jumpTo(-panOffset.dx);
     _labelScrollController.jumpTo(-panOffset.dy);
+  }
+}
+
+class _ChartLabels extends StatelessWidget {
+  final List<(GridRow, Size)> rows;
+  final ScrollController scrollController;
+  final Function(double position) onScroll;
+  final double width;
+  final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
+  final Widget Function(TaskGridRow task) taskLabelBuilder;
+  final Color? gridColor;
+
+  const _ChartLabels({
+    required this.rows,
+    required this.scrollController,
+    required this.onScroll,
+    required this.width,
+    this.activityLabelBuilder,
+    required this.taskLabelBuilder,
+    required this.gridColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        onScroll(scrollNotification.metrics.pixels);
+        return true;
+      },
+      child: SizedBox(
+        width: width,
+        child: ListView.separated(
+            controller: scrollController,
+            itemCount: rows.length,
+            itemBuilder: (context, index) {
+              final row = rows[index].$1;
+              if (row is ActivityGridRow && activityLabelBuilder != null) {
+                return activityLabelBuilder?.call(row);
+              } else if (row is TaskGridRow) {
+                return taskLabelBuilder.call(row);
+              }
+              return const SizedBox.shrink();
+            },
+            separatorBuilder: (context, index) => gridColor != null
+                ? Divider(
+                    color: gridColor,
+                    height: 1,
+                    thickness: 1,
+                  )
+                : const SizedBox.shrink()),
+      ),
+    );
   }
 }
 
