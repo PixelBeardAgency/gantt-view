@@ -31,18 +31,16 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
     return Column(
       children: [
         _GanttChartHeaderRow(
-          labelColumnWidth: widget.config.labelColumnWidth,
-          title: widget.config.style.chartTitleBuilder?.call(),
-          timelineHeight: widget.config.timelineHeight,
-          itemBuilder: (context, index) => SizedBox(
-            width: widget.config.cellWidth,
-            child: widget.config.style.dateLabelBuilder(
-                widget.config.startDate.add(Duration(days: index))),
-          ),
+          config: widget.config,
           dateScrollController: _dateScrollController,
-          columnCount: widget.config.columnCount,
           onScroll: (double position) => controller.setPanX(position),
         ),
+        if (widget.config.style.axisDividerColor != null)
+          Divider(
+            color: widget.config.style.axisDividerColor,
+            height: 1,
+            thickness: 1,
+          ),
         Expanded(
           child: Row(
             children: [
@@ -51,6 +49,12 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                 scrollController: _labelScrollController,
                 onScroll: (position) => controller.setPanY(position),
               ),
+              if (widget.config.style.axisDividerColor != null)
+                VerticalDivider(
+                  color: widget.config.style.axisDividerColor,
+                  width: 1,
+                  thickness: 1,
+                ),
               Expanded(
                 child: ClipRect(
                   child: MouseRegion(
@@ -185,51 +189,53 @@ class _ChartLabels<T> extends StatelessWidget {
 }
 
 class _GanttChartHeaderRow extends StatelessWidget {
-  final double labelColumnWidth;
-  final double timelineHeight;
-  final Widget? title;
-  final Widget Function(BuildContext context, int index) itemBuilder;
+  final GanttConfig config;
   final ScrollController dateScrollController;
-  final int columnCount;
   final Function(double position) onScroll;
 
   const _GanttChartHeaderRow({
-    required this.labelColumnWidth,
-    required this.timelineHeight,
-    required this.title,
-    required this.itemBuilder,
+    required this.config,
     required this.dateScrollController,
-    required this.columnCount,
     required this.onScroll,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: labelColumnWidth,
-          height: timelineHeight,
-          child: title,
-        ),
-        Expanded(
-          child: SizedBox(
-            height: timelineHeight,
+    return SizedBox(
+      height: config.timelineHeight,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: config.labelColumnWidth,
+            child: config.style.chartTitleBuilder?.call(),
+          ),
+          if (config.style.axisDividerColor != null)
+            VerticalDivider(
+              color: config.style.axisDividerColor,
+              width: 1,
+              thickness: 1,
+            ),
+          Expanded(
             child: NotificationListener<ScrollNotification>(
               onNotification: (scrollNotification) {
                 onScroll(scrollNotification.metrics.pixels);
                 return true;
               },
               child: ListView.builder(
-                itemBuilder: itemBuilder,
-                itemCount: columnCount,
+                itemBuilder: (context, index) => SizedBox(
+                  width: config.cellWidth,
+                  child: config.style.dateLabelBuilder(
+                      config.startDate.add(Duration(days: index))),
+                ),
+                itemCount: config.columnCount,
                 scrollDirection: Axis.horizontal,
                 controller: dateScrollController,
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
