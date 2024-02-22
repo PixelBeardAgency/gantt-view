@@ -72,8 +72,9 @@ class GanttConfig<T> {
         style = style ?? const GanttStyle() {
     cellWidth = this.grid.columnWidth / widthDivisor;
 
-    dataHeight = rows.fold(
-        0, (previousValue, element) => previousValue + element.$2.height);
+    dataHeight = rows.fold(0.0,
+            (previousValue, element) => previousValue + element.$2.height) +
+        (style?.axisDividerColor != null ? rows.length : 0);
     dataWidth = columnCount * cellWidth;
 
     uiOffset = Offset(
