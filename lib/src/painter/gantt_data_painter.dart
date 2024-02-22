@@ -188,7 +188,7 @@ class GanttDataPainter<T> extends GanttPainter {
         gridData.firstVisibleColumn;
 
     final firstRowOffset = (gridData.rowOffsets[gridData.firstVisibleRow]);
-    final currentPosY = tooltipOffset.dy;
+    final currentPosY = tooltipOffset.dy - panOffset.dy + firstRowOffset;
 
     final y = gridData.rowOffsets
             .indexWhere((offset) => currentPosY < offset + firstRowOffset) -
