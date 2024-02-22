@@ -2,11 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gantt_view/gantt_view.dart';
-import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
-class GanttDataPainter extends GanttPainter {
+class GanttDataPainter<T> extends GanttPainter {
   final Offset tooltipOffset;
 
   GanttDataPainter({
@@ -53,8 +52,8 @@ class GanttDataPainter extends GanttPainter {
 
         final isHighlighted = config.highlightedColumns.contains(x);
 
-        if (row is TaskGridRow) {
-          final task = row.task;
+        if (row is TaskGridRow<T>) {
+          final task = row;
 
           final start = task.startDate;
           final end = task.endDate;
@@ -144,7 +143,7 @@ class GanttDataPainter extends GanttPainter {
         x,
         y + (height - min(height, config.grid.barHeight)) / 2,
         config.cellWidth + 1,
-        config.grid.barHeight,
+        min(height, config.grid.barHeight),
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
       bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -202,18 +201,18 @@ class GanttDataPainter extends GanttPainter {
     final row = config.rows[y].$1;
     if (row is! TaskGridRow) return;
 
-    final int from = row.task.startDate.difference(config.startDate).inDays;
-    final int to = row.task.endDate.difference(config.startDate).inDays;
+    final int from = row.startDate.difference(config.startDate).inDays;
+    final int to = row.endDate.difference(config.startDate).inDays;
 
     final isTask = x >= from && x <= to;
 
-    if (!isTask || (row.task.tooltip?.isEmpty ?? true)) {
+    if (!isTask || (row.tooltip?.isEmpty ?? true)) {
       return;
     }
 
     final painter = TextPainter(
       text: TextSpan(
-        text: row.task.tooltip!,
+        text: row.tooltip!,
         style: config.style.tooltipStyle,
       ),
       textDirection: TextDirection.ltr,

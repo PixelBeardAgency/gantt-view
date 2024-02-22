@@ -29,62 +29,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late GanttChartController<ExampleEventItem> _controller;
-
   final List<ExampleEventItem> _items = Data.dummyData;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = GanttChartController<ExampleEventItem>(
-      items: _items,
-      itemBuilder: (items) {
-        List<GanttActivity> activities = [];
-        Map<String, List<GanttTask>> labelTasks = {};
-
-        for (var item in items) {
-          final label = item.group;
-          (labelTasks[label] ??= []).add(GanttTask(
-            label: item.title,
-            startDate: item.start,
-            endDate: item.end,
-            tooltip:
-                '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
-          ));
-        }
-
-        activities = labelTasks.entries.map((e) {
-          final tasks = e.value;
-          tasks.sort((a, b) => a.startDate.compareTo(b.startDate));
-          return GanttActivity(label: e.key, tasks: tasks);
-        }).toList();
-        activities.sort((a, b) =>
-            a.tasks.first.startDate.compareTo(b.tasks.first.startDate));
-        return activities;
-      },
-      highlightedDates: [DateTime.now().add(const Duration(days: 5))],
-      showFullWeeks: false,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GanttChart(
-        controller: _controller,
+      body: GanttChart<ExampleEventItem>(
+        rows: _items.toRows(),
         grid: const GanttGrid(
           columnWidth: 100,
+          barHeight: 100,
           timelineAxisType: TimelineAxisType.daily,
           tooltipType: TooltipType.hover,
         ),
-        style: GanttStyle(
-          chartTitleBuilder: () => const Text('Gantt Chart'),
+        style: GanttStyle<ExampleEventItem>(
           taskBarColor: Colors.blue.shade400,
           activityLabelColor: Colors.blue.shade100,
           taskLabelColor: Colors.blue.shade900,
           taskLabelBuilder: (task) => Container(
             padding: const EdgeInsets.all(8),
-            child: Text(task.label),
+            child: Text(task.data.title),
           ),
           gridColor: Colors.grey.shade300,
           taskBarRadius: 6,
@@ -95,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               children: [
                 Text(
-                  activity.label,
+                  activity.label!,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -129,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.redAccent,
-        onPressed: () => setState(() => _controller.addItems(Data.dummyData)),
+        onPressed: () => setState(() => _items.addAll(Data.dummyData)),
         child: const Icon(Icons.restore, color: Colors.white),
       ),
     );
@@ -138,4 +102,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
 extension on DateTime {
   String get formattedDate => '$day/$month/$year';
+}
+
+extension on List<ExampleEventItem> {
+  List<GridRow> toRows() {
+    List<GridRow> rows = [];
+    Map<String, List<TaskGridRow<ExampleEventItem>>> labelTasks = {};
+
+    sort((a, b) => a.start.compareTo(b.start));
+
+    for (var item in this) {
+      final label = item.group;
+      (labelTasks[label] ??= []).add(TaskGridRow<ExampleEventItem>(
+        data: item,
+        startDate: item.start,
+        endDate: item.end,
+        tooltip:
+            '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
+      ));
+    }
+
+    for (var label in labelTasks.keys) {
+      rows.add(ActivityGridRow(label));
+      rows.addAll(labelTasks[label]!);
+    }
+
+    return rows;
+  }
 }

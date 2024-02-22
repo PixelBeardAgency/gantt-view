@@ -38,10 +38,10 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
           itemBuilder: (context, index) => SizedBox(
             width: widget.config.cellWidth,
             child: widget.config.style.dateLabelBuilder(
-                widget.controller.startDate.add(Duration(days: index))),
+                widget.config.startDate.add(Duration(days: index))),
           ),
           dateScrollController: _dateScrollController,
-          columnCount: widget.controller.columnCount,
+          columnCount: widget.config.columnCount,
           onScroll: (double position) => widget.controller.setPanX(position),
         ),
         Expanded(
@@ -56,16 +56,17 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                   width: widget.config.labelColumnWidth,
                   child: ListView.builder(
                     controller: _labelScrollController,
-                    itemCount: widget.controller.rows.length,
+                    itemCount: widget.config.rows.length,
                     itemBuilder: (context, index) {
-                      final row = widget.controller.rows[index];
-                      if (row is ActivityGridRow) {
-                        return widget.config.style.activityLabelBuilder(row);
+                      final row = widget.config.rows[index].$1;
+                      if (row is ActivityGridRow &&
+                          widget.config.style.activityLabelBuilder != null) {
+                        return widget.config.style.activityLabelBuilder
+                            ?.call(row);
                       } else if (row is TaskGridRow) {
-                        return widget.config.style.taskLabelBuilder(row);
-                      } else {
-                        return const SizedBox.shrink();
+                        return widget.config.style.taskLabelBuilder.call(row);
                       }
+                      return const SizedBox.shrink();
                     },
                   ),
                 ),
@@ -112,7 +113,7 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                         child: CustomPaint(
                           size: Size.infinite,
                           willChange: true,
-                          painter: GanttDataPainter(
+                          painter: GanttDataPainter<T>(
                             config: widget.config,
                             panOffset: widget.controller.panOffset,
                             tooltipOffset: widget.controller.tooltipOffset,

@@ -1,45 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/gantt_view.dart';
+import 'package:gantt_view/src/controller/gantt_data_controller.dart';
 import 'package:gantt_view/src/gantt_chart_content.dart';
-import 'package:gantt_view/src/model/grid_row.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 import 'package:gantt_view/src/util/measure_util.dart';
 
-class GanttChart<T> extends StatelessWidget {
-  final GanttChartController<T> controller;
+class GanttChart<T> extends StatefulWidget {
+  final List<GridRow> rows;
+  final List<DateTime> highlightedDates;
   final GanttGrid grid;
   final GanttStyle style;
 
   const GanttChart({
     super.key,
-    required this.controller,
+    required this.rows,
+    this.highlightedDates = const [],
     this.grid = const GanttGrid(),
     this.style = const GanttStyle(),
   });
+
+  @override
+  State<GanttChart<T>> createState() => _GanttChartState<T>();
+}
+
+class _GanttChartState<T> extends State<GanttChart<T>> {
+  final GanttChartController<T> controller = GanttChartController();
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => ListenableBuilder(
         listenable: controller,
-        builder: (context, child) => (controller.activities.isNotEmpty == true)
+        builder: (context, child) => (widget.rows.isNotEmpty == true)
             ? GanttChartContent(
                 config: GanttConfig(
-                  grid: grid,
-                  style: style,
+                  grid: widget.grid,
+                  style: widget.style,
                   containerSize: constraints.biggest,
-                  startDate: controller.startDate,
-                  columnCount: controller.columnCount,
-                  highlightedColumns: controller.highlightedDates,
-                  rows: controller.rows
+                  highlightedDates: widget.highlightedDates,
+                  rows: widget.rows
                       .map((e) => (
                             e,
                             e is ActivityGridRow
                                 ? MeasureUtil.measureWidget(Material(
-                                    child: style.activityLabelBuilder(e)))
-                                : e is TaskGridRow
+                                    child: widget.style.activityLabelBuilder
+                                        ?.call(e)))
+                                : e is TaskGridRow<T>
                                     ? MeasureUtil.measureWidget(Material(
-                                        child: style.taskLabelBuilder(e)))
+                                        child:
+                                            widget.style.taskLabelBuilder(e)))
                                     : const Size(0, 0)
                           ))
                       .toList(),

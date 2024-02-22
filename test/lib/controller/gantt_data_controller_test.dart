@@ -10,10 +10,7 @@ void main() {
     const Offset updatedPanOffset = Offset(30, 30);
     const Offset expectedTooltipOffset = Offset(40, 40);
 
-    final controller = GanttChartController<int>(
-      items: [1],
-      itemBuilder: (item) => [],
-    );
+    final controller = GanttChartController<int>();
 
     // Act
     controller.setPanOffset(panOffset);

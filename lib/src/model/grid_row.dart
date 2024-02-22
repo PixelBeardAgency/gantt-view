@@ -1,17 +1,23 @@
-import 'package:gantt_view/gantt_view.dart';
-
 abstract class GridRow {
-  String label;
-
-  GridRow(this.label);
+  GridRow();
 }
 
 class ActivityGridRow extends GridRow {
-  ActivityGridRow(super.label);
+  final String? label;
+
+  ActivityGridRow(this.label);
 }
 
-class TaskGridRow extends GridRow {
-  final GanttTask task;
+class TaskGridRow<T> extends GridRow {
+  final DateTime startDate;
+  final DateTime endDate;
+  final T data;
+  final String? tooltip;
 
-  TaskGridRow(this.task) : super(task.label);
+  TaskGridRow({
+    required this.startDate,
+    required this.endDate,
+    required this.data,
+    this.tooltip,
+  });
 }

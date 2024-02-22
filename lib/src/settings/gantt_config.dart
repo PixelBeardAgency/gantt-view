@@ -7,17 +7,16 @@ import 'package:gantt_view/src/settings/gantt_grid.dart';
 import 'package:gantt_view/src/settings/gantt_style.dart';
 import 'package:gantt_view/src/util/measure_util.dart';
 
-class GanttConfig {
+class GanttConfig<T> {
   final GanttGrid grid;
-  final GanttStyle style;
+  final GanttStyle<T> style;
 
   final String? title;
   final String? subtitle;
 
-  final DateTime startDate;
-  final int columnCount;
   final List<(GridRow, Size)> rows;
-  final Iterable<int> highlightedColumns;
+
+  final List<DateTime> highlightedDates;
 
   late Size renderAreaSize;
 
@@ -41,16 +40,34 @@ class GanttConfig {
   double get labelColumnWidth => uiOffset.dx;
   double get timelineHeight => uiOffset.dy;
 
+  Iterable<int> get highlightedColumns =>
+      highlightedDates.map((d) => d.difference(startDate).inDays);
+
+  DateTime get startDate => rows
+      .map((e) => e.$1)
+      .whereType<TaskGridRow>()
+      .map((t) => t.startDate)
+      .fold(
+          rows.map((e) => e.$1).whereType<TaskGridRow>().first.startDate,
+          (previousValue, newValue) =>
+              previousValue.isBefore(newValue) ? previousValue : newValue);
+
+  DateTime get endDate =>
+      rows.map((e) => e.$1).whereType<TaskGridRow>().map((t) => t.endDate).fold(
+          rows.map((e) => e.$1).whereType<TaskGridRow>().first.endDate,
+          (previousValue, newValue) =>
+              previousValue.isAfter(newValue) ? previousValue : newValue);
+
+  int get columnCount => endDate.difference(startDate).inDays + 1;
+
   GanttConfig({
     GanttGrid? grid,
-    GanttStyle? style,
+    GanttStyle<T>? style,
     this.title,
     this.subtitle,
     required Size containerSize,
-    required this.startDate,
-    required this.columnCount,
     required this.rows,
-    required this.highlightedColumns,
+    this.highlightedDates = const [],
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? const GanttStyle() {
     cellWidth = this.grid.columnWidth / widthDivisor;

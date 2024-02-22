@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
 
-class GanttStyle {
+class GanttStyle<T> {
   final Color taskBarColor;
   final double taskBarRadius;
 
@@ -13,7 +13,7 @@ class GanttStyle {
 
   final Widget Function()? chartTitleBuilder;
   final Widget Function(TaskGridRow task) taskLabelBuilder;
-  final Widget Function(ActivityGridRow activity) activityLabelBuilder;
+  final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
   final Widget Function(DateTime dateTime) dateLabelBuilder;
 
   final Color timelineColor;
@@ -55,7 +55,7 @@ class GanttStyle {
     TextStyle? tooltipStyle,
     this.tooltipPadding = const EdgeInsets.all(4),
     this.tooltipRadius = 4.0,
-    this.activityLabelBuilder = _defaultActivityLabelBuilder,
+    this.activityLabelBuilder,
     this.taskLabelBuilder = _defaultTaskLabelBuilder,
     this.dateLabelBuilder = _defaultDateLabelBuilder,
     this.chartTitleBuilder,
@@ -80,10 +80,8 @@ class GanttStyle {
         tooltipStyle =
             tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16);
 
-  static Widget _defaultActivityLabelBuilder(ActivityGridRow activity) =>
-      Text(activity.label);
+  static Widget _defaultTaskLabelBuilder(TaskGridRow task) => Container();
 
-  static Widget _defaultTaskLabelBuilder(TaskGridRow task) => Text(task.label);
   static Widget _defaultDateLabelBuilder(DateTime dateTime) => Column(
         children: [
           Text(
