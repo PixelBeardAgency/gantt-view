@@ -6,6 +6,8 @@ import 'package:gantt_view/src/painter/gantt_data_painter.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 
 class GanttTasks extends StatefulWidget {
+  final ScrollController horizontalScrollController;
+  final ScrollController verticalScrollController;
   final GanttChartController controller;
   final GanttConfig config;
   final Function(Offset position) onPanned;
@@ -15,6 +17,8 @@ class GanttTasks extends StatefulWidget {
     required this.controller,
     required this.config,
     required this.onPanned,
+    required this.horizontalScrollController,
+    required this.verticalScrollController,
   });
 
   @override
@@ -43,11 +47,7 @@ class _GanttTasksState extends State<GanttTasks> {
         child: Listener(
           onPointerSignal: (event) {
             if (event is PointerScrollEvent) {
-              _updateOffset(
-                widget.controller.panOffset + -event.scrollDelta,
-                widget.config.maxDx,
-                widget.config.maxDy,
-              );
+              _updateOffset(widget.controller.panOffset + -event.scrollDelta);
             }
           },
           child: GestureDetector(
@@ -56,11 +56,8 @@ class _GanttTasksState extends State<GanttTasks> {
                 widget.controller.setTooltipOffset(Offset(mouseX, mouseY));
               }
             },
-            onPanUpdate: (details) => _updateOffset(
-              widget.controller.panOffset + details.delta,
-              widget.config.maxDx,
-              widget.config.maxDy,
-            ),
+            onPanUpdate: (details) =>
+                _updateOffset(widget.controller.panOffset + details.delta),
             child: ListenableBuilder(
               listenable: widget.controller,
               builder: (context, child) => CustomPaint(
@@ -79,19 +76,18 @@ class _GanttTasksState extends State<GanttTasks> {
     );
   }
 
-  void _updateOffset(Offset panOffset, double maxDx, double maxDy) {
-    panOffset;
+  void _updateOffset(Offset panOffset) {
     if (panOffset.dx > 0) {
       panOffset = Offset(0, panOffset.dy);
     }
-    if (panOffset.dx < -maxDx) {
-      panOffset = Offset(-maxDx, panOffset.dy);
+    if (panOffset.dx < -widget.config.maxDx) {
+      panOffset = Offset(-widget.config.maxDx, panOffset.dy);
     }
     if (panOffset.dy > 0) {
       panOffset = Offset(panOffset.dx, 0);
     }
-    if (panOffset.dy < -maxDy) {
-      panOffset = Offset(panOffset.dx, -maxDy);
+    if (panOffset.dy < -widget.config.maxDy) {
+      panOffset = Offset(panOffset.dx, -widget.config.maxDy);
     }
     widget.onPanned(panOffset);
   }
