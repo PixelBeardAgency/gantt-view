@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
+import 'package:gantt_view/src/model/month.dart';
 import 'package:gantt_view/src/model/timeline_axis_type.dart';
 import 'package:gantt_view/src/settings/gantt_grid.dart';
 import 'package:gantt_view/src/settings/gantt_style.dart';
+import 'package:gantt_view/src/util/datetime_extension.dart';
 import 'package:gantt_view/src/util/measure_util.dart';
 
 class GanttConfig<T> {
@@ -58,6 +60,9 @@ class GanttConfig<T> {
           (previousValue, newValue) =>
               previousValue.isAfter(newValue) ? previousValue : newValue);
 
+  late List<DateTime> monthsBetween;
+  late List<DateTime> yearsBetween;
+
   int get columnCount => endDate.difference(startDate).inDays + 1;
 
   GanttConfig({
@@ -70,6 +75,9 @@ class GanttConfig<T> {
     this.highlightedDates = const [],
   })  : grid = grid ?? const GanttGrid(),
         style = style ?? const GanttStyle() {
+    monthsBetween = startDate.monthsBetween(endDate);
+    yearsBetween = startDate.yearsBetween(endDate);
+
     cellWidth = this.grid.columnWidth / widthDivisor;
 
     dataHeight = rows.fold(0.0,
@@ -124,7 +132,13 @@ class GanttConfig<T> {
       Material(
         child: SizedBox(
           width: cellWidth,
-          child: style.dateLabelBuilder(DateTime(2222, 12, 22)),
+          child: Column(
+            children: [
+              if (grid.showYear) style.yearLabelBuilder(2222),
+              if (grid.showMonth) style.monthLabelBuilder(Month.jan),
+              if (grid.showDay) style.dayLabelBuilder(31),
+            ],
+          ),
         ),
       ),
     ).height;

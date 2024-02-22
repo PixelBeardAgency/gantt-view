@@ -18,7 +18,9 @@ class GanttContent<T> extends StatefulWidget {
 }
 
 class GanttContentState<T> extends State<GanttContent<T>> {
-  final ScrollController _dateScrollController = ScrollController();
+  final ScrollController _yearScrollController = ScrollController();
+  final ScrollController _monthScrollController = ScrollController();
+  final ScrollController _dayScrollController = ScrollController();
   final ScrollController _labelScrollController = ScrollController();
   final GanttChartController controller = GanttChartController();
 
@@ -28,7 +30,9 @@ class GanttContentState<T> extends State<GanttContent<T>> {
       children: [
         GanttHeaderRow(
           config: widget.config,
-          dateScrollController: _dateScrollController,
+          yearScrollController: _yearScrollController,
+          monthScrollController: _monthScrollController,
+          dayScrollController: _dayScrollController,
           onScroll: (double position) => controller.setPanX(position),
         ),
         if (widget.config.style.axisDividerColor != null)
@@ -57,7 +61,18 @@ class GanttContentState<T> extends State<GanttContent<T>> {
                   config: widget.config,
                   onPanned: (position) {
                     controller.setPanOffset(position);
-                    _dateScrollController.jumpTo(-position.dx);
+                    if (widget.config.grid.showYear) {
+                      _yearScrollController.jumpTo(-position.dx);
+                    }
+
+                    if (widget.config.grid.showMonth) {
+                      _monthScrollController.jumpTo(-position.dx);
+                    }
+
+                    if (widget.config.grid.showDay) {
+                      _dayScrollController.jumpTo(-position.dx);
+                    }
+
                     _labelScrollController.jumpTo(-position.dy);
                   },
                 ),

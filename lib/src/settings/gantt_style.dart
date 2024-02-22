@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/src/model/grid_row.dart';
+import 'package:gantt_view/src/model/month.dart';
 
 class GanttStyle<T> {
   final Color taskBarColor;
@@ -11,7 +12,10 @@ class GanttStyle<T> {
   final Widget Function()? chartTitleBuilder;
   final Widget Function(TaskGridRow<T> task) taskLabelBuilder;
   final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
-  final Widget Function(DateTime dateTime) dateLabelBuilder;
+
+  final Widget Function(int year) yearLabelBuilder;
+  final Widget Function(Month month) monthLabelBuilder;
+  final Widget Function(int day) dayLabelBuilder;
 
   final Color? gridColor;
 
@@ -40,7 +44,9 @@ class GanttStyle<T> {
     this.tooltipRadius = 4.0,
     this.activityLabelBuilder,
     this.taskLabelBuilder = _defaultTaskLabelBuilder,
-    this.dateLabelBuilder = _defaultDateLabelBuilder,
+    this.yearLabelBuilder = _defaultYearLabelBuilder,
+    this.monthLabelBuilder = _defaultMonthLabelBuilder,
+    this.dayLabelBuilder = _defaultDayLabelBuilder,
     this.chartTitleBuilder,
   })  : taskBarColor = taskBarColor ?? const Color.fromRGBO(144, 202, 249, 1),
         taskLabelColor = taskLabelColor ?? const Color.fromRGBO(13, 71, 161, 1),
@@ -54,14 +60,10 @@ class GanttStyle<T> {
 
   static Widget _defaultTaskLabelBuilder(TaskGridRow task) => Container();
 
-  static Widget _defaultDateLabelBuilder(DateTime dateTime) => Column(
-        children: [
-          Text(
-            '${dateTime.year}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text('${dateTime.month}'),
-          Text('${dateTime.day}'),
-        ],
+  static Widget _defaultYearLabelBuilder(int year) => Text(
+        '$year',
+        style: const TextStyle(fontWeight: FontWeight.bold),
       );
+  static Widget _defaultMonthLabelBuilder(Month month) => Text('${month.id}');
+  static Widget _defaultDayLabelBuilder(int day) => Text('$day');
 }

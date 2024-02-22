@@ -6,8 +6,6 @@ import 'package:gantt_view/src/painter/gantt_data_painter.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 
 class GanttTasks extends StatefulWidget {
-  final ScrollController horizontalScrollController;
-  final ScrollController verticalScrollController;
   final GanttChartController controller;
   final GanttConfig config;
   final Function(Offset position) onPanned;
@@ -17,8 +15,6 @@ class GanttTasks extends StatefulWidget {
     required this.controller,
     required this.config,
     required this.onPanned,
-    required this.horizontalScrollController,
-    required this.verticalScrollController,
   });
 
   @override
