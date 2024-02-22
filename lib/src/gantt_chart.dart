@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/gantt_view.dart';
-import 'package:gantt_view/src/gantt_chart_content.dart';
+import 'package:gantt_view/src/content/gantt_content.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 import 'package:gantt_view/src/util/measure_util.dart';
 
@@ -22,7 +22,7 @@ class GanttChart<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => (rows.isNotEmpty == true)
-          ? GanttChartContent(
+          ? GanttContent(
               config: GanttConfig(
                 grid: grid,
                 style: style,
