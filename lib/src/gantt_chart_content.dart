@@ -7,13 +7,11 @@ import 'package:gantt_view/src/painter/gantt_data_painter.dart';
 import 'package:gantt_view/src/settings/gantt_config.dart';
 
 class GanttChartContent<T> extends StatefulWidget {
-  final GanttChartController<T> controller;
   final GanttConfig config;
 
   const GanttChartContent({
     super.key,
     required this.config,
-    required this.controller,
   });
 
   @override
@@ -26,6 +24,7 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
 
   final ScrollController _dateScrollController = ScrollController();
   final ScrollController _labelScrollController = ScrollController();
+  final GanttChartController controller = GanttChartController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +41,14 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
           ),
           dateScrollController: _dateScrollController,
           columnCount: widget.config.columnCount,
-          onScroll: (double position) => widget.controller.setPanX(position),
+          onScroll: (double position) => controller.setPanX(position),
         ),
         Expanded(
           child: Row(
             children: [
               NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
-                  widget.controller.setPanY(scrollNotification.metrics.pixels);
+                  controller.setPanY(scrollNotification.metrics.pixels);
                   return true;
                 },
                 child: SizedBox(
@@ -76,22 +75,21 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                   child: MouseRegion(
                     onExit: (event) {
                       if (widget.config.grid.tooltipType == TooltipType.hover) {
-                        widget.controller.setTooltipOffset(Offset.zero);
+                        controller.setTooltipOffset(Offset.zero);
                       }
                     },
                     onHover: (event) {
                       mouseX = event.localPosition.dx;
                       mouseY = event.localPosition.dy;
                       if (widget.config.grid.tooltipType == TooltipType.hover) {
-                        widget.controller
-                            .setTooltipOffset(Offset(mouseX, mouseY));
+                        controller.setTooltipOffset(Offset(mouseX, mouseY));
                       }
                     },
                     child: Listener(
                       onPointerSignal: (event) {
                         if (event is PointerScrollEvent) {
                           _updateOffset(
-                            widget.controller.panOffset + -event.scrollDelta,
+                            controller.panOffset + -event.scrollDelta,
                             widget.config.maxDx,
                             widget.config.maxDy,
                           );
@@ -101,22 +99,24 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
                         onTap: () {
                           if (widget.config.grid.tooltipType ==
                               TooltipType.tap) {
-                            widget.controller
-                                .setTooltipOffset(Offset(mouseX, mouseY));
+                            controller.setTooltipOffset(Offset(mouseX, mouseY));
                           }
                         },
                         onPanUpdate: (details) => _updateOffset(
-                          widget.controller.panOffset + details.delta,
+                          controller.panOffset + details.delta,
                           widget.config.maxDx,
                           widget.config.maxDy,
                         ),
-                        child: CustomPaint(
-                          size: Size.infinite,
-                          willChange: true,
-                          painter: GanttDataPainter<T>(
-                            config: widget.config,
-                            panOffset: widget.controller.panOffset,
-                            tooltipOffset: widget.controller.tooltipOffset,
+                        child: ListenableBuilder(
+                          listenable: controller,
+                          builder: (context, child) => CustomPaint(
+                            size: Size.infinite,
+                            willChange: true,
+                            painter: GanttDataPainter<T>(
+                              config: widget.config,
+                              panOffset: controller.panOffset,
+                              tooltipOffset: controller.tooltipOffset,
+                            ),
                           ),
                         ),
                       ),
@@ -146,7 +146,7 @@ class GanttChartContentState<T> extends State<GanttChartContent<T>> {
       panOffset = Offset(panOffset.dx, -maxDy);
     }
 
-    widget.controller.setPanOffset(panOffset);
+    controller.setPanOffset(panOffset);
     _dateScrollController.jumpTo(-panOffset.dx);
     _labelScrollController.jumpTo(-panOffset.dy);
   }
