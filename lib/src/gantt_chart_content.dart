@@ -176,6 +176,7 @@ class _GanttChartHeaderRow extends StatelessWidget {
       children: [
         SizedBox(
           width: labelColumnWidth,
+          height: timelineHeight,
           child: title,
         ),
         Expanded(

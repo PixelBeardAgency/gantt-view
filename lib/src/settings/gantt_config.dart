@@ -65,7 +65,7 @@ class GanttConfig {
     );
 
     renderAreaSize = Size(
-      min(containerSize.width, dataWidth),
+      min(containerSize.width - uiOffset.dx, dataWidth),
       min(containerSize.height, dataHeight),
     );
 
@@ -80,9 +80,10 @@ class GanttConfig {
     return dataWidth < renderAreaWidth ? 0 : dataWidth - renderAreaSize.width;
   }
 
-  double get _verticalScrollBoundary => dataHeight < (renderAreaSize.height)
-      ? 0
-      : dataHeight - renderAreaSize.height;
+  double get _verticalScrollBoundary =>
+      dataHeight < (renderAreaSize.height + uiOffset.dy)
+          ? 0
+          : dataHeight - renderAreaSize.height + uiOffset.dy;
 
   double _titleWidth(Iterable<(GridRow, Size)> rows) {
     double width = 0;
