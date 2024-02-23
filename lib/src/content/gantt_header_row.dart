@@ -82,8 +82,11 @@ class GanttHeaderRow extends StatelessWidget {
                         controller: dayScrollController,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          final date =
-                              config.startDate.add(Duration(days: index));
+                          final date = DateTime(
+                            config.startDate.year,
+                            config.startDate.month,
+                            config.startDate.day + index,
+                          );
                           return SizedBox(
                             width: config.cellWidth,
                             child: config.style.dayLabelBuilder(date.day),

@@ -1,3 +1,6 @@
+## 0.1.2
+- Fixes for DateTime calculations when daylight savings time is in effect
+
 ## 0.1.1
 - Tasks canvas fix to align to top of row instead of center
 
