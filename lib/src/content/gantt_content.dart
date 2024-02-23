@@ -25,6 +25,16 @@ class GanttContentState<T> extends State<GanttContent<T>> {
   final GanttChartController controller = GanttChartController();
 
   @override
+  void dispose() {
+    _yearScrollController.dispose();
+    _monthScrollController.dispose();
+    _dayScrollController.dispose();
+    _labelScrollController.dispose();
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
