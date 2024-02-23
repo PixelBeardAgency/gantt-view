@@ -56,6 +56,7 @@ class GanttContentState<T> extends State<GanttContent<T>> {
                 ),
               Expanded(
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GanttLabels<T>(
                       config: widget.config,
