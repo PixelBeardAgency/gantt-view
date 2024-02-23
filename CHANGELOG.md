@@ -1,4 +1,7 @@
-## 0.0.7
+## 0.1.1
+- Tasks canvas fix to align to top of row instead of center
+
+## 0.1.0
 - Labels now use a builder to render in a list
 - Dates now use a builder to render in a list
 - Title and subtitle now use a builder to render in a list
