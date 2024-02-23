@@ -29,59 +29,55 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late GanttChartController<ExampleEventItem> _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = GanttChartController<ExampleEventItem>(
-      items: Data.dummyData,
-      taskBuilder: (item) => GanttTask(
-        label: item.title,
-        startDate: item.start,
-        endDate: item.end,
-        tooltip:
-            '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
-      ),
-      taskSort: (a, b) => a.startDate.compareTo(b.startDate),
-      activityLabelBuilder: (item) => item.group,
-      activitySort: (a, b) =>
-          a.tasks.first.startDate.compareTo(b.tasks.first.startDate),
-      highlightedDates: [DateTime.now().add(const Duration(days: 5))],
-      showFullWeeks: false,
-    );
-  }
+  final List<ExampleEventItem> _items = Data.dummyData;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GanttChart(
-        controller: _controller,
-        title: 'My Lovely Gantt',
-        subtitle: 'This is a subtitle',
-        grid: const GanttGrid(
-          columnWidth: 40,
-          rowSpacing: 0,
-          timelineAxisType: TimelineAxisType.daily,
-          tooltipType: TooltipType.tap,
-        ),
+      body: GanttChart<ExampleEventItem>(
+        rows: _items.toRows(),
         style: GanttStyle(
+          columnWidth: 100,
+          barHeight: 16,
+          timelineAxisType: TimelineAxisType.daily,
+          tooltipType: TooltipType.hover,
           taskBarColor: Colors.blue.shade400,
-          activityLabelColor: Colors.blue.shade100,
+          activityLabelColor: Colors.blue.shade500,
           taskLabelColor: Colors.blue.shade900,
-          gridColor: Colors.grey.shade300,
-          taskBarRadius: 6,
-          activityLabelStyle: Theme.of(context).textTheme.labelLarge,
-          titleStyle: Theme.of(context).textTheme.titleLarge,
-          titlePadding: const EdgeInsets.only(
-            left: 8,
-            right: 8,
-            top: 16,
-            bottom: 8,
+          taskLabelBuilder: (task) => Container(
+            padding: const EdgeInsets.all(4),
+            child: Text(
+              task.data.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
-          subtitleStyle: Theme.of(context).textTheme.titleMedium,
-          timelineColor: Colors.grey.shade100,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          gridColor: Colors.grey.shade300,
+          taskBarRadius: 8,
+          activityLabelBuilder: (activity) => Container(
+            padding: const EdgeInsets.all(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  activity.label!,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const Text(
+                  'A subtitle',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
           axisDividerColor: Colors.grey.shade500,
           tooltipColor: Colors.redAccent,
           tooltipPadding:
@@ -91,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.redAccent,
-        onPressed: () => _controller.addItems(Data.dummyData),
+        onPressed: () => setState(() => _items.addAll(Data.dummyData)),
         child: const Icon(Icons.restore, color: Colors.white),
       ),
     );
@@ -100,4 +96,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
 extension on DateTime {
   String get formattedDate => '$day/$month/$year';
+}
+
+extension on List<ExampleEventItem> {
+  List<GridRow> toRows() {
+    List<GridRow> rows = [];
+    Map<String, List<TaskGridRow<ExampleEventItem>>> labelTasks = {};
+
+    sort((a, b) => a.start.compareTo(b.start));
+
+    for (var item in this) {
+      final label = item.group;
+      (labelTasks[label] ??= []).add(TaskGridRow<ExampleEventItem>(
+        data: item,
+        startDate: item.start,
+        endDate: item.end,
+        tooltip:
+            '${item.title}\n${item.start.formattedDate} - ${item.end.formattedDate}',
+      ));
+    }
+
+    for (var label in labelTasks.keys) {
+      rows.add(ActivityGridRow(label));
+      rows.addAll(labelTasks[label]!);
+    }
+
+    return rows;
+  }
 }

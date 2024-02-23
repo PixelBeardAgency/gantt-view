@@ -1,31 +1,28 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/model/grid_row.dart';
-import 'package:gantt_view/src/model/tooltip_type.dart';
+import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 import 'package:gantt_view/src/settings/gantt_visible_data.dart';
 
-class GanttDataPainter extends GanttPainter {
+class GanttDataPainter<T> extends GanttPainter {
   final Offset tooltipOffset;
 
-  final double _taskOffset;
-
   GanttDataPainter({
-    required super.rows,
     required super.config,
     required super.panOffset,
     required this.tooltipOffset,
-  }) : _taskOffset =
-            (config.grid.rowSpacing + config.style.labelPadding.vertical) / 2;
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (config.style.gridColor != null) {
-      _paintGrid(canvas, size, gridData);
+      _paintGridColumns(size, canvas, gridData.visibleColumns);
     }
 
     _paintCells(canvas, size, gridData);
 
-    if (config.grid.tooltipType != TooltipType.none) {
+    if (config.style.tooltipType != TooltipType.none) {
       _paintTooltip(canvas, gridData);
     }
   }
@@ -37,21 +34,26 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintCells(Canvas canvas, Size size, GanttVisibleData gridData) {
     for (int y = gridData.firstVisibleRow; y < gridData.lastVisibleRow; y++) {
-      var dy = y * config.rowHeight + config.uiOffset.dy;
-      final row = rows[y];
+      final row = config.rows[y].$1;
+      var rowHeight = config.rows[y].$2.height;
+      var dy = gridData.rowOffsets[y];
+
+      if (config.style.gridColor != null) {
+        _paintGridRow(dy, size, canvas);
+      }
 
       for (int x = gridData.firstVisibleColumn;
           x < gridData.lastVisibleColumn;
           x++) {
-        var dx = x * config.cellWidth + config.uiOffset.dx;
+        var dx = x * config.cellWidth;
 
         final currentOffset = (config.weekendOffset + x) % 7;
         final isWeekend = currentOffset == 5 || currentOffset == 6;
 
         final isHighlighted = config.highlightedColumns.contains(x);
 
-        if (row is TaskGridRow) {
-          final task = row.task;
+        if (row is TaskGridRow<T>) {
+          final task = row;
 
           final start = task.startDate;
           final end = task.endDate;
@@ -68,6 +70,7 @@ class GanttDataPainter extends GanttPainter {
             _paintTask(
               dx,
               dy,
+              rowHeight,
               canvas,
               _TaskGridCell(
                 task.tooltip,
@@ -78,22 +81,26 @@ class GanttDataPainter extends GanttPainter {
               ),
             );
           } else if (isHighlighted) {
-            _paintFill(dx, dy, canvas, config.style.holidayColor);
+            _paintFill(dx, dy, rowHeight, canvas, config.style.holidayColor);
           } else if (isWeekend && config.style.weekendColor != null) {
-            _paintFill(dx, dy, canvas, config.style.weekendColor!);
+            _paintFill(dx, dy, rowHeight, canvas, config.style.weekendColor!);
           }
         } else if (isHighlighted) {
-          _paintFill(dx, dy, canvas, config.style.holidayColor);
+          _paintFill(dx, dy, rowHeight, canvas, config.style.holidayColor);
         } else if (isWeekend && config.style.weekendColor != null) {
-          _paintFill(dx, dy, canvas, config.style.weekendColor!);
+          _paintFill(dx, dy, rowHeight, canvas, config.style.weekendColor!);
         } else if (row is ActivityGridRow) {
-          _paintFill(dx, dy, canvas, config.style.activityLabelColor);
+          _paintFill(
+              dx, dy, rowHeight, canvas, config.style.activityLabelColor);
         }
       }
+
+      dy += rowHeight;
     }
   }
 
-  void _paintFill(double x, double y, Canvas canvas, Color color) {
+  void _paintFill(
+      double x, double y, double height, Canvas canvas, Color color) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
@@ -102,7 +109,7 @@ class GanttDataPainter extends GanttPainter {
       x,
       y,
       config.cellWidth + 1,
-      config.rowHeight,
+      height,
     );
 
     canvas.drawRect(
@@ -111,13 +118,15 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintTask(double x, double y, Canvas canvas, _TaskGridCell fill) {
+  void _paintTask(
+      double x, double y, double height, Canvas canvas, _TaskGridCell fill) {
     var color = config.style.taskBarColor;
     if (fill.isHighlighted ||
         (fill.isWeekend && config.style.weekendColor != null)) {
       _paintFill(
           x,
           y,
+          height,
           canvas,
           fill.isHighlighted
               ? config.style.holidayColor
@@ -132,9 +141,9 @@ class GanttDataPainter extends GanttPainter {
     final rect = RRect.fromRectAndCorners(
       Rect.fromLTWH(
         x,
-        y + _taskOffset,
+        y + (height - min(height, config.style.barHeight)) / 2,
         config.cellWidth + 1,
-        config.grid.barHeight,
+        min(height, config.style.barHeight),
       ),
       topLeft: Radius.circular(fill.isFirst ? radius : 0),
       bottomLeft: Radius.circular(fill.isFirst ? radius : 0),
@@ -147,32 +156,21 @@ class GanttDataPainter extends GanttPainter {
     );
   }
 
-  void _paintGrid(Canvas canvas, Size size, GanttVisibleData gridData) {
-    _paintGridRows(size, canvas, gridData.visibleRows);
-    _paintGridColumns(size, canvas, gridData.visibleColumns);
-  }
-
-  void _paintGridRows(Size size, Canvas canvas, int rows) {
-    final double rowVerticalOffset =
-        config.timelineHeight + (panOffset.dy % config.rowHeight);
-
-    for (int y = 0; y < rows; y++) {
-      final py = y * config.rowHeight + rowVerticalOffset;
-      final p1 = Offset(config.labelColumnWidth, py);
-      final p2 = Offset(size.width, py);
-      final paint = Paint()
-        ..color = config.style.gridColor!
-        ..strokeWidth = 1;
-      canvas.drawLine(p1, p2, paint);
-    }
+  void _paintGridRow(double dy, Size size, Canvas canvas) {
+    final p1 = Offset(0, dy + panOffset.dy);
+    final p2 = Offset(size.width, dy + panOffset.dy);
+    final paint = Paint()
+      ..color = config.style.gridColor!
+      ..strokeWidth = 1;
+    canvas.drawLine(p1, p2, paint);
   }
 
   void _paintGridColumns(Size size, Canvas canvas, int columns) {
     final double columnHorizontalOffset =
-        config.labelColumnWidth + (panOffset.dx % config.grid.columnWidth);
+        panOffset.dx % config.style.columnWidth;
     for (int x = 0; x < columns; x++) {
-      final px = x * config.grid.columnWidth + columnHorizontalOffset;
-      final p1 = Offset(px, config.timelineHeight);
+      final px = x * config.style.columnWidth + columnHorizontalOffset;
+      final p1 = Offset(px, 0);
       final p2 = Offset(px, size.height);
       final paint = Paint()
         ..color = config.style.gridColor!
@@ -183,56 +181,61 @@ class GanttDataPainter extends GanttPainter {
 
   void _paintTooltip(Canvas canvas, GanttVisibleData gridData) {
     final firstColumnOffset = ((-panOffset.dx) % config.cellWidth);
-    final currentPosX = tooltipOffset.dx - config.labelColumnWidth;
+    final currentPosX = tooltipOffset.dx;
 
     var x = (currentPosX + firstColumnOffset) ~/
-            (config.grid.columnWidth / config.widthDivisor) +
+            (config.style.columnWidth / config.widthDivisor) +
         gridData.firstVisibleColumn;
 
-    final firstRowOffset = ((-panOffset.dy) % config.rowHeight);
-    final currentPosY = tooltipOffset.dy - config.timelineHeight;
+    final firstRowOffset = (gridData.rowOffsets[gridData.firstVisibleRow]);
+    final currentPosY = tooltipOffset.dy - panOffset.dy + firstRowOffset;
 
-    final y = ((currentPosY + firstRowOffset) ~/ config.rowHeight) +
-        gridData.firstVisibleRow;
+    final y = gridData.rowOffsets
+            .indexWhere((offset) => currentPosY < offset + firstRowOffset) -
+        1;
 
     if (x < 0 || y < 0) {
       return;
     }
 
-    final row = rows[y];
+    final row = config.rows[y].$1;
     if (row is! TaskGridRow) return;
 
-    final int from = row.task.startDate.difference(config.startDate).inDays;
-    final int to = row.task.endDate.difference(config.startDate).inDays;
+    final int from = row.startDate.difference(config.startDate).inDays;
+    final int to = row.endDate.difference(config.startDate).inDays;
 
     final isTask = x >= from && x <= to;
 
-    if (!isTask || (row.task.tooltip?.isEmpty ?? true)) {
+    if (!isTask || (row.tooltip?.isEmpty ?? true)) {
       return;
     }
 
-    final textPainter = config.textPainter(
-      row.task.tooltip!,
-      config.style.tooltipStyle,
-      maxWidth: config.grid.tooltipWidth,
+    final painter = TextPainter(
+      text: TextSpan(
+        text: row.tooltip!,
+        style: config.style.tooltipStyle,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    painter.layout(
+      minWidth: 0,
+      maxWidth: config.style.tooltipWidth,
     );
 
     var startOffset = Offset(
-      tooltipOffset.dx - textPainter.width / 2,
-      tooltipOffset.dy -
-          config.style.tooltipPadding.vertical -
-          textPainter.height,
+      tooltipOffset.dx - painter.width / 2,
+      tooltipOffset.dy - config.style.tooltipPadding.vertical - painter.height,
     );
 
     final backgroundWidth =
-        textPainter.width + config.style.tooltipPadding.horizontal;
+        painter.width + config.style.tooltipPadding.horizontal;
     final backgroundHeight =
-        textPainter.height + config.style.tooltipPadding.vertical;
+        painter.height + config.style.tooltipPadding.vertical;
 
     // Tooltip is rendered off the start edge of the available space
-    if (startOffset.dx - panOffset.dx < config.labelColumnWidth) {
+    if (startOffset.dx - panOffset.dx < 0) {
       startOffset = Offset(
-        config.labelColumnWidth + panOffset.dx,
+        panOffset.dx,
         startOffset.dy,
       );
     }
@@ -249,10 +252,10 @@ class GanttDataPainter extends GanttPainter {
     }
 
     // Tooltip is rendered off the top edge of the available space
-    if (startOffset.dy - panOffset.dy < config.timelineHeight) {
+    if (startOffset.dy - panOffset.dy < 0) {
       startOffset = Offset(
         startOffset.dx,
-        config.timelineHeight + panOffset.dy,
+        panOffset.dy,
       );
     }
 
@@ -280,7 +283,7 @@ class GanttDataPainter extends GanttPainter {
       backgroundPaint,
     );
 
-    textPainter.paint(
+    painter.paint(
       canvas,
       startOffset +
           Offset(

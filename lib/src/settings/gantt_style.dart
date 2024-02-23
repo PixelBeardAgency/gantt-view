@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:gantt_view/gantt_view.dart';
 
-class GanttStyle {
+class GanttStyle<T> {
   final Color taskBarColor;
   final double taskBarRadius;
 
-  final TextStyle taskLabelStyle;
   final Color taskLabelColor;
-  final EdgeInsets labelPadding;
-
-  final TextStyle activityLabelStyle;
   final Color activityLabelColor;
 
-  final Color timelineColor;
-  final TextStyle timelineStyle;
+  final Widget Function()? chartTitleBuilder;
+  final Widget Function(TaskGridRow<T> task) taskLabelBuilder;
+  final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
 
-  final TextStyle titleStyle;
-  final TextStyle subtitleStyle;
-  final EdgeInsets titlePadding;
+  final Widget Function(int year) yearLabelBuilder;
+  final Widget Function(Month month) monthLabelBuilder;
+  final Widget Function(int day) dayLabelBuilder;
 
   final Color? gridColor;
 
@@ -30,19 +28,22 @@ class GanttStyle {
   final EdgeInsets tooltipPadding;
   final double tooltipRadius;
 
-  GanttStyle({
+  final double barHeight;
+  final double columnWidth;
+  final double tooltipWidth;
+
+  final bool showYear;
+  final bool showMonth;
+  final bool showDay;
+
+  final TimelineAxisType timelineAxisType;
+  final TooltipType tooltipType;
+
+  const GanttStyle({
     Color? taskBarColor,
     this.taskBarRadius = 8.0,
-    TextStyle? taskLabelStyle,
     Color? taskLabelColor,
-    this.labelPadding = const EdgeInsets.all(4),
-    TextStyle? activityLabelStyle,
     Color? activityLabelColor,
-    Color? timelineColor,
-    TextStyle? timelineStyle,
-    TextStyle? titleStyle,
-    TextStyle? subtitleStyle,
-    this.titlePadding = const EdgeInsets.all(4),
     this.gridColor,
     this.weekendColor,
     Color? highlightedDateColor,
@@ -51,22 +52,36 @@ class GanttStyle {
     TextStyle? tooltipStyle,
     this.tooltipPadding = const EdgeInsets.all(4),
     this.tooltipRadius = 4.0,
-  })  : taskBarColor = taskBarColor ?? Colors.blue.shade200,
-        taskLabelStyle = taskLabelStyle ??
-            const TextStyle(color: Colors.white, fontSize: 12),
-        taskLabelColor = taskLabelColor ?? Colors.blue.shade900,
-        activityLabelStyle = activityLabelStyle ??
-            const TextStyle(color: Colors.white, fontSize: 12),
-        activityLabelColor = activityLabelColor ?? Colors.blue.shade400,
-        timelineColor = timelineColor ?? Colors.grey.shade300,
-        timelineStyle =
-            timelineStyle ?? const TextStyle(color: Colors.black, fontSize: 10),
-        titleStyle =
-            titleStyle ?? const TextStyle(color: Colors.black, fontSize: 16),
-        subtitleStyle =
-            subtitleStyle ?? const TextStyle(color: Colors.black, fontSize: 14),
-        holidayColor = highlightedDateColor ?? Colors.grey.shade300,
-        tooltipColor = tooltipColor ?? Colors.grey.shade500,
+    this.activityLabelBuilder,
+    this.taskLabelBuilder = _defaultTaskLabelBuilder,
+    this.yearLabelBuilder = _defaultYearLabelBuilder,
+    this.monthLabelBuilder = _defaultMonthLabelBuilder,
+    this.dayLabelBuilder = _defaultDayLabelBuilder,
+    this.chartTitleBuilder,
+    this.barHeight = 12.0,
+    this.columnWidth = 30.0,
+    this.tooltipWidth = 200,
+    this.showYear = true,
+    this.showMonth = true,
+    this.showDay = true,
+    this.timelineAxisType = TimelineAxisType.daily,
+    this.tooltipType = TooltipType.none,
+  })  : taskBarColor = taskBarColor ?? const Color.fromRGBO(144, 202, 249, 1),
+        taskLabelColor = taskLabelColor ?? const Color.fromRGBO(13, 71, 161, 1),
+        activityLabelColor =
+            activityLabelColor ?? const Color.fromRGBO(66, 165, 245, 1),
+        holidayColor =
+            highlightedDateColor ?? const Color.fromRGBO(224, 224, 224, 1),
+        tooltipColor = tooltipColor ?? const Color.fromRGBO(158, 158, 158, 1),
         tooltipStyle =
             tooltipStyle ?? const TextStyle(color: Colors.white, fontSize: 16);
+
+  static Widget _defaultTaskLabelBuilder(TaskGridRow task) => Container();
+
+  static Widget _defaultYearLabelBuilder(int year) => Text(
+        '$year',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      );
+  static Widget _defaultMonthLabelBuilder(Month month) => Text('${month.id}');
+  static Widget _defaultDayLabelBuilder(int day) => Text('$day');
 }
