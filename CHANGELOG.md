@@ -1,3 +1,9 @@
+## 0.0.7
+- Labels now use a builder to render in a list
+- Dates now use a builder to render in a list
+- Title and subtitle now use a builder to render in a list
+- Canvas now only used to render the task bars
+
 ## 0.0.6
 - A bug where tooltips would only appear for the first column has been fixed
 - A bug where sometimes the legend would scroll in the wrong direction has been fixes
