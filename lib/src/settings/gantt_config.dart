@@ -60,8 +60,7 @@ class GanttConfig<T> {
 
   late List<DateTime> monthsBetween;
   late List<DateTime> yearsBetween;
-
-  int get columnCount => endDate.difference(startDate).inDays + 1;
+  late int columnCount;
 
   GanttConfig({
     GanttStyle<T>? style,
@@ -71,6 +70,7 @@ class GanttConfig<T> {
     required this.rows,
     this.highlightedDates = const [],
   }) : style = style ?? const GanttStyle() {
+    columnCount = startDate.numberOfDaysBetween(endDate);
     monthsBetween = startDate.monthsBetween(endDate);
     yearsBetween = startDate.yearsBetween(endDate);
 

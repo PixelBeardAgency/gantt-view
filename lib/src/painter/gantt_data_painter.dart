@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/painter/gantt_painter.dart';
 import 'package:gantt_view/src/settings/gantt_visible_data.dart';
+import 'package:gantt_view/src/util/datetime_extension.dart';
 
 class GanttDataPainter<T> extends GanttPainter {
   final Offset tooltipOffset;
@@ -58,8 +59,8 @@ class GanttDataPainter<T> extends GanttPainter {
           final start = task.startDate;
           final end = task.endDate;
 
-          final int from = start.difference(config.startDate).inDays;
-          final int to = end.difference(config.startDate).inDays;
+          final int from = start.numberOfDaysBetween(config.startDate) - 1;
+          final int to = end.numberOfDaysBetween(config.startDate)- 1;
 
           if (start.isAtSameMomentAs(end) && start.isAfter(end)) {
             throw Exception('Start date must be before or same as end date.');
