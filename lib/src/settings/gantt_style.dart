@@ -31,6 +31,7 @@ class GanttStyle<T> {
   final double barHeight;
   final double columnWidth;
   final double tooltipWidth;
+  final double? labelColumnWidth;
 
   final bool showYear;
   final bool showMonth;
@@ -61,6 +62,7 @@ class GanttStyle<T> {
     this.barHeight = 12.0,
     this.columnWidth = 30.0,
     this.tooltipWidth = 200,
+    this.labelColumnWidth,
     this.showYear = true,
     this.showMonth = true,
     this.showDay = true,

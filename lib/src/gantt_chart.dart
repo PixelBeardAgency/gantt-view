@@ -9,37 +9,37 @@ class GanttChart<T> extends StatelessWidget {
   final List<DateTime> highlightedDates;
   final GanttStyle<T> style;
 
-  const GanttChart({
+  GanttChart({
     super.key,
     required this.rows,
     this.highlightedDates = const [],
     this.style = const GanttStyle(),
-  });
+  }) : assert(rows.isNotEmpty == true, 'rows cannot be empty');
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => (rows.isNotEmpty == true)
-          ? GanttContent(
-              config: GanttConfig(
-                style: style,
-                containerSize: constraints.biggest,
-                highlightedDates: highlightedDates,
-                rows: rows
-                    .map((e) => (
-                          e,
-                          e is ActivityGridRow
-                              ? MeasureUtil.measureWidget(Material(
-                                  child: style.activityLabelBuilder?.call(e)))
-                              : e is TaskGridRow<T>
-                                  ? MeasureUtil.measureWidget(Material(
-                                      child: style.taskLabelBuilder(e)))
-                                  : const Size(0, 0)
-                        ))
-                    .toList(),
-              ),
-            )
-          : const Center(child: Text('No data')),
+      builder: (context, constraints) => GanttContent(
+        config: GanttConfig(
+          style: style,
+          containerSize: constraints.biggest,
+          highlightedDates: highlightedDates,
+          rows: rows
+              .map(
+                (e) => (
+                  e,
+                  e is ActivityGridRow
+                      ? MeasureUtil.measureWidget(
+                          Material(child: style.activityLabelBuilder?.call(e)))
+                      : e is TaskGridRow<T>
+                          ? MeasureUtil.measureWidget(
+                              Material(child: style.taskLabelBuilder(e)))
+                          : const Size(0, 0)
+                ),
+              )
+              .toList(),
+        ),
+      ),
     );
   }
 }
