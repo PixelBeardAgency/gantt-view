@@ -78,6 +78,7 @@ GanttChart<ExampleEventItem>(
 | barHeight            | double                                     |
 | columnWidth          | double                                     |
 | tooltipWidth         | double                                     |
+| labelColumnWidth     | double                                     |
 | showYear             | bool                                       |
 | showMonth            | bool                                       |
 | showDay              | bool                                       |

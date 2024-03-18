@@ -108,6 +108,10 @@ class GanttConfig<T> {
           : dataHeight - renderAreaSize.height + uiOffset.dy;
 
   double _titleWidth(Iterable<(GridRow, Size)> rows) {
+    if (style.labelColumnWidth != null) {
+      return style.labelColumnWidth!;
+    }
+
     double width = 0;
 
     if (style.chartTitleBuilder != null) {
