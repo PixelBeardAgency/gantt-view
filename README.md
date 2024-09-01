@@ -49,6 +49,7 @@ GanttChart<ExampleEventItem>(
         tooltipPadding:
             const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         weekendColor: Colors.grey.shade200,
+        snapToDay: false,
     ),
     dateLines: [
         GanttDateLine(
@@ -86,6 +87,7 @@ GanttChart<ExampleEventItem>(
 | columnWidth          | double                                     |
 | tooltipWidth         | double                                     |
 | labelColumnWidth     | double                                     |
+| snapToDay            | bool                                       |
 | showYear             | bool                                       |
 | showMonth            | bool                                       |
 | showDay              | bool                                       |

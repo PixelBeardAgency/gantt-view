@@ -85,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           weekendColor: Colors.grey.shade200,
           dateLineColor: Colors.red,
+          snapToDay: false,
         ),
         dateLines: [
           GanttDateLine(
