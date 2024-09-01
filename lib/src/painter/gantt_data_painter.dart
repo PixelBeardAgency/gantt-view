@@ -224,7 +224,7 @@ class GanttDataPainter<T> extends GanttPainter {
       if (config.style.tooltipType != TooltipType.none &&
           tooltipOffset.dx > lowerLimit &&
           tooltipOffset.dx < upperLimit) {
-        _tooltip = line.date.toString();
+        _tooltip = line.tooltipBuilder?.call(line.date) ?? line.date.toString();
       }
     }
   }
