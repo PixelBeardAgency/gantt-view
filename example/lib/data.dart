@@ -19,8 +19,9 @@ class ExampleEventItem {
   });
 
   factory ExampleEventItem.random() {
-    final start = DateTime.timestamp()
-        .add(Duration(days: Random().nextInt(25) - Random().nextInt(25)));
+    final start = DateTime.timestamp().add(Duration(
+        days: Random().nextInt(25) - Random().nextInt(25),
+        minutes: Random().nextInt(1500) - Random().nextInt(1500)));
     final end = start.add(Duration(days: Random().nextInt(50)));
     return ExampleEventItem(
       title: _tasks[Random().nextInt(_tasks.length)],

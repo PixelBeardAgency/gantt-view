@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gantt_view/gantt_view.dart';
 
+typedef TaskLabelBuilder = Widget Function(TaskGridRow task);
+typedef ActivityLabelBuilder = Widget Function(ActivityGridRow activity);
+
 class GanttStyle<T> {
   final Color taskBarColor;
   final double taskBarRadius;
@@ -9,8 +12,8 @@ class GanttStyle<T> {
   final Color activityLabelColor;
 
   final Widget Function()? chartTitleBuilder;
-  final Widget Function(TaskGridRow<T> task) taskLabelBuilder;
-  final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
+  final TaskLabelBuilder taskLabelBuilder;
+  final ActivityLabelBuilder? activityLabelBuilder;
 
   final Widget Function(int year) yearLabelBuilder;
   final Widget Function(Month month) monthLabelBuilder;
@@ -32,6 +35,7 @@ class GanttStyle<T> {
   final double columnWidth;
   final double tooltipWidth;
   final double? labelColumnWidth;
+  final bool snapToDay;
 
   final bool showYear;
   final bool showMonth;
@@ -48,6 +52,7 @@ class GanttStyle<T> {
     this.gridColor,
     this.weekendColor,
     Color? highlightedDateColor,
+    Color? dateLineColor,
     this.axisDividerColor,
     Color? tooltipColor,
     TextStyle? tooltipStyle,
@@ -63,6 +68,7 @@ class GanttStyle<T> {
     this.columnWidth = 30.0,
     this.tooltipWidth = 200,
     this.labelColumnWidth,
+    this.snapToDay = true,
     this.showYear = true,
     this.showMonth = true,
     this.showDay = true,

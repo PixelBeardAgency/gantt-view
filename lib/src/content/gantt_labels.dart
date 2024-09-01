@@ -7,7 +7,8 @@ class GanttLabels<T> extends StatelessWidget {
   final ScrollController scrollController;
   final Function(double position) onScroll;
 
-  const GanttLabels({super.key, 
+  const GanttLabels({
+    super.key,
     required this.config,
     required this.scrollController,
     required this.onScroll,

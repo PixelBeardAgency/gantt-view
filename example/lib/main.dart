@@ -36,8 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: GanttChart<ExampleEventItem>(
         rows: _items.toRows(),
+        showCurrentDate: true,
         style: GanttStyle(
-          columnWidth: 100,
+          columnWidth: 50,
           barHeight: 16,
           timelineAxisType: TimelineAxisType.daily,
           tooltipType: TooltipType.hover,
@@ -83,7 +84,16 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltipPadding:
               const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           weekendColor: Colors.grey.shade200,
+          dateLineColor: Colors.red,
+          snapToDay: false,
         ),
+        dateLines: [
+          GanttDateLine(
+              date: DateTime.timestamp(), width: 2, color: Colors.orangeAccent),
+          GanttDateLine(
+            date: DateTime.timestamp().add(const Duration(days: 2)),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.redAccent,
