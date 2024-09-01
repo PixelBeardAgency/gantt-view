@@ -9,7 +9,7 @@ import 'package:gantt_view/src/util/datetime_extension.dart';
 class GanttDataPainter<T> extends GanttPainter {
   final Offset tooltipOffset;
 
-  bool _showingTooltip = false;
+  String? _tooltip;
 
   GanttDataPainter({
     required super.config,
@@ -31,8 +31,8 @@ class GanttDataPainter<T> extends GanttPainter {
       canvas,
     );
 
-    if (config.style.tooltipType != TooltipType.none) {
-      _paintTooltips(canvas, gridData);
+    if (config.style.tooltipType != TooltipType.none && _tooltip != null) {
+      _paintTooltip(canvas, gridData, _tooltip!);
     }
   }
 
@@ -81,10 +81,10 @@ class GanttDataPainter<T> extends GanttPainter {
 
           if (isFilled) {
             final taskDx = dx +
-                (isFirst && config.style.snapToDay
+                (isFirst && !config.style.snapToDay
                     ? config.cellWidth * row.startDate.dayProgress
                     : 0);
-            final taskWidth = (isLast && config.style.snapToDay
+            final taskWidth = (isLast && !config.style.snapToDay
                     ? (config.cellWidth -
                             (config.cellWidth * row.endDate.dayProgress)) -
                         (taskDx - dx)
@@ -163,6 +163,11 @@ class GanttDataPainter<T> extends GanttPainter {
       rect.shift(panOffset),
       paint,
     );
+
+    if (config.style.tooltipType != TooltipType.none &&
+        rect.contains(tooltipOffset)) {
+      _tooltip = fill.tooltip!;
+    }
   }
 
   void _paintGridRow(double dy, Size size, Canvas canvas) {
@@ -216,50 +221,15 @@ class GanttDataPainter<T> extends GanttPainter {
 
       canvas.drawLine(p1, p2, paint);
 
-      if (tooltipOffset.dx > lowerLimit && tooltipOffset.dx < upperLimit) {
-        _paintTooltip(canvas, gridData, line.date.toString());
+      if (config.style.tooltipType != TooltipType.none &&
+          tooltipOffset.dx > lowerLimit &&
+          tooltipOffset.dx < upperLimit) {
+        _tooltip = line.date.toString();
       }
     }
   }
 
-  void _paintTooltips(Canvas canvas, GanttVisibleData gridData) {
-    final firstColumnOffset = ((-panOffset.dx) % config.cellWidth);
-    final currentPosX = tooltipOffset.dx;
-
-    var x = (currentPosX + firstColumnOffset) ~/
-            (config.style.columnWidth / config.widthDivisor) +
-        gridData.firstVisibleColumn;
-
-    final firstRowOffset = (gridData.rowOffsets[gridData.firstVisibleRow]);
-    final currentPosY = tooltipOffset.dy - panOffset.dy + firstRowOffset;
-
-    final y = gridData.rowOffsets
-            .indexWhere((offset) => currentPosY < offset + firstRowOffset) -
-        1;
-
-    if (x < 0 || y < 0) {
-      return;
-    }
-
-    final row = config.rows[y].$1;
-    if (row is! TaskGridRow) return;
-
-    final int from = row.startDate.difference(config.startDate).inDays;
-    final int to = row.endDate.difference(config.startDate).inDays;
-
-    final isTask = x >= from && x <= to;
-
-    if (!isTask || (row.tooltip?.isEmpty ?? true)) {
-      return;
-    }
-    _paintTooltip(canvas, gridData, row.tooltip!);
-  }
-
   void _paintTooltip(Canvas canvas, GanttVisibleData gridData, String label) {
-    // Only allow 1 tooltip at a time
-    if (_showingTooltip) return;
-    _showingTooltip = true;
-
     final painter = TextPainter(
       text: TextSpan(
         text: label,

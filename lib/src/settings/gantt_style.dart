@@ -65,7 +65,7 @@ class GanttStyle<T> {
     this.columnWidth = 30.0,
     this.tooltipWidth = 200,
     this.labelColumnWidth,
-    this.snapToDay = false,
+    this.snapToDay = true,
     this.showYear = true,
     this.showMonth = true,
     this.showDay = true,
