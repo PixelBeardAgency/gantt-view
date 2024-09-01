@@ -1,4 +1,4 @@
-abstract class GridRow {
+sealed class GridRow {
   GridRow();
 }
 

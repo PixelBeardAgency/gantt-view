@@ -23,6 +23,12 @@ class GanttDataPainter<T> extends GanttPainter {
 
     _paintCells(canvas, size, gridData);
 
+    _paintDateLines(
+      config.dateLines,
+      size,
+      canvas,
+    );
+
     if (config.style.tooltipType != TooltipType.none) {
       _paintTooltip(canvas, gridData);
     }
@@ -60,7 +66,7 @@ class GanttDataPainter<T> extends GanttPainter {
           final end = task.endDate;
 
           final int from = start.numberOfDaysBetween(config.startDate) - 1;
-          final int to = end.numberOfDaysBetween(config.startDate)- 1;
+          final int to = end.numberOfDaysBetween(config.startDate) - 1;
 
           if (start.isAtSameMomentAs(end) && start.isAfter(end)) {
             throw Exception('Start date must be before or same as end date.');
@@ -293,6 +299,31 @@ class GanttDataPainter<T> extends GanttPainter {
           ),
     );
   }
+
+  void _paintDateLines(List<GanttDateLine> lines, Size size, Canvas canvas) {
+    // Get date offset
+    for (var line in lines) {
+      final double horizontalColumnOffset =
+          (line.date.difference(config.startDate).inDays *
+                  config.style.columnWidth) +
+              panOffset.dx;
+
+      // Get offset based on current time
+      final double columnTimeOffset =
+          config.style.columnWidth * line.time.dayProgress;
+
+      final double timelineOffset = horizontalColumnOffset + columnTimeOffset;
+
+      final px = timelineOffset;
+      final p1 = Offset(px, 0);
+      final p2 = Offset(px, size.height);
+      final paint = Paint()
+        ..color = line.color
+        ..strokeWidth = line.width;
+
+      canvas.drawLine(p1, p2, paint);
+    }
+  }
 }
 
 class _TaskGridCell {
@@ -309,4 +340,8 @@ class _TaskGridCell {
     this.isHighlighted = false,
     this.isWeekend = false,
   });
+}
+
+extension on TimeOfDay {
+  double get dayProgress => (hour / 24) + (minute / 60 / 100);
 }

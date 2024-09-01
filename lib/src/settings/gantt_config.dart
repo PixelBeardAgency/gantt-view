@@ -1,10 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gantt_view/src/model/grid_row.dart';
-import 'package:gantt_view/src/model/month.dart';
-import 'package:gantt_view/src/model/timeline_axis_type.dart';
-import 'package:gantt_view/src/settings/gantt_style.dart';
+import 'package:gantt_view/gantt_view.dart';
 import 'package:gantt_view/src/util/datetime_extension.dart';
 import 'package:gantt_view/src/util/measure_util.dart';
 
@@ -17,6 +14,7 @@ class GanttConfig<T> {
   final List<(GridRow, Size)> rows;
 
   final List<DateTime> highlightedDates;
+  final List<GanttDateLine> dateLines;
 
   late Size renderAreaSize;
 
@@ -69,6 +67,7 @@ class GanttConfig<T> {
     required Size containerSize,
     required this.rows,
     this.highlightedDates = const [],
+    this.dateLines = const [],
   }) : style = style ?? const GanttStyle() {
     columnCount = startDate.numberOfDaysBetween(endDate);
     monthsBetween = startDate.monthsBetween(endDate);
@@ -136,7 +135,7 @@ class GanttConfig<T> {
             children: [
               if (style.showYear) style.yearLabelBuilder(2222),
               if (style.showMonth) style.monthLabelBuilder(Month.jan),
-              if (style.showDay) style.dayLabelBuilder(31),
+              if (style.showDay) style.dayLabelBuilder(22),
             ],
           ),
         ),

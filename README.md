@@ -50,7 +50,14 @@ GanttChart<ExampleEventItem>(
             const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         weekendColor: Colors.grey.shade200,
     ),
-    )
+    dateLines: [
+        GanttDateLine(
+            date: DateTime.timestamp(), width: 2, color: Colors.orangeAccent),
+        GanttDateLine(
+        date: DateTime.timestamp().add(const Duration(days: 2)),
+        ),
+    ],
+)
 ```
 
 ## Styling
@@ -100,6 +107,7 @@ This is a WIP project and is not yet ready for production use. The API is subjec
 - [ ] Add ability to set the first day of the week
 - [ ] Add ability to make highlighted days and weekend days a solid colour, so that the task bar is not visible
 - [ ] Add scrollbars
+- [ ] Add date lines for the user to be able to display important dates
 
 ## Current Known Issues
 - [ ] Sometimes when instantiated, the pan offset of the chart is not correctly updated when panning, resulting in a slower pan speed than expected.

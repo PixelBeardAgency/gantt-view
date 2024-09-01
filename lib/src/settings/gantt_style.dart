@@ -9,7 +9,7 @@ class GanttStyle<T> {
   final Color activityLabelColor;
 
   final Widget Function()? chartTitleBuilder;
-  final Widget Function(TaskGridRow<T> task) taskLabelBuilder;
+  final Widget Function(TaskGridRow task) taskLabelBuilder;
   final Widget Function(ActivityGridRow activity)? activityLabelBuilder;
 
   final Widget Function(int year) yearLabelBuilder;
@@ -48,6 +48,7 @@ class GanttStyle<T> {
     this.gridColor,
     this.weekendColor,
     Color? highlightedDateColor,
+    Color? dateLineColor,
     this.axisDividerColor,
     Color? tooltipColor,
     TextStyle? tooltipStyle,
